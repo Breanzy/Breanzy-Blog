@@ -50,6 +50,7 @@ export default function Header() {
 
     return (
         <Navbar className="border-b-2">
+            {/* Logo */}
             <Link
                 to="/"
                 className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
@@ -59,6 +60,7 @@ export default function Header() {
                     Blog
                 </span>
             </Link>
+            {/* Big Search */}
             <form onSubmit={handleSubmit}>
                 <TextInput
                     type="text"
@@ -69,6 +71,8 @@ export default function Header() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </form>
+            
+            {/* Small Search */}
             <Button
                 className="w-12 h-10 lg:hidden md:order-2"
                 color="gray"
@@ -76,8 +80,8 @@ export default function Header() {
             >
                 <AiOutlineSearch />
             </Button>
-
             <div className="flex gap-2 md:order-2">
+                {/* Dark & Light Theme Button */}
                 <Button
                     className="w-12 h-10 hidden sm:inline"
                     color="gray"
@@ -86,6 +90,8 @@ export default function Header() {
                 >
                     {theme === "light" ? <FaMoon /> : <FaSun />}
                 </Button>
+
+                {/* User Profile */}
                 {currentUser ? (
                     <Dropdown
                         arrowIcon={false}
@@ -122,9 +128,10 @@ export default function Header() {
                     </Link>
                 )}
 
+                {/* Navbar Hamburger Toggle */}
                 <Navbar.Toggle />
             </div>
-
+            {/* Navbar Collapsed Contents */}
             <Navbar.Collapse>
                 <Navbar.Link active={path == "/"} as={"div"}>
                     <Link to="/">Home</Link>
