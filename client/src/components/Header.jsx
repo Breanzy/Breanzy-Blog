@@ -60,26 +60,18 @@ export default function Header() {
                     Blog
                 </span>
             </Link>
-            {/* Big Search */}
-            <form onSubmit={handleSubmit}>
+
+            {/* Search */}
+            <form onSubmit={handleSubmit} className="flex-grow basis-0 p-2 max-w-[400px]">
                 <TextInput
                     type="text"
                     placeholder="Search..."
                     rightIcon={AiOutlineSearch}
-                    className="hidden lg:inline"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </form>
-            
-            {/* Small Search */}
-            <Button
-                className="w-12 h-10 lg:hidden md:order-2"
-                color="gray"
-                pill
-            >
-                <AiOutlineSearch />
-            </Button>
+
             <div className="flex gap-2 md:order-2">
                 {/* Dark & Light Theme Button */}
                 <Button
