@@ -5,7 +5,7 @@ import {
     BsInstagram,
     BsTwitter,
     BsGithub,
-    BsDribbble,
+    BsLinkedin,
 } from "react-icons/bs";
 
 export default function FooterCom() {
@@ -87,11 +87,26 @@ export default function FooterCom() {
                         year={new Date().getFullYear()}
                     />
                     <div className="flex gap-6 sm:mt-0 mt-4 sm:justify-center">
-                        <Footer.Icon href="#" icon={BsFacebook} />
-                        <Footer.Icon href="#" icon={BsInstagram} />
-                        <Footer.Icon href="#" icon={BsTwitter} />
-                        <Footer.Icon href="#" icon={BsGithub} />
-                        <Footer.Icon href="#" icon={BsDribbble} />
+                        <Footer.Icon
+                            href="https://www.facebook.com/Breanzyy"
+                            icon={BsFacebook}
+                        />
+                        <Footer.Icon
+                            href="https://www.instagram.com/breanzy/"
+                            icon={BsInstagram}
+                        />
+                        <Footer.Icon
+                            href="https://x.com/Breanzyy"
+                            icon={BsTwitter}
+                        />
+                        <Footer.Icon
+                            href="https://github.com/Breanzy"
+                            icon={BsGithub}
+                        />
+                        <Footer.Icon
+                            href="https://www.linkedin.com/in/juliuscarbonilla/"
+                            icon={BsLinkedin}
+                        />
                     </div>
                 </div>
             </div>
