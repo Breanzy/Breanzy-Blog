@@ -40,7 +40,7 @@ export default function FooterCom() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    About
+                                    About test
                                 </Footer.Link>
                             </Footer.LinkGroup>
                         </div>
@@ -57,11 +57,11 @@ export default function FooterCom() {
                                     Github
                                 </Footer.Link>
                                 <Footer.Link
-                                    href="https://www.facebook.com/Breanzyy"
+                                    href="https://www.facebook.com/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    Facebook
+                                    Portfolio
                                 </Footer.Link>
                             </Footer.LinkGroup>
                         </div>
