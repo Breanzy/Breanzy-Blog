@@ -40,7 +40,7 @@ export default function FooterCom() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    Aboutfff
+                                    About
                                 </Footer.Link>
                             </Footer.LinkGroup>
                         </div>
