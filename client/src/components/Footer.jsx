@@ -33,7 +33,7 @@ export default function FooterCom() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    Facebook ahaha
+                                    Facebook ahahakuygft
                                 </Footer.Link>
                                 <Footer.Link
                                     href="/about"
