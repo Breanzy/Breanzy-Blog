@@ -41,7 +41,7 @@ export default function CreatePost() {
                     setImageUploadProgress(progress.toFixed(0));
                 },
                 (error) => {
-                    setImageUploadError("Image upload failed");
+                    setImageUploadError("Image upload faileddd");
                     setImageUploadProgress(null);
                 },
                 () => {
