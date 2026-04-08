@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
+import { app } from "../firebase";
 import Modal from "./Modal";
 
 const emptyForm = {
@@ -16,15 +18,69 @@ const emptyForm = {
 
 const inputCls = "w-full bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
 
-/* Shared form fields for add/edit project modals */
-const ProjectFormFields = ({ formData, setFormData, formError }) => (
+/* Shared form fields for add/edit project modals — manages its own image upload state */
+const ProjectFormFields = ({ formData, setFormData, formError }) => {
+    const [imageFile, setImageFile] = useState(null);
+    const [imageUploadProgress, setImageUploadProgress] = useState(null);
+    const [imageUploadError, setImageUploadError] = useState(null);
+
+    const handleUploadImage = async () => {
+        if (!imageFile) { setImageUploadError("Please select an image"); return; }
+        setImageUploadError(null);
+        try {
+            const storage = getStorage(app);
+            const storageRef = ref(storage, new Date().getTime() + "-" + imageFile.name);
+            const uploadTask = uploadBytesResumable(storageRef, imageFile);
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    setImageUploadProgress(((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0));
+                },
+                () => {
+                    setImageUploadError("Image upload failed");
+                    setImageUploadProgress(null);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                        setImageUploadProgress(null);
+                        setFormData({ ...formData, image: url });
+                    });
+                }
+            );
+        } catch {
+            setImageUploadError("Image upload failed");
+            setImageUploadProgress(null);
+        }
+    };
+
+    return (
     <div className="flex flex-col gap-3">
         <input className={inputCls} placeholder="Title" required value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
         <textarea className={`${inputCls} resize-none`} placeholder="Description" required rows={3} value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
-        <input className={inputCls} placeholder="Image URL" value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })} />
+
+        {/* Image upload — uploads to Firebase Storage */}
+        <div className="flex gap-3 items-center border border-dashed border-neutral-700 rounded-xl p-3">
+            <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                className="text-sm text-neutral-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
+            />
+            <button
+                type="button"
+                onClick={handleUploadImage}
+                disabled={!!imageUploadProgress}
+                className="shrink-0 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs px-3 py-1.5 rounded-lg transition-colors"
+            >
+                {imageUploadProgress ? `${imageUploadProgress}%` : "Upload"}
+            </button>
+        </div>
+        {imageUploadError && <p className="text-red-400 text-xs">{imageUploadError}</p>}
+        {formData.image && (
+            <img src={formData.image} alt="preview" className="w-full h-40 object-cover rounded-lg border border-neutral-800" />
+        )}
         <input className={inputCls} placeholder="Tech stack (comma-separated: React, Node.js, MongoDB)" value={formData.techStack}
             onChange={(e) => setFormData({ ...formData, techStack: e.target.value })} />
         <input className={inputCls} placeholder="Live URL" value={formData.liveUrl}
@@ -50,7 +106,8 @@ const ProjectFormFields = ({ formData, setFormData, formError }) => (
         </label>
         {formError && <p className="text-red-400 text-sm">{formError}</p>}
     </div>
-);
+    );
+};
 
 export default function DashProjects() {
     const { currentUser } = useSelector((state) => state.user);
