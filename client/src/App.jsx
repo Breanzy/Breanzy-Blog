@@ -14,6 +14,8 @@ import UpdatePost from "./pages/UpdatePost";
 import PostPage from "./pages/PostPage";
 import ScrollToTop from "./components/ScrollToTop";
 import Search from "./pages/Search";
+import Blog from "./pages/Blog";
+import Resume from "./pages/Resume";
 
 export default function App() {
     return (
@@ -27,6 +29,8 @@ export default function App() {
                 <Route path="/sign-in" element={<Signin />} />
                 <Route path="/sign-up" element={<Signup />} />
                 <Route path="/search" element={<Search />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/resume" element={<Resume />} />
                 <Route element={<PrivateRoute />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                 </Route>

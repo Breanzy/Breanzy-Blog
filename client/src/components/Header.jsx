@@ -125,16 +125,25 @@ export default function Header() {
             </div>
             {/* Navbar Collapsed Contents */}
             <Navbar.Collapse>
-                <Navbar.Link active={path == "/"} as={"div"}>
+                <Navbar.Link active={path === "/"} as={"div"}>
                     <Link to="/">Home</Link>
                 </Navbar.Link>
 
-                <Navbar.Link active={path == "/about"} as={"div"}>
-                    <Link to="/about">About</Link>
+                {/* Active on /blog and any post page beneath it */}
+                <Navbar.Link active={path === "/blog" || path.startsWith("/blog/")} as={"div"}>
+                    <Link to="/blog">Blog</Link>
                 </Navbar.Link>
 
-                <Navbar.Link active={path == "/projects"} as={"div"}>
+                <Navbar.Link active={path === "/projects"} as={"div"}>
                     <Link to="/projects">Projects</Link>
+                </Navbar.Link>
+
+                <Navbar.Link active={path === "/resume"} as={"div"}>
+                    <Link to="/resume">Resume</Link>
+                </Navbar.Link>
+
+                <Navbar.Link active={path === "/about"} as={"div"}>
+                    <Link to="/about">About</Link>
                 </Navbar.Link>
             </Navbar.Collapse>
         </Navbar>
