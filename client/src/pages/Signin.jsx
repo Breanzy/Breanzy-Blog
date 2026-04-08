@@ -1,19 +1,15 @@
-import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    signInStart,
-    signInSuccess,
-    signInFailure,
-} from "../redux/user/userSlice";
+import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
 
 export default function SignIn() {
     const [formData, setFormData] = useState({});
-    const {loading, error: errorMessage} = useSelector((state) => state.user)
+    const { loading, error: errorMessage } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
     };
@@ -30,84 +26,79 @@ export default function SignIn() {
             const data = await res.json();
             if (data.success === false) {
                 dispatch(signInFailure(data.message));
+                return;
             }
             if (res.ok) {
                 dispatch(signInSuccess(data));
                 navigate("/");
             }
         } catch (error) {
-            dispatch(signInFailure(data.message));
+            dispatch(signInFailure("Something went wrong"));
         }
     };
 
     return (
-        <div className="min-h-screen mt-20">
-            <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
-                <div className="flex-1">
-                    <Link to="/" className="font-bold dark:text-white text-4xl">
-                        <span className="px-2 py-1 bg-gradient-to-r from-blue-600 via-purple-500 to-orange-400 rounded-lg text-white">
-                            test
-                        </span>
-                    </Link>
-                    <p className="text-sm mt-5">
-                        You can sign in with your email and password or with
-                        Google.
-                    </p>
-                </div>
+        <div className="min-h-screen flex items-center justify-center px-4 py-16">
+            <div className="w-full max-w-md bg-neutral-900 border border-neutral-800 rounded-xl p-8">
+                {/* Logo */}
+                <Link to="/" className="block text-center text-white font-bold text-2xl mb-2">
+                    Brean<span className="text-blue-500">zy</span>
+                </Link>
+                <p className="text-center text-neutral-500 text-sm mb-8">
+                    Sign in with your email or Google
+                </p>
 
-                <div className="flex-1">
-                    <form
-                        className="flex flex-col gap-4"
-                        onSubmit={handleSubmit}
-                    >
-                        <div>
-                            <Label value="Your email" />
-                            <TextInput
-                                type="email"
-                                placeholder="Email"
-                                id="email"
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <Label value="Your password" />
-                            <TextInput
-                                type="password"
-                                placeholder="*********"
-                                id="password"
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <Button
-                            gradientDuoTone="purpleToPink"
-                            type="submit"
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <>
-                                    <Spinner size="sm" />
-                                    <span className="pl-3">Loading...</span>
-                                </>
-                            ) : (
-                                "Sign In"
-                            )}
-                        </Button>
-                        <OAuth/>
-                    </form>
-                    <div className="flex gap-2 text-sm mt-5">
-                        <span>Don't have an account?</span>
-                        <Link to="/sign-up" className="text-blue-500">
-                            Sign Up
-                        </Link>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
+                        <label htmlFor="email" className="text-neutral-400 text-sm">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            onChange={handleChange}
+                            required
+                            className="bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm"
+                        />
                     </div>
-                    {errorMessage && (
-                        <Alert className="mt-5" color="failure">
-                            {errorMessage}
-                        </Alert>
-                    )}
-                </div>
+                    <div className="flex flex-col gap-1">
+                        <label htmlFor="password" className="text-neutral-400 text-sm">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            onChange={handleChange}
+                            required
+                            className="bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                        {loading ? (
+                            <>
+                                {/* Inline spinner */}
+                                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Signing in...
+                            </>
+                        ) : "Sign In"}
+                    </button>
+
+                    <OAuth />
+                </form>
+
+                {errorMessage && (
+                    <p className="mt-4 text-red-400 text-sm text-center">{errorMessage}</p>
+                )}
+
+                <p className="mt-6 text-center text-neutral-500 text-sm">
+                    Don't have an account?{" "}
+                    <Link to="/sign-up" className="text-blue-500 hover:text-blue-400 transition-colors">
+                        Sign Up
+                    </Link>
+                </p>
             </div>
         </div>
     );

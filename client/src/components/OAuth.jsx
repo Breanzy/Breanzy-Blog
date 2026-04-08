@@ -1,4 +1,3 @@
-import { Button } from "flowbite-react";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { app } from "../firebase";
@@ -10,6 +9,7 @@ export default function OAuth() {
     const auth = getAuth(app);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const handleGoogleClick = async () => {
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
@@ -33,14 +33,13 @@ export default function OAuth() {
     };
 
     return (
-        <Button
+        <button
             type="button"
-            gradientDuoTone="pinkToOrange"
-            outline
             onClick={handleGoogleClick}
+            className="w-full flex items-center justify-center gap-2 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white py-2 rounded-lg transition-colors text-sm"
         >
-            <AiFillGoogleCircle className="w-6 h-6 mr-2" />
+            <AiFillGoogleCircle className="text-xl" />
             Continue with Google
-        </Button>
+        </button>
     );
 }
