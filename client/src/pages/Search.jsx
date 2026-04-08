@@ -1,7 +1,9 @@
-import { Button, Select, TextInput } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PostCard from "../components/PostCard";
+
+const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
+const selectCls = "w-full bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
 
 export default function Search() {
     const [sideBarData, setSideBarData] = useState({
@@ -23,45 +25,25 @@ export default function Search() {
         if (searchTermFromUrl || sortFromUrl || categoryFromUrl) {
             setSideBarData({
                 ...sideBarData,
-                searchTerm: searchTermFromUrl,
-                sort: sortFromUrl,
-                category: categoryFromUrl,
+                searchTerm: searchTermFromUrl || "",
+                sort: sortFromUrl || "desc",
+                category: categoryFromUrl || "uncategorized",
             });
         }
         const fetchPosts = async () => {
             setLoading(true);
-            const searchQuery = urlParams.toString();
-            const res = await fetch(`/api/post/getposts?${searchQuery}`);
-            if (!res.ok) {
-                setLoading(false);
-                return;
-            }
-            if (res.ok) {
-                const data = await res.json();
-                setPosts(data.posts);
-                setLoading(false);
-                if (data.posts.length === 9) {
-                    setShowMore(true);
-                } else {
-                    setShowMore(false);
-                }
-            }
+            const res = await fetch(`/api/post/getposts?${urlParams.toString()}`);
+            if (!res.ok) { setLoading(false); return; }
+            const data = await res.json();
+            setPosts(data.posts);
+            setLoading(false);
+            setShowMore(data.posts.length === 9);
         };
         fetchPosts();
     }, [location.search]);
 
-    const handleChange = async (e) => {
-        if (e.target.id === "searchTerm") {
-            setSideBarData({ ...sideBarData, searchTerm: e.target.value });
-        }
-        if (e.target.id === "sort") {
-            const order = e.target.value || "desc";
-            setSideBarData({ ...sideBarData, sort: order });
-        }
-        if (e.target.id === "category") {
-            const category = e.target.value || "uncategorized";
-            setSideBarData({ ...sideBarData, category: category });
-        }
+    const handleChange = (e) => {
+        setSideBarData({ ...sideBarData, [e.target.id]: e.target.value });
     };
 
     const handleSubmit = (e) => {
@@ -70,103 +52,84 @@ export default function Search() {
         urlParams.set("searchTerm", sideBarData.searchTerm);
         urlParams.set("sort", sideBarData.sort);
         urlParams.set("category", sideBarData.category);
-        const searchQuery = urlParams.toString();
-        navigate(`/search?${searchQuery}`);
+        navigate(`/search?${urlParams.toString()}`);
     };
 
     const handleShowMore = async () => {
-        const startIndex = posts.length;
-        urlParams.set("startIndex", startIndex);
-        const searchQuery = urlParams.toString();
-        const res = await fetch(`/api/post/getposts?${searchQuery}`);
-        if (!res.ok) {
-            return;
-        }
-        if (res.ok) {
-            const data = await res.json();
-            setPosts([...posts, ...data.posts]);
-            if (data.posts.length >= 9) {
-                setShowMore(true);
-            } else {
-                setShowMore(false);
-            }
-        }
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set("startIndex", posts.length);
+        const res = await fetch(`/api/post/getposts?${urlParams.toString()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setPosts([...posts, ...data.posts]);
+        setShowMore(data.posts.length >= 9);
     };
 
     return (
-        <div className="flex flex-col md:flex-row">
-            <div className="p-7 border-b md:border-r md:min-h-screen border-gray-500">
-                <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
-                    <div className="flex items-center gap-2">
-                        <label className="whitespace-nowrap font-semibold">
-                            Search Term:
-                        </label>
-                        <TextInput
-                            placeholder="Search..."
+        <div className="min-h-screen bg-black flex flex-col md:flex-row">
+            {/* Sidebar filters */}
+            <aside className="md:w-64 shrink-0 p-6 border-b md:border-b-0 md:border-r border-neutral-800 bg-neutral-950">
+                <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                    <div className="flex flex-col gap-1">
+                        <label htmlFor="searchTerm" className="text-neutral-400 text-sm">Search</label>
+                        <input
                             id="searchTerm"
                             type="text"
+                            placeholder="Search posts..."
                             value={sideBarData.searchTerm}
                             onChange={handleChange}
+                            className={inputCls}
                         />
                     </div>
-                    <div className="flex items-center gap-2">
-                        <label className="font-semibold">Sort: </label>
-                        <Select
-                            onChange={handleChange}
-                            value={sideBarData.sort}
-                            id="sort"
-                        >
+                    <div className="flex flex-col gap-1">
+                        <label htmlFor="sort" className="text-neutral-400 text-sm">Sort</label>
+                        <select id="sort" value={sideBarData.sort} onChange={handleChange} className={selectCls}>
                             <option value="desc">Latest</option>
                             <option value="asc">Oldest</option>
-                        </Select>
+                        </select>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <label className="font-semibold">Category: </label>
-                        <Select
-                            onChange={handleChange}
-                            value={sideBarData.category}
-                            id="category"
-                        >
-                            <option value="uncagegorized">Uncagegorized</option>
+                    <div className="flex flex-col gap-1">
+                        <label htmlFor="category" className="text-neutral-400 text-sm">Category</label>
+                        <select id="category" value={sideBarData.category} onChange={handleChange} className={selectCls}>
+                            <option value="uncategorized">All</option>
                             <option value="reactjs">React.js</option>
                             <option value="nextjs">Next.js</option>
-                            <option value="javascript">Javascript</option>
-                        </Select>
+                            <option value="javascript">JavaScript</option>
+                        </select>
                     </div>
-                    <Button
+                    <button
                         type="submit"
-                        outline
-                        gradientDuoTone="purpleToPink"
+                        className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 rounded-lg transition-colors"
                     >
                         Apply Filters
-                    </Button>
+                    </button>
                 </form>
-            </div>
-            <div className="w-full">
-                <h1 className="text-3xl font-secmibold sm:border-b border-gray-500 p-3 m-5">
-                    Post Result:{" "}
+            </aside>
+
+            {/* Results */}
+            <div className="flex-1 p-6">
+                <h1 className="text-2xl font-semibold text-white mb-6 pb-4 border-b border-neutral-800">
+                    Results
                 </h1>
-                <div className="p-7 flex flex-wrap gap-4">
-                    {!loading && posts.length === 0 && (
-                        <p className="text-xl text-gray-500">No posts found.</p>
-                    )}
+                <div className="flex flex-wrap gap-4 justify-center">
                     {loading && (
-                        <p className="text-xl text-gray-500">Loading...</p>
+                        <p className="text-neutral-500 w-full text-center py-12">Loading...</p>
                     )}
-                    {!loading &&
-                        posts &&
-                        posts.map((post) => (
-                            <PostCard key={post._id} post={post} />
-                        ))}
-                    {showMore && (
-                        <button
-                            onClick={handleShowMore}
-                            className="text-teal-500 text-lg hover:underline p-7 w-full"
-                        >
-                            Show More
-                        </button>
+                    {!loading && posts.length === 0 && (
+                        <p className="text-neutral-500 w-full text-center py-12">No posts found.</p>
                     )}
+                    {!loading && posts.map((post) => (
+                        <PostCard key={post._id} post={post} />
+                    ))}
                 </div>
+                {showMore && (
+                    <button
+                        onClick={handleShowMore}
+                        className="mt-8 w-full text-blue-500 hover:text-blue-400 text-sm transition-colors py-4"
+                    >
+                        Show More
+                    </button>
+                )}
             </div>
         </div>
     );
