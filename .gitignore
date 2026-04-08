@@ -25,3 +25,7 @@ dist-ssr
 *.sw?
 
 .DS_Store
+
+# Claude Code context files
+CLAUDE.md
+.claude/
