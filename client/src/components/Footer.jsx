@@ -1,115 +1,74 @@
-import { Footer } from "flowbite-react";
 import { Link } from "react-router-dom";
 import {
     BsFacebook,
     BsInstagram,
-    BsTwitter,
+    BsTwitterX,
     BsGithub,
     BsLinkedin,
 } from "react-icons/bs";
 
-export default function FooterCom() {
+export default function Footer() {
     return (
-        <Footer container className="border border-t-8 border-teal-500">
-            <div className="w-full max-w-7xl mx-auto">
-                <div className="grid w-full justify-between sm:flex md:grid-col-1">
-                    <div className="mt-5">
-                        <Link
-                            to="/"
-                            className="self-center whitespace-nowrap text-lg sm:text-xl font-semibold dark:text-white"
-                        >
-                            <span className="px-2 py-1 bg-gradient-to-r from-blue-600 via-purple-500 to-orange-400 rounded-lg text-white">
-                                test
-                            </span>
+        <footer className="bg-neutral-950 border-t border-neutral-800">
+            <div className="max-w-7xl mx-auto px-4 py-10">
+                <div className="flex flex-col md:flex-row justify-between gap-8">
+                    {/* Logo + tagline */}
+                    <div>
+                        <Link to="/" className="text-white font-bold text-lg">
+                            Brean<span className="text-blue-500">zy</span>
                         </Link>
+                        <p className="text-neutral-500 text-sm mt-2 max-w-xs">
+                            Full-stack developer. Building things for the web.
+                        </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-8 mt-4 sm:grid-cols-3 sm:gap-6">
-                        <div>
-                            <Footer.Title title="About" />
-                            <Footer.LinkGroup col>
-                                <Footer.Link
-                                    href="https://facebook.com"
-                                    //target makes it so that when you click the link, you automatically open a different window
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Facebook ahahakuygftasdf
-                                </Footer.Link>
-                                <Footer.Link
-                                    href="/about"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Aboutttt
-                                </Footer.Link>
-                            </Footer.LinkGroup>
-                        </div>
 
-                        <div>
-                            <Footer.Title title="Follow Us" />
-                            <Footer.LinkGroup col>
-                                <Footer.Link
-                                    href="https://github.com/Breanzy"
-                                    //target makes it so that when you click the link, you automatically open a different window
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Github
-                                </Footer.Link>
-                                <Footer.Link
-                                    href="https://www.facebook.com/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Portfolio
-                                </Footer.Link>
-                            </Footer.LinkGroup>
+                    {/* Nav links */}
+                    <div className="flex gap-12 flex-wrap text-sm">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-neutral-400 font-medium mb-1">Site</span>
+                            <Link to="/about" className="text-neutral-500 hover:text-white transition-colors">About</Link>
+                            <Link to="/blog" className="text-neutral-500 hover:text-white transition-colors">Blog</Link>
+                            <Link to="/projects" className="text-neutral-500 hover:text-white transition-colors">Projects</Link>
+                            <Link to="/resume" className="text-neutral-500 hover:text-white transition-colors">Resume</Link>
                         </div>
-
-                        <div>
-                            <Footer.Title title="Legal" />
-                            <Footer.LinkGroup col>
-                                <Footer.Link href="#">
-                                    Terms & Conditions
-                                </Footer.Link>
-                                <Footer.Link href="#">
-                                    Privacy Policy
-                                </Footer.Link>
-                            </Footer.LinkGroup>
+                        <div className="flex flex-col gap-2">
+                            <span className="text-neutral-400 font-medium mb-1">Legal</span>
+                            <a href="#" className="text-neutral-500 hover:text-white transition-colors">Terms</a>
+                            <a href="#" className="text-neutral-500 hover:text-white transition-colors">Privacy</a>
                         </div>
                     </div>
                 </div>
-                <Footer.Divider />
-                <div className="w-full sm:flex sm:items-center sm:justify-between">
-                    <Footer.Copyright
-                        href="#"
-                        by="Breanzy's Blog"
-                        year={new Date().getFullYear()}
-                    />
-                    <div className="flex gap-6 sm:mt-0 mt-4 sm:justify-center">
-                        <Footer.Icon
-                            href="https://www.facebook.com/Breanzyy"
-                            icon={BsFacebook}
-                        />
-                        <Footer.Icon
-                            href="https://www.instagram.com/breanzy/"
-                            icon={BsInstagram}
-                        />
-                        <Footer.Icon
-                            href="https://x.com/Breanzyy"
-                            icon={BsTwitter}
-                        />
-                        <Footer.Icon
-                            href="https://github.com/Breanzy"
-                            icon={BsGithub}
-                        />
-                        <Footer.Icon
-                            href="https://www.linkedin.com/in/juliuscarbonilla/"
-                            icon={BsLinkedin}
-                        />
+
+                {/* Bottom bar */}
+                <div className="mt-10 pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-neutral-600 text-xs">
+                        &copy; {new Date().getFullYear()} Brean Julius Carbonilla. All rights reserved.
+                    </p>
+                    {/* Social icons */}
+                    <div className="flex items-center gap-4">
+                        <a href="https://github.com/Breanzy" target="_blank" rel="noopener noreferrer"
+                            className="text-neutral-500 hover:text-blue-500 transition-colors">
+                            <BsGithub className="text-lg" />
+                        </a>
+                        <a href="https://www.linkedin.com/in/juliuscarbonilla/" target="_blank" rel="noopener noreferrer"
+                            className="text-neutral-500 hover:text-blue-500 transition-colors">
+                            <BsLinkedin className="text-lg" />
+                        </a>
+                        <a href="https://x.com/Breanzyy" target="_blank" rel="noopener noreferrer"
+                            className="text-neutral-500 hover:text-blue-500 transition-colors">
+                            <BsTwitterX className="text-lg" />
+                        </a>
+                        <a href="https://www.facebook.com/Breanzyy" target="_blank" rel="noopener noreferrer"
+                            className="text-neutral-500 hover:text-blue-500 transition-colors">
+                            <BsFacebook className="text-lg" />
+                        </a>
+                        <a href="https://www.instagram.com/breanzy/" target="_blank" rel="noopener noreferrer"
+                            className="text-neutral-500 hover:text-blue-500 transition-colors">
+                            <BsInstagram className="text-lg" />
+                        </a>
                     </div>
                 </div>
             </div>
-        </Footer>
+        </footer>
     );
 }
