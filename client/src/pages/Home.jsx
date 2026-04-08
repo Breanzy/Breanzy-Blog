@@ -28,78 +28,72 @@ export default function Home() {
     }, []);
 
     return (
-        <div>
-            {/* Hero section */}
-            <div className="flex flex-col gap-6 px-3 p-28 max-w-6xl mx-auto">
-                <h1 className="text-3xl font-bold lg:text-6xl">
-                    Hi, I'm{" "}
-                    <span className="px-2 py-1 bg-gradient-to-r from-blue-600 via-purple-500 to-orange-400 rounded-lg text-white">
-                        Brean
-                    </span>
-                </h1>
-                <p className="text-gray-500 text-sm sm:text-base max-w-2xl">
-                    A full-stack developer who enjoys building things for the web.
-                    I write about code, share what I'm working on, and document
-                    what I've learned along the way.
+        <div className="bg-black">
+            {/* Hero */}
+            <section className="max-w-6xl mx-auto px-4 py-28 flex flex-col gap-6">
+                <p className="text-blue-500 text-sm font-medium tracking-widest uppercase">
+                    Full-Stack Developer
                 </p>
-                <div className="flex gap-4 flex-wrap">
+                <h1 className="text-4xl lg:text-7xl font-bold text-white leading-tight">
+                    Hi, I'm{" "}
+                    <span className="text-blue-500">Brean</span>
+                </h1>
+                <p className="text-neutral-400 text-base max-w-xl leading-relaxed">
+                    I build things for the web — from full-stack applications to
+                    personal tools. I write about what I learn and share it here.
+                </p>
+                <div className="flex gap-3 flex-wrap mt-2">
                     <Link
                         to="/projects"
-                        className="px-6 py-2 bg-gradient-to-r from-blue-600 via-purple-500 to-orange-400 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                        className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
                     >
                         View My Projects
                     </Link>
                     <Link
                         to="/blog"
-                        className="px-6 py-2 border border-teal-500 text-teal-500 rounded-lg font-semibold hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors"
+                        className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 hover:text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
                     >
                         Read My Blog
                     </Link>
                 </div>
-            </div>
+            </section>
 
-            {/* Featured projects preview — only renders if there are featured projects */}
+            {/* Featured projects — only renders if there are featured projects */}
             {featuredProjects.length > 0 && (
-                <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7">
-                    <div className="flex flex-col gap-6">
-                        <h2 className="text-2xl font-semibold text-center">
-                            Featured Projects
-                        </h2>
+                <section className="bg-neutral-950 py-16">
+                    <div className="max-w-6xl mx-auto px-4">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-white text-2xl font-semibold">Featured Projects</h2>
+                            <Link to="/projects" className="text-blue-500 hover:text-blue-400 text-sm transition-colors">
+                                View all →
+                            </Link>
+                        </div>
                         <div className="flex flex-wrap gap-4 justify-center">
                             {featuredProjects.map((project) => (
                                 <ProjectCard key={project._id} project={project} />
                             ))}
                         </div>
-                        <Link
-                            to="/projects"
-                            className="text-lg text-teal-500 hover:underline text-center"
-                        >
-                            View all projects
-                        </Link>
                     </div>
-                </div>
+                </section>
             )}
 
-            {/* Recent blog posts preview */}
+            {/* Recent blog posts */}
             {recentPosts.length > 0 && (
-                <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7">
-                    <div className="flex flex-col gap-6">
-                        <h2 className="text-2xl font-semibold text-center">
-                            Recent Posts
-                        </h2>
+                <section className="py-16">
+                    <div className="max-w-6xl mx-auto px-4">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-white text-2xl font-semibold">Recent Posts</h2>
+                            <Link to="/blog" className="text-blue-500 hover:text-blue-400 text-sm transition-colors">
+                                View all →
+                            </Link>
+                        </div>
                         <div className="flex flex-wrap gap-4 justify-center">
                             {recentPosts.map((post) => (
                                 <PostCard key={post._id} post={post} />
                             ))}
                         </div>
-                        <Link
-                            to="/blog"
-                            className="text-lg text-teal-500 hover:underline text-center"
-                        >
-                            View all posts
-                        </Link>
                     </div>
-                </div>
+                </section>
             )}
         </div>
     );
