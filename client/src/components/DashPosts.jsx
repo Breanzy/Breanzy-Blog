@@ -91,7 +91,7 @@ export default function DashPosts() {
                                         ).toLocaleDateString()}
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Link to={`/post/${post.slug}`}>
+                                        <Link to={`/blog/${post.slug}`}>
                                             <img
                                                 src={post.image}
                                                 alt={post.title}
@@ -102,7 +102,7 @@ export default function DashPosts() {
                                     <Table.Cell>
                                         <Link
                                             className="font-medium text-gray-900 dark:text-white"
-                                            to={`/post/${post.slug}`}
+                                            to={`/blog/${post.slug}`}
                                         >
                                             {post.title}
                                         </Link>
