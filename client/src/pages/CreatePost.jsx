@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
@@ -94,10 +95,13 @@ export default function CreatePost() {
                         onChange={(e) => setFile(e.target.files[0])}
                         className="text-sm text-neutral-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
                     />
-                    <button
+                    <motion.button
                         type="button"
                         onClick={handleUploadImage}
                         disabled={!!imageUploadProgress}
+                        whileHover={!imageUploadProgress ? { scale: 1.03 } : {}}
+                        whileTap={!imageUploadProgress ? { scale: 0.96 } : {}}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         className="shrink-0 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm px-4 py-1.5 rounded-lg transition-colors flex items-center gap-2"
                     >
                         {imageUploadProgress ? (
@@ -110,7 +114,7 @@ export default function CreatePost() {
                                 />
                             </span>
                         ) : "Upload Image"}
-                    </button>
+                    </motion.button>
                 </div>
 
                 {imageUploadError && <p className="text-red-400 text-sm">{imageUploadError}</p>}
@@ -126,12 +130,15 @@ export default function CreatePost() {
                     onChange={(value) => setFormData({ ...formData, content: value })}
                 />
 
-                <button
+                <motion.button
                     type="submit"
+                    whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }}
+                    whileTap={{ scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     className="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors"
                 >
                     Publish
-                </button>
+                </motion.button>
 
                 {publishError && <p className="text-red-400 text-sm">{publishError}</p>}
             </form>

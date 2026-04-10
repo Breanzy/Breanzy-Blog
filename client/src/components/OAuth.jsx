@@ -4,6 +4,7 @@ import { app } from "../firebase";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function OAuth() {
     const auth = getAuth(app);
@@ -33,13 +34,16 @@ export default function OAuth() {
     };
 
     return (
-        <button
+        <motion.button
             type="button"
             onClick={handleGoogleClick}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             className="w-full flex items-center justify-center gap-2 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white py-2 rounded-lg transition-colors text-sm"
         >
             <AiFillGoogleCircle className="text-xl" />
             Continue with Google
-        </button>
+        </motion.button>
     );
 }
