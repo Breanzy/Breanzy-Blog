@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import CallToAction from "../components/CallToAction";
+import NewsletterSubscribe from "../components/NewsletterSubscribe";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import PostCard from "../components/PostCard";
@@ -44,10 +45,15 @@ export default function Blog() {
             </div>
 
             {/* CTA */}
-            <div className="max-w-6xl mx-auto px-4 pb-12">
+            <div className="max-w-6xl mx-auto px-4 pb-6">
                 <FadeIn delay={0.1}>
                     <CallToAction />
                 </FadeIn>
+            </div>
+
+            {/* Newsletter */}
+            <div className="max-w-6xl mx-auto px-4 pb-12">
+                <NewsletterSubscribe />
             </div>
 
             {/* Posts grid */}

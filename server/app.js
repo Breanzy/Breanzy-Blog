@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.route.js";
 import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import projectRoutes from "./routes/project.route.js";
+import subscriberRoutes from "./routes/subscriber.route.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/project", projectRoutes);
+app.use("/api/subscriber", subscriberRoutes);
 
 // Global error handler
 app.use((err, _req, res, _next) => {

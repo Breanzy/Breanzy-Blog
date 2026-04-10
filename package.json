@@ -21,6 +21,7 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.6.1",
         "nodemon": "^3.1.4",
-        "react-redux": "^9.1.2"
+        "react-redux": "^9.1.2",
+        "resend": "^6.10.0"
     }
 }

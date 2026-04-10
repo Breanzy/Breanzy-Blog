@@ -1,5 +1,7 @@
 import Post from "../models/post.model.js";
+import Subscriber from "../models/subscriber.model.js";
 import { errorHandler } from "../utils/error.js";
+import { sendNewsletter } from "../utils/sendNewsletter.js";
 
 export const create = async (req, res, next) => {
     if (!req.user.isAdmin) {
@@ -23,6 +25,10 @@ export const create = async (req, res, next) => {
     try {
         const savedPost = await newPost.save();
         res.status(201).json(savedPost);
+
+        // Fire newsletter after responding — non-blocking
+        const subscribers = await Subscriber.find({}, "email unsubscribeToken");
+        sendNewsletter(savedPost, subscribers);
     } catch (error) {
         next(error);
     }
