@@ -1,61 +1,92 @@
 import { BsGithub } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
+
+/* Stagger variants — parent container passes these down */
+export const cardVariant = {
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 15 } },
+};
 
 /* Card for displaying a single project with tech stack badges and external links */
 export default function ProjectCard({ project }) {
     return (
-        <div className="group w-full sm:w-[430px] bg-neutral-900 border border-neutral-800 hover:border-blue-600 transition-all overflow-hidden rounded-xl">
+        <motion.div
+            className="w-full sm:w-[430px] bg-neutral-900 border border-neutral-800 overflow-hidden rounded-xl"
+            whileHover={{ scale: 1.03, y: -6, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", borderColor: "#2563eb" }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
             {project.image && (
-                <img
+                <motion.img
                     src={project.image}
                     alt={project.title}
-                    className="h-[220px] w-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+                    className="h-[220px] w-full object-cover"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
                 />
             )}
             <div className="p-4 flex flex-col gap-2">
                 <p className="text-white text-lg font-semibold line-clamp-2">{project.title}</p>
                 <p className="text-neutral-400 text-sm line-clamp-2">{project.description}</p>
 
-                {/* Tech stack badges */}
+                {/* Tech stack badges — staggered entrance */}
                 {project.techStack && project.techStack.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-1">
+                    <motion.div
+                        className="flex flex-wrap gap-1.5 mt-1"
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+                    >
                         {project.techStack.map((tech) => (
-                            <span
+                            <motion.span
                                 key={tech}
-                                className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-2 py-0.5 rounded-full"
+                                variants={{ hidden: { opacity: 0, scale: 0.8 }, show: { opacity: 1, scale: 1 } }}
+                                whileHover={{ scale: 1.1, y: -2 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-2 py-0.5 rounded-full cursor-default"
                             >
                                 {tech}
-                            </span>
+                            </motion.span>
                         ))}
-                    </div>
+                    </motion.div>
                 )}
 
-                {/* External links */}
+                {/* External links with icon animation */}
                 <div className="flex gap-4 mt-2">
                     {project.liveUrl && (
-                        <a
+                        <motion.a
                             href={project.liveUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                            whileHover={{ x: 3 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
-                            <FaExternalLinkAlt className="text-xs" />
+                            <motion.span whileHover={{ rotate: 12, scale: 1.2 }} transition={{ type: "spring", stiffness: 400, damping: 17 }}>
+                                <FaExternalLinkAlt className="text-xs" />
+                            </motion.span>
                             Live Demo
-                        </a>
+                        </motion.a>
                     )}
                     {project.repoUrl && (
-                        <a
+                        <motion.a
                             href={project.repoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
+                            whileHover={{ x: 3 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
-                            <BsGithub />
+                            <motion.span whileHover={{ rotate: 12, scale: 1.2 }} transition={{ type: "spring", stiffness: 400, damping: 17 }}>
+                                <BsGithub />
+                            </motion.span>
                             Repo
-                        </a>
+                        </motion.a>
                     )}
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
