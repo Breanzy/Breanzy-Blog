@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
 import DashPosts from "../components/DashPosts";
@@ -18,30 +19,35 @@ export default function Dashboard() {
             setTab(tabFromUrl);
         }
     }, [location.search]);
+    const tabMap = {
+        profile: <DashProfile />,
+        posts: <DashPosts />,
+        projects: <DashProjects />,
+        users: <DashUsers />,
+        comments: <DashComments />,
+        dash: <DashboardComponent />,
+    };
+
     return (
         <div className="min-h-screen flex flex-col md:flex-row">
             <div className="md:w-56">
-                {/* Sidebar */}
                 <DashSidebar />
             </div>
 
-            {/* Profile */}
-            {tab === "profile" && <DashProfile />}
-
-            {/* {Posts} */}
-            {tab === "posts" && <DashPosts />}
-
-            {/* Projects */}
-            {tab === "projects" && <DashProjects />}
-
-            {/* Users */}
-            {tab === "users" && <DashUsers />}
-
-            {/* comments */}
-            {tab === "comments" && <DashComments />}
-
-            {/* dashboard */}
-            {tab === "dash" && <DashboardComponent />}
+            <AnimatePresence mode="wait">
+                {tabMap[tab] && (
+                    <motion.div
+                        key={tab}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex-1"
+                    >
+                        {tabMap[tab]}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

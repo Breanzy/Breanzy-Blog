@@ -5,6 +5,7 @@ import {
     HiDocumentText,
     HiOutlineUserGroup,
 } from "react-icons/hi";
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -70,9 +71,18 @@ export default function DashboardComponent() {
         }
     }, [currentUser]);
 
+    const statCardVariants = {
+        hidden: {},
+        show: { transition: { staggerChildren: 0.1 } },
+    };
+    const statCardItem = {
+        hidden: { opacity: 0, y: 30 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
+    };
+
     /* Reusable stat card */
     const StatCard = ({ label, total, lastMonth, Icon, iconBg }) => (
-        <div className="flex flex-col bg-neutral-900 border border-neutral-800 rounded-xl p-4 gap-4 md:w-64 w-full">
+        <motion.div variants={statCardItem} className="flex flex-col bg-neutral-900 border border-neutral-800 rounded-xl p-4 gap-4 md:w-64 w-full">
             <div className="flex justify-between items-start">
                 <div>
                     <p className="text-neutral-500 text-xs uppercase tracking-wide mb-1">{label}</p>
@@ -87,17 +97,22 @@ export default function DashboardComponent() {
                 <span className="text-green-400">{lastMonth}</span>
                 <span className="text-neutral-500 ml-1">last month</span>
             </div>
-        </div>
+        </motion.div>
     );
 
     return (
         <div className="p-6 max-w-6xl mx-auto w-full">
             {/* Stat cards */}
-            <div className="flex flex-wrap gap-4 mb-8">
+            <motion.div
+                className="flex flex-wrap gap-4 mb-8"
+                variants={statCardVariants}
+                initial="hidden"
+                animate="show"
+            >
                 <StatCard label="Total Users" total={totalUsers} lastMonth={lastMonthUsers} Icon={HiOutlineUserGroup} iconBg="bg-blue-600" />
                 <StatCard label="Total Comments" total={totalComments} lastMonth={lastMonthComments} Icon={HiAnnotation} iconBg="bg-indigo-600" />
                 <StatCard label="Total Posts" total={totalPosts} lastMonth={lastMonthPosts} Icon={HiDocumentText} iconBg="bg-green-700" />
-            </div>
+            </motion.div>
 
             {/* Recent data tables */}
             <div className="flex flex-wrap gap-4">

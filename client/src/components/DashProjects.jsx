@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
 import { app } from "../firebase";
@@ -68,14 +69,17 @@ const ProjectFormFields = ({ formData, setFormData, formError }) => {
                 onChange={(e) => setImageFile(e.target.files[0])}
                 className="text-sm text-neutral-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
             />
-            <button
+            <motion.button
                 type="button"
                 onClick={handleUploadImage}
                 disabled={!!imageUploadProgress}
+                whileHover={!imageUploadProgress ? { scale: 1.03 } : {}}
+                whileTap={!imageUploadProgress ? { scale: 0.96 } : {}}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 className="shrink-0 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs px-3 py-1.5 rounded-lg transition-colors"
             >
                 {imageUploadProgress ? `${imageUploadProgress}%` : "Upload"}
-            </button>
+            </motion.button>
         </div>
         {imageUploadError && <p className="text-red-400 text-xs">{imageUploadError}</p>}
         {formData.image && (
@@ -238,12 +242,15 @@ export default function DashProjects() {
         <div className="p-4 w-full">
             {currentUser.isAdmin && (
                 <div className="mb-4">
-                    <button
+                    <motion.button
                         onClick={() => { setAddFormData(emptyForm); setFormError(null); setShowAddModal(true); }}
+                        whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }}
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
                     >
                         + Add Project
-                    </button>
+                    </motion.button>
                 </div>
             )}
 
@@ -319,12 +326,12 @@ export default function DashProjects() {
                     <HiOutlineExclamationCircle className="h-12 w-12 text-neutral-500 mx-auto mb-4" />
                     <p className="text-neutral-300 mb-6">Are you sure you want to delete this project?</p>
                     <div className="flex justify-center gap-3">
-                        <button onClick={handleDeleteProject} className="bg-red-600 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                        <motion.button onClick={handleDeleteProject} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="bg-red-600 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
                             Yes, delete
-                        </button>
-                        <button onClick={() => setShowDeleteModal(false)} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
+                        </motion.button>
+                        <motion.button onClick={() => setShowDeleteModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
                             Cancel
-                        </button>
+                        </motion.button>
                     </div>
                 </div>
             </Modal>
@@ -334,12 +341,12 @@ export default function DashProjects() {
                 <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
                     <ProjectFormFields formData={editFormData} setFormData={setEditFormData} formError={formError} />
                     <div className="flex justify-end gap-3 mt-2">
-                        <button type="button" onClick={() => setShowEditModal(false)} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
+                        <motion.button type="button" onClick={() => setShowEditModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
                             Cancel
-                        </button>
-                        <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                        </motion.button>
+                        <motion.button type="submit" whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
                             Save Changes
-                        </button>
+                        </motion.button>
                     </div>
                 </form>
             </Modal>
@@ -349,12 +356,12 @@ export default function DashProjects() {
                 <form onSubmit={handleAddSubmit} className="flex flex-col gap-4">
                     <ProjectFormFields formData={addFormData} setFormData={setAddFormData} formError={formError} />
                     <div className="flex justify-end gap-3 mt-2">
-                        <button type="button" onClick={() => setShowAddModal(false)} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
+                        <motion.button type="button" onClick={() => setShowAddModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
                             Cancel
-                        </button>
-                        <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                        </motion.button>
+                        <motion.button type="submit" whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
                             Add Project
-                        </button>
+                        </motion.button>
                     </div>
                 </form>
             </Modal>

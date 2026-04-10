@@ -9,6 +9,7 @@ import {
 } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -40,14 +41,18 @@ export default function DashSidebar() {
         const isActive = tab === activeKey;
         return (
             <Link to={to}>
-                <div className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
-                    isActive
-                        ? "bg-neutral-800 text-white"
-                        : "text-neutral-400 hover:text-white hover:bg-neutral-900"
-                }`}>
+                <motion.div
+                    whileHover={{ x: 4 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                        isActive
+                            ? "bg-neutral-800 text-white"
+                            : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+                    }`}
+                >
                     <Icon className="text-base shrink-0" />
                     <span>{label}</span>
-                </div>
+                </motion.div>
             </Link>
         );
     };
@@ -60,7 +65,10 @@ export default function DashSidebar() {
 
                 {/* Profile — always visible */}
                 <Link to="/dashboard?tab=profile">
-                    <div className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                    <motion.div
+                        whileHover={{ x: 4 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
                         tab === "profile"
                             ? "bg-neutral-800 text-white"
                             : "text-neutral-400 hover:text-white hover:bg-neutral-900"
@@ -76,7 +84,7 @@ export default function DashSidebar() {
                         }`}>
                             {currentUser?.isAdmin ? "Admin" : "User"}
                         </span>
-                    </div>
+                    </motion.div>
                 </Link>
 
                 {/* Admin-only tabs */}
@@ -93,13 +101,15 @@ export default function DashSidebar() {
                 <div className="my-2 border-t border-neutral-800" />
 
                 {/* Sign out */}
-                <button
+                <motion.button
                     onClick={handleSignout}
+                    whileHover={{ x: 4 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
                     className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:text-red-400 hover:bg-neutral-900 transition-colors w-full text-left"
                 >
                     <HiArrowSmRight className="text-base shrink-0" />
                     Sign Out
-                </button>
+                </motion.button>
             </div>
         </nav>
     );

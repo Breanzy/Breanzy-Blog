@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import Modal from "./Modal";
 
@@ -109,12 +110,12 @@ export default function DashComments() {
                     <HiOutlineExclamationCircle className="h-12 w-12 text-neutral-500 mx-auto mb-4" />
                     <p className="text-neutral-300 mb-6">Are you sure you want to delete this comment?</p>
                     <div className="flex justify-center gap-3">
-                        <button onClick={handleDeleteComment} className="bg-red-600 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                        <motion.button onClick={handleDeleteComment} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="bg-red-600 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
                             Yes, delete
-                        </button>
-                        <button onClick={() => setShowModal(false)} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
+                        </motion.button>
+                        <motion.button onClick={() => setShowModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
                             Cancel
-                        </button>
+                        </motion.button>
                     </div>
                 </div>
             </Modal>
