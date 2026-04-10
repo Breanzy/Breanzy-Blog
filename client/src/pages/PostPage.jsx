@@ -1,8 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import CallToAction from "../components/CallToAction";
 import CommentSection from "../components/CommentSection";
 import PostCard from "../components/PostCard";
+import FadeIn from "../components/FadeIn";
+
+const gridVariants = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.1 } },
+};
+const cardVariant = {
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 15 } },
+};
 
 export default function PostPage() {
     const { postSlug } = useParams();
@@ -58,44 +69,55 @@ export default function PostPage() {
         <main className="bg-black min-h-screen">
             <div className="max-w-3xl mx-auto px-4 pt-12 pb-20">
                 {/* Title */}
-                <h1 className="text-3xl lg:text-4xl font-bold text-white text-center leading-tight mb-5">
-                    {post && post.title}
-                </h1>
+                <FadeIn>
+                    <h1 className="text-3xl lg:text-4xl font-bold text-white text-center leading-tight mb-5">
+                        {post && post.title}
+                    </h1>
+                </FadeIn>
 
                 {/* Category pill */}
-                <div className="flex justify-center mb-8">
+                <FadeIn delay={0.05} className="flex justify-center mb-8">
                     <Link to={`/search?category=${post && post.category}`}>
-                        <span className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-3 py-1 rounded-full capitalize">
+                        <motion.span
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-3 py-1 rounded-full capitalize cursor-pointer"
+                        >
                             {post && post.category}
-                        </span>
+                        </motion.span>
                     </Link>
-                </div>
+                </FadeIn>
 
-                {/* Cover image */}
-                <img
+                {/* Cover image with scale-in */}
+                <motion.img
                     src={post && post.image}
                     alt={post && post.title}
                     className="w-full max-h-[500px] object-cover rounded-xl mb-6"
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 80, damping: 15, delay: 0.1 }}
                 />
 
                 {/* Meta: date + read time */}
-                <div className="flex justify-between items-center text-neutral-500 text-xs mb-8 pb-4 border-b border-neutral-800">
+                <FadeIn delay={0.15} className="flex justify-between items-center text-neutral-500 text-xs mb-8 pb-4 border-b border-neutral-800">
                     <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
                     <span className="italic">
                         {post && (post.content.length / 1000).toFixed(0)} mins read
                     </span>
-                </div>
+                </FadeIn>
 
                 {/* Post body */}
-                <div
-                    className="post-content text-neutral-300 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: post && post.content }}
-                />
+                <FadeIn delay={0.2}>
+                    <div
+                        className="post-content text-neutral-300 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: post && post.content }}
+                    />
+                </FadeIn>
 
                 {/* CTA */}
-                <div className="mt-12">
+                <FadeIn delay={0.1} className="mt-12">
                     <CallToAction />
-                </div>
+                </FadeIn>
 
                 {/* Comments */}
                 <CommentSection postId={post._id} />
@@ -105,14 +127,22 @@ export default function PostPage() {
             {recentPosts && recentPosts.length > 0 && (
                 <div className="bg-neutral-950 py-14">
                     <div className="max-w-6xl mx-auto px-4">
-                        <h2 className="text-white text-xl font-semibold mb-6 text-center">
-                            Recent Articles
-                        </h2>
-                        <div className="flex flex-wrap gap-4 justify-center">
+                        <FadeIn className="text-center mb-6">
+                            <h2 className="text-white text-xl font-semibold">Recent Articles</h2>
+                        </FadeIn>
+                        <motion.div
+                            className="flex flex-wrap gap-4 justify-center"
+                            variants={gridVariants}
+                            initial="hidden"
+                            whileInView="show"
+                            viewport={{ once: true, margin: "-80px" }}
+                        >
                             {recentPosts.map((p) => (
-                                <PostCard key={p._id} post={p} />
+                                <motion.div key={p._id} variants={cardVariant}>
+                                    <PostCard post={p} />
+                                </motion.div>
                             ))}
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             )}
