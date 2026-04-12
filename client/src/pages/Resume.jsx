@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import FadeIn from "../components/FadeIn";
+import SEO from "../components/SEO";
 
 const skills = {
     Languages: ["JavaScript", "HTML", "CSS", "Python"],
@@ -40,6 +41,11 @@ const badgeItem = {
 export default function Resume() {
     return (
         <div className="min-h-screen bg-black">
+            <SEO
+                title="Resume"
+                description="Resume of Brean Julius Carbonilla — full-stack developer skilled in React, Node.js, Express, MongoDB, and more."
+                url="/resume"
+            />
             <div className="max-w-3xl mx-auto px-4 py-16">
                 {/* Header row */}
                 <FadeIn className="flex items-start justify-between flex-wrap gap-4 mb-12">

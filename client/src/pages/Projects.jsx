@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProjectCard from "../components/ProjectCard";
 import FadeIn from "../components/FadeIn";
+import SEO from "../components/SEO";
 
 const gridVariants = {
     hidden: {},
@@ -39,6 +40,11 @@ export default function Projects() {
 
     return (
         <div className="min-h-screen bg-black">
+            <SEO
+                title="Projects"
+                description="A collection of full-stack web apps, tools, and experiments built by Brean Julius Carbonilla."
+                url="/projects"
+            />
             <div className="max-w-6xl mx-auto px-4 py-20">
                 <FadeIn>
                     <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4">Projects</h1>

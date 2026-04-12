@@ -5,6 +5,7 @@ import CallToAction from "../components/CallToAction";
 import CommentSection from "../components/CommentSection";
 import PostCard from "../components/PostCard";
 import FadeIn from "../components/FadeIn";
+import SEO from "../components/SEO";
 
 const gridVariants = {
     hidden: {},
@@ -65,8 +66,19 @@ export default function PostPage() {
         );
     }
 
+    // Strip HTML tags from content for meta description
+    const plainText = post?.content?.replace(/<[^>]+>/g, "") ?? "";
+    const excerpt = plainText.slice(0, 160).trim();
+
     return (
         <main className="bg-black min-h-screen">
+            <SEO
+                title={post?.title}
+                description={excerpt || undefined}
+                image={post?.image || undefined}
+                url={`/blog/${post?.slug}`}
+                type="article"
+            />
             <div className="max-w-3xl mx-auto px-4 pt-12 pb-20">
                 {/* Title */}
                 <FadeIn>

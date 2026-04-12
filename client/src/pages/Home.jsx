@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FadeIn from "../components/FadeIn";
+import SEO from "../components/SEO";
 
 /* Stagger variants for card grids */
 const gridVariants = {
@@ -56,6 +57,7 @@ export default function Home() {
 
     return (
         <div className="bg-black">
+            <SEO url="/" />
             {/* Hero with parallax */}
             <section ref={heroRef} className="relative overflow-hidden min-h-[70vh] flex items-center">
                 <motion.div style={{ y: heroY }} className="max-w-6xl mx-auto px-4 py-28 flex flex-col gap-6 w-full">

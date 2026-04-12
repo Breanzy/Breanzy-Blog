@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import PostCard from "../components/PostCard";
 import FadeIn from "../components/FadeIn";
+import SEO from "../components/SEO";
 
 const gridVariants = {
     hidden: {},
@@ -30,6 +31,11 @@ export default function Blog() {
 
     return (
         <div className="bg-black min-h-screen">
+            <SEO
+                title="Blog"
+                description="Thoughts, tutorials, and write-ups on web development, full-stack projects, and everything in between."
+                url="/blog"
+            />
             {/* Header */}
             <div className="max-w-6xl mx-auto px-4 py-20">
                 <FadeIn>

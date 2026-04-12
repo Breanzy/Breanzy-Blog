@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import FadeIn from "../components/FadeIn";
+import SEO from "../components/SEO";
 
 const tech = ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS", "Firebase", "Redux"];
 
@@ -15,6 +16,11 @@ const badgeItem = {
 export default function About() {
     return (
         <div className="min-h-screen bg-black">
+            <SEO
+                title="About"
+                description="I'm Brean Julius Carbonilla — a full-stack developer based in the Philippines. I build web apps and write about what I learn."
+                url="/about"
+            />
             <div className="max-w-3xl mx-auto px-4 py-24">
                 <FadeIn>
                     <h1 className="text-4xl font-bold text-white mb-10">About</h1>
