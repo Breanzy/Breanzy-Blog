@@ -1,5 +1,8 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { signoutSuccess } from "./redux/user/userSlice";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Signin from "./pages/Signin";
@@ -21,6 +24,22 @@ import Resume from "./pages/Resume";
 /* Inner layout — useLocation must live inside BrowserRouter */
 function AppContent() {
     const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    // Intercept any 401/403 API response — cookie expired or invalid
+    useEffect(() => {
+        const originalFetch = window.fetch;
+        window.fetch = async (...args) => {
+            const res = await originalFetch(...args);
+            if ((res.status === 401 || res.status === 403) && String(args[0]).startsWith("/api")) {
+                dispatch(signoutSuccess());
+                navigate("/sign-in");
+            }
+            return res;
+        };
+        return () => { window.fetch = originalFetch; };
+    }, [dispatch, navigate]);
     return (
         <>
             <Header />
