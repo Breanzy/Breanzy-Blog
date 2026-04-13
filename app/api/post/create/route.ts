@@ -1,0 +1,48 @@
+import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+import { revalidateTag } from "next/cache";
+import { connectDB } from "@/lib/db";
+import Post from "@/models/post.model";
+import Subscriber from "@/models/subscriber.model";
+import { sendNewsletter } from "@/utils/sendNewsletter";
+
+export async function POST(request: NextRequest) {
+    const token = request.cookies.get("access_token")?.value;
+    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    let authUser: { id: string; isAdmin: boolean };
+    try {
+        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
+    } catch {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!authUser.isAdmin) {
+        return NextResponse.json({ message: "You are not allowed to create a post" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    if (!body.title || !body.content) {
+        return NextResponse.json({ message: "Please provide all required fields" }, { status: 400 });
+    }
+
+    const slug = body.title
+        .split(" ")
+        .join("-")
+        .toLowerCase()
+        .replace(/[^a-zA-Z0-9-]/g, "");
+
+    try {
+        await connectDB();
+        const newPost = new Post({ ...body, slug, userId: authUser.id });
+        const savedPost = await newPost.save();
+
+        revalidateTag("posts"); // Bust ISR cache for all public post pages
+
+        const subscribers = await Subscriber.find({}, "email unsubscribeToken");
+        sendNewsletter(savedPost, subscribers); // Fire-and-forget
+
+        return NextResponse.json(savedPost, { status: 201 });
+    } catch (error: any) {
+        return NextResponse.json({ message: error.message }, { status: 500 });
+    }
+}

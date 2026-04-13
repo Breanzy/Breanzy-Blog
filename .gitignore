@@ -26,6 +26,10 @@ dist-ssr
 
 .DS_Store
 
+# Next.js
+.next/
+next-env.d.ts
+
 # Claude Code context files
 CLAUDE.md
 .claude/
