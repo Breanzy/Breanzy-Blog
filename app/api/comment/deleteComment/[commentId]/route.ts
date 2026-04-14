@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Comment from "@/models/comment.model";
 
@@ -22,7 +21,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { comme
             return NextResponse.json({ message: "You are not allowed to delete this comment" }, { status: 403 });
         }
         await Comment.findByIdAndDelete(params.commentId);
-        revalidateTag("comments");
         return NextResponse.json("Comment has been deleted", { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

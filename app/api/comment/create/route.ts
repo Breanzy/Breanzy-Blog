@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Comment from "@/models/comment.model";
 
@@ -23,7 +22,6 @@ export async function POST(request: NextRequest) {
         await connectDB();
         const newComment = new Comment({ content, postId, userId });
         await newComment.save();
-        revalidateTag("comments");
         return NextResponse.json(newComment, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

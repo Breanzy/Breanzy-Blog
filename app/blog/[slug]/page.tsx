@@ -29,6 +29,13 @@ const getRecentPosts = unstable_cache(
     { tags: ["posts"], revalidate: false }
 );
 
+// Pre-render all known post slugs at build time; new posts are rendered on first visit then cached
+export async function generateStaticParams() {
+    await connectDB();
+    const posts = await Post.find({}, "slug").lean();
+    return (posts as any[]).map((p) => ({ slug: p.slug }));
+}
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const post = await getPost(params.slug);
     if (!post) return {};

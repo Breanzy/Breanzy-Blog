@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Comment from "@/models/comment.model";
 
@@ -28,7 +27,6 @@ export async function PUT(request: NextRequest, { params }: { params: { commentI
             comment.likes.splice(userIndex, 1);
         }
         await comment.save();
-        revalidateTag("comments");
         return NextResponse.json(comment, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
