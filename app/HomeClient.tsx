@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import PostCard from "@/components/PostCard";
 import ProjectCard from "@/components/ProjectCard";
 import FadeIn from "@/components/FadeIn";
+import MatrixRain from "@/components/MatrixRain";
 
 const gridVariants = {
     hidden: {},
@@ -38,7 +39,8 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
         <div className="bg-black">
             {/* Hero with parallax */}
             <section ref={heroRef} className="relative overflow-hidden min-h-[70vh] flex items-center">
-                <motion.div style={{ y: heroY }} className="max-w-6xl mx-auto px-4 py-28 flex flex-col gap-6 w-full">
+                <MatrixRain />
+                <motion.div style={{ y: heroY }} className="relative z-10 max-w-6xl mx-auto px-4 py-28 flex flex-col gap-6 w-full">
                     <motion.div variants={heroContainer} initial="hidden" animate="show">
                         <motion.p variants={heroItem} className="text-blue-500 text-sm font-medium tracking-widest uppercase mb-2">
                             Full-Stack Developer
