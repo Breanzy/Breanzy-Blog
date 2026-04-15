@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import {
     HiAnnotation,
     HiArrowNarrowUp,
@@ -134,7 +135,7 @@ export default function DashboardComponent() {
                             {users.map((user) => (
                                 <tr key={user._id} className="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/40 transition-colors">
                                     <td className="px-4 py-2">
-                                        <img src={user.profilePicture} alt={user.username} className="w-8 h-8 rounded-full object-cover border border-neutral-700" />
+                                        <Image src={user.profilePicture} alt={user.username} width={32} height={32} className="rounded-full object-cover border border-neutral-700" />
                                     </td>
                                     <td className="px-4 py-2 text-neutral-300">{user.username}</td>
                                 </tr>
@@ -191,7 +192,9 @@ export default function DashboardComponent() {
                             {posts.map((post) => (
                                 <tr key={post._id} className="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/40 transition-colors">
                                     <td className="px-4 py-2">
-                                        <img src={post.image} alt={post.title} className="w-12 h-8 rounded object-cover border border-neutral-700" />
+                                        <div className="relative w-12 h-8 overflow-hidden rounded border border-neutral-700">
+                                            <Image src={post.image} alt={post.title} fill className="object-cover" sizes="48px" />
+                                        </div>
                                     </td>
                                     <td className="px-4 py-2 text-neutral-300 max-w-[180px]">
                                         <p className="line-clamp-1">{post.title}</p>

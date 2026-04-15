@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -90,7 +91,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             {currentUser ? (
                 <div className="flex items-center gap-2 mb-4 text-xs text-neutral-500">
                     <span>Signed in as</span>
-                    <img src={currentUser.profilePicture} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    <Image src={currentUser.profilePicture} alt="" width={20} height={20} className="rounded-full object-cover" />
                     <Link href="/dashboard?tab=profile" className="text-blue-500 hover:text-blue-400 transition-colors">
                         @{currentUser.username}
                     </Link>

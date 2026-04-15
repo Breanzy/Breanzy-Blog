@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { unstable_cache } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
@@ -22,7 +23,7 @@ const getPost = unstable_cache(
 const getRecentPosts = unstable_cache(
     async () => {
         await connectDB();
-        const posts = await Post.find().sort({ updatedAt: -1 }).limit(3).lean();
+        const posts = await Post.find().sort({ updatedAt: -1 }).limit(3).select("-content").lean();
         return JSON.parse(JSON.stringify(posts));
     },
     ["recent-posts"],
@@ -77,9 +78,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
                 {/* Cover image */}
                 {post.image && (
-                    <img
+                    <Image
                         src={post.image}
                         alt={post.title}
+                        width={900}
+                        height={500}
+                        priority
                         className="w-full max-h-[500px] object-cover rounded-xl mb-6"
                     />
                 )}

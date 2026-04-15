@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -84,7 +85,9 @@ const ProjectFormFields = ({ formData, setFormData, formError }: any) => {
             </div>
             {imageUploadError && <p className="text-red-400 text-xs">{imageUploadError}</p>}
             {formData.image && (
-                <img src={formData.image} alt="preview" className="w-full h-40 object-cover rounded-lg border border-neutral-800" />
+                <div className="relative w-full h-40 overflow-hidden rounded-lg border border-neutral-800">
+                    <Image src={formData.image} alt="preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
+                </div>
             )}
             <input className={inputCls} placeholder="Tech stack (comma-separated: React, Node.js, MongoDB)" value={formData.techStack}
                 onChange={(e) => setFormData({ ...formData, techStack: e.target.value })} />
@@ -276,7 +279,11 @@ export default function DashProjects() {
                                         <td className={tdCls}>{new Date(project.updatedAt).toLocaleDateString()}</td>
                                         <td className={tdCls}>
                                             {project.image
-                                                ? <img src={project.image} alt={project.title} className="w-20 h-11 object-cover rounded border border-neutral-700" />
+                                                ? (
+                                                    <div className="relative w-20 h-11 overflow-hidden rounded border border-neutral-700">
+                                                        <Image src={project.image} alt={project.title} fill className="object-cover" sizes="80px" />
+                                                    </div>
+                                                )
                                                 : <span className="text-neutral-600 text-xs">No image</span>
                                             }
                                         </td>

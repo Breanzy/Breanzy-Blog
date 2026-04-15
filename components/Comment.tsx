@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import moment from "moment";
 import { FaThumbsUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -52,11 +53,15 @@ export default function Comment({ comment, onLike, onEdit, onDelete }: CommentPr
 
     return (
         <div className="flex gap-3 p-4 border-b border-neutral-800 text-sm">
-            <img
-                className="w-9 h-9 rounded-full object-cover shrink-0 border border-neutral-800"
-                src={user.profilePicture}
-                alt={user.username}
-            />
+            {user?.profilePicture && (
+                <Image
+                    src={user.profilePicture}
+                    alt={user.username || ""}
+                    width={36}
+                    height={36}
+                    className="rounded-full object-cover shrink-0 border border-neutral-800"
+                />
+            )}
             <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                     <span className="text-white font-medium text-xs">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
@@ -105,13 +106,13 @@ export default function Header() {
                     {currentUser ? (
                         <Menu as="div" className="relative">
                             <MenuButton className="focus:outline-none">
-                                <motion.img
-                                    src={currentUser.profilePicture}
-                                    alt="avatar"
+                                <motion.div
+                                    className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-700 hover:border-blue-500 transition-colors"
                                     whileHover={{ scale: 1.1 }}
                                     transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                                    className="w-8 h-8 rounded-full object-cover border border-neutral-700 hover:border-blue-500 transition-colors"
-                                />
+                                >
+                                    <Image src={currentUser.profilePicture} alt="avatar" fill className="object-cover" sizes="32px" />
+                                </motion.div>
                             </MenuButton>
                             <MenuItems className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl focus:outline-none overflow-hidden">
                                 <div className="px-4 py-3 border-b border-neutral-800">

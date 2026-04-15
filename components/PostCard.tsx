@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 interface PostCardProps {
@@ -22,14 +23,20 @@ export default function PostCard({ post }: PostCardProps) {
             transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
         >
             <Link href={`/blog/${post.slug}`} className="block h-full">
-                <motion.img
-                    src={post.image}
-                    alt="post cover"
-                    className="w-full object-cover"
+                <motion.div
+                    className="relative w-full overflow-hidden"
                     initial={{ height: "260px" }}
                     whileHover={{ height: "200px" }}
                     transition={{ type: "spring" as const, stiffness: 200, damping: 25 }}
-                />
+                >
+                    <Image
+                        src={post.image}
+                        alt="post cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 430px"
+                    />
+                </motion.div>
                 <div className="p-3 flex flex-col gap-2">
                     <p className="text-white text-lg font-semibold line-clamp-2">{post.title}</p>
                     <span className="text-neutral-500 italic text-sm">{post.category}</span>

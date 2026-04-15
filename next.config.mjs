@@ -14,6 +14,8 @@ const nextConfig = {
             { protocol: "https", hostname: "firebasestorage.googleapis.com" },
             { protocol: "https", hostname: "lh3.googleusercontent.com" },
             { protocol: "https", hostname: "*.googleusercontent.com" },
+            { protocol: "https", hostname: "assets.vercel.com" },
+            { protocol: "https", hostname: "www.hostinger.com" },
         ],
     },
     experimental: {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
@@ -117,7 +118,9 @@ export default function CreatePostPage() {
 
                 {imageUploadError && <p className="text-red-400 text-sm">{imageUploadError}</p>}
                 {formData.image && (
-                    <img src={formData.image} alt="upload preview" className="w-full h-64 object-cover rounded-xl border border-neutral-800" />
+                    <div className="relative w-full h-64 overflow-hidden rounded-xl border border-neutral-800">
+                        <Image src={formData.image} alt="upload preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
+                    </div>
                 )}
 
                 <QuillEditor

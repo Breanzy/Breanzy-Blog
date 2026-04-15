@@ -8,7 +8,7 @@ const getHomeData = unstable_cache(
     async () => {
         await connectDB();
         const [postsRaw, projectsRaw] = await Promise.all([
-            Post.find().sort({ updatedAt: -1 }).limit(3).lean(),
+            Post.find().sort({ updatedAt: -1 }).limit(3).select("-content").lean(),
             Project.find({ featured: true }).limit(3).lean(),
         ]);
         return {

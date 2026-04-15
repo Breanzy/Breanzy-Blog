@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const getPosts = unstable_cache(
     async () => {
         await connectDB();
-        const posts = await Post.find().sort({ updatedAt: -1 }).lean();
+        const posts = await Post.find().sort({ updatedAt: -1 }).select("-content").lean();
         return JSON.parse(JSON.stringify(posts));
     },
     ["blog-list"],

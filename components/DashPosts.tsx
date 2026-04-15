@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -80,7 +81,9 @@ export default function DashPosts() {
                                         <td className={tdCls}>{new Date(post.updatedAt).toLocaleDateString()}</td>
                                         <td className={tdCls}>
                                             <Link href={`/blog/${post.slug}`}>
-                                                <img src={post.image} alt={post.title} className="w-20 h-11 object-cover rounded border border-neutral-700" />
+                                                <div className="relative w-20 h-11 overflow-hidden rounded border border-neutral-700">
+                                                    <Image src={post.image} alt={post.title} fill className="object-cover" sizes="80px" />
+                                                </div>
                                             </Link>
                                         </td>
                                         <td className={`${tdCls} max-w-[220px]`}>

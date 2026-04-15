@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import FadeIn from "./FadeIn";
 
@@ -25,9 +26,11 @@ export default function CallToAction() {
                     </motion.a>
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <img
+                    <Image
                         src="https://assets.vercel.com/image/upload/contentful/image/e5382hct74si/2EP14mWkbx9sq03nWnRSGT/f1d22d88bb5dde030275f9520c0f2e92/React_YT_Thumbnail.png"
                         alt="React"
+                        width={320}
+                        height={180}
                         className="max-h-40 rounded-lg object-contain opacity-80"
                     />
                 </div>

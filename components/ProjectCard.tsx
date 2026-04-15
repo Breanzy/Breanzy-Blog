@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { BsGithub } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -25,13 +26,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
         >
             {project.image && (
-                <motion.img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-[220px] w-full object-cover"
+                <motion.div
+                    className="relative h-[220px] w-full overflow-hidden"
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring" as const, stiffness: 200, damping: 25 }}
-                />
+                >
+                    <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 430px"
+                    />
+                </motion.div>
             )}
             <div className="p-4 flex flex-col gap-2">
                 <p className="text-white text-lg font-semibold line-clamp-2">{project.title}</p>

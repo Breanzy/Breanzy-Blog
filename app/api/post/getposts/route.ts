@@ -29,7 +29,9 @@ export async function GET(request: NextRequest) {
         })
             .sort({ updatedAt: sortDirection })
             .skip(startIndex)
-            .limit(limit);
+            .limit(limit)
+            .select(postId ? "" : "-content") // update-post fetches by postId and needs content for the editor
+            .lean();
 
         const totalPosts = await Post.countDocuments();
         const now = new Date();

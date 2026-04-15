@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -79,7 +80,7 @@ export default function DashUsers() {
                                     <tr key={user._id} className="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/40 transition-colors">
                                         <td className={tdCls}>{new Date(user.createdAt).toLocaleDateString()}</td>
                                         <td className={tdCls}>
-                                            <img src={user.profilePicture} alt={user.username} className="w-9 h-9 rounded-full object-cover border border-neutral-700" />
+                                            <Image src={user.profilePicture} alt={user.username} width={36} height={36} className="rounded-full object-cover border border-neutral-700" />
                                         </td>
                                         <td className={tdCls}>{user.username}</td>
                                         <td className={tdCls}>{user.email}</td>
