@@ -7,6 +7,7 @@ import PostCard from "@/components/PostCard";
 import CallToAction from "@/components/CallToAction";
 import NewsletterSubscribe from "@/components/NewsletterSubscribe";
 import FadeIn from "@/components/FadeIn";
+import ParallaxHero from "@/components/ParallaxHero";
 
 export const metadata: Metadata = {
     title: "Blog",
@@ -27,18 +28,15 @@ export default async function BlogPage() {
     const posts = await getPosts();
 
     return (
-        <div className="bg-black min-h-screen">
-            <div className="max-w-6xl mx-auto px-4 py-20">
-                <FadeIn>
-                    <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4">Blog</h1>
-                    <p className="text-neutral-400 text-base max-w-xl">
-                        Thoughts, tutorials, and write-ups on web development, full-stack projects, and everything in between.
-                    </p>
-                    <Link href="/search" className="inline-block mt-4 text-sm text-blue-500 hover:text-blue-400 transition-colors">
-                        Browse all posts →
-                    </Link>
-                </FadeIn>
-            </div>
+        <div className="min-h-screen">
+            <ParallaxHero
+                title="Blog"
+                subtitle="Thoughts, tutorials, and write-ups on web development, full-stack projects, and everything in between."
+            >
+                <Link href="/search" className="inline-block mt-4 text-sm text-blue-500 hover:text-blue-400 transition-colors">
+                    Browse all posts →
+                </Link>
+            </ParallaxHero>
 
             <div className="max-w-6xl mx-auto px-4 pb-6">
                 <FadeIn delay={0.1}>

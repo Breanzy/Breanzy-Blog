@@ -17,8 +17,8 @@ interface PostCardProps {
 export default function PostCard({ post }: PostCardProps) {
     return (
         <motion.div
-            className="relative w-full sm:w-[430px] bg-neutral-900 border border-neutral-800 h-[400px] overflow-hidden rounded-xl"
-            whileHover={{ scale: 1.03, y: -6, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", borderColor: "#2563eb" }}
+            className="glass-card relative w-full sm:w-[430px] h-[400px] rounded-xl"
+            whileHover={{ scale: 1.03, y: -8, boxShadow: "0 28px 56px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.25), 0 0 50px rgba(255,255,255,0.08), inset 0 1.5px 0 rgba(255,255,255,0.8)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
         >

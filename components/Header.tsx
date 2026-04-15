@@ -51,9 +51,9 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-40">
-            {/* Animated bg that fades in on scroll */}
-            <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 bg-black pointer-events-none" />
-            <motion.div style={{ opacity: borderOpacity }} className="absolute bottom-0 left-0 right-0 h-px bg-neutral-800 pointer-events-none" />
+            {/* Animated glass bg that fades in on scroll */}
+            <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 bg-black/60 backdrop-blur-xl pointer-events-none" />
+            <motion.div style={{ opacity: borderOpacity }} className="absolute bottom-0 left-0 right-0 h-px bg-white/[0.06] pointer-events-none" />
 
             <div className="relative max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
                 {/* Logo */}
@@ -73,7 +73,7 @@ export default function Header() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             whileFocus={{ scale: 1.02 }}
                             transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
-                            className="w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-1.5 text-sm pr-9"
+                            className="w-full bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-1.5 text-sm pr-9 backdrop-blur-sm"
                         />
                         <AiOutlineSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 text-base" />
                     </div>
@@ -92,7 +92,7 @@ export default function Header() {
                             {link.active && (
                                 <motion.span
                                     layoutId="nav-pill"
-                                    className="absolute inset-0 bg-neutral-900 rounded-lg"
+                                    className="absolute inset-0 bg-white/[0.08] backdrop-blur-sm border border-white/10 rounded-lg"
                                     transition={{ type: "spring" as const, stiffness: 300, damping: 25 }}
                                 />
                             )}
@@ -114,18 +114,18 @@ export default function Header() {
                                     <Image src={currentUser.profilePicture} alt="avatar" fill className="object-cover" sizes="32px" />
                                 </motion.div>
                             </MenuButton>
-                            <MenuItems className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl focus:outline-none overflow-hidden">
-                                <div className="px-4 py-3 border-b border-neutral-800">
+                            <MenuItems className="absolute right-0 mt-2 w-48 glass-card rounded-xl shadow-2xl focus:outline-none overflow-hidden">
+                                <div className="px-4 py-3 border-b border-white/[0.06]">
                                     <p className="text-white text-sm font-medium truncate">{currentUser.username}</p>
                                     <p className="text-neutral-500 text-xs truncate">{currentUser.email}</p>
                                 </div>
                                 <MenuItem>
-                                    <Link href="/dashboard?tab=profile" className="block px-4 py-2.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors">
+                                    <Link href="/dashboard?tab=profile" className="block px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white transition-colors">
                                         Profile
                                     </Link>
                                 </MenuItem>
                                 <MenuItem>
-                                    <button onClick={handleSignout} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors border-t border-neutral-800">
+                                    <button onClick={handleSignout} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white transition-colors border-t border-white/[0.06]">
                                         Sign Out
                                     </button>
                                 </MenuItem>
@@ -165,7 +165,7 @@ export default function Header() {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="md:hidden border-t border-neutral-800 bg-black overflow-hidden"
+                        className="md:hidden border-t border-white/[0.06] bg-black/70 backdrop-blur-xl overflow-hidden"
                     >
                         <div className="px-4 pb-4">
                             <form onSubmit={handleSearch} className="mt-3 mb-2">
@@ -175,7 +175,7 @@ export default function Header() {
                                         placeholder="Search..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm pr-9"
+                                        className="w-full bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-2 text-sm pr-9"
                                     />
                                     <AiOutlineSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 text-base" />
                                 </div>
@@ -192,7 +192,7 @@ export default function Header() {
                                             href={link.href}
                                             onClick={() => setMobileOpen(false)}
                                             className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                                                link.active ? "text-white bg-neutral-900" : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+                                                link.active ? "text-white bg-white/[0.08] border border-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
                                             }`}
                                         >
                                             {link.label}

@@ -110,7 +110,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
             </div>
 
             {recentPosts.length > 0 && (
-                <div className="bg-neutral-950 py-14">
+                <div className="bg-white/[0.025] border-t border-white/[0.04] py-14">
                     <div className="max-w-6xl mx-auto px-4">
                         <FadeIn className="text-center mb-6">
                             <h2 className="text-white text-xl font-semibold">Recent Articles</h2>

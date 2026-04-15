@@ -3,7 +3,7 @@ import { BsFacebook, BsInstagram, BsTwitterX, BsGithub, BsLinkedin } from "react
 
 export default function Footer() {
     return (
-        <footer className="bg-neutral-950 border-t border-neutral-800">
+        <footer className="bg-black/50 backdrop-blur-xl border-t border-white/[0.06]">
             <div className="max-w-7xl mx-auto px-4 py-10">
                 <div className="flex flex-col md:flex-row justify-between gap-8">
                     {/* Logo + tagline */}
@@ -34,7 +34,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom bar */}
-                <div className="mt-10 pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="mt-10 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-neutral-600 text-xs">
                         &copy; {new Date().getFullYear()} Brean Julius Carbonilla. All rights reserved.
                     </p>

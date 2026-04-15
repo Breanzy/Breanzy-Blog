@@ -30,7 +30,7 @@ export default function NewsletterSubscribe() {
 
     return (
         <FadeIn>
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border border-neutral-800 rounded-xl bg-neutral-900 max-w-4xl mx-auto">
+            <div className="glass-card flex flex-col sm:flex-row items-center gap-6 p-6 rounded-xl max-w-4xl mx-auto">
                 <div className="flex-1 flex flex-col gap-2 text-center sm:text-left">
                     <h2 className="text-white text-xl font-semibold">Stay in the loop</h2>
                     <p className="text-neutral-400 text-sm">
@@ -62,7 +62,7 @@ export default function NewsletterSubscribe() {
                                     placeholder="you@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="flex-1 min-w-0 bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm"
+                                    className="flex-1 min-w-0 bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-2 text-sm backdrop-blur-sm"
                                 />
                                 <motion.button
                                     type="submit"

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
-import FadeIn from "@/components/FadeIn";
+import ParallaxHero from "@/components/ParallaxHero";
 import ProjectsClient from "./ProjectsClient";
 
 export const metadata: Metadata = {
@@ -24,14 +24,12 @@ export default async function ProjectsPage() {
     const projects = await getProjects();
 
     return (
-        <div className="min-h-screen bg-black">
-            <div className="max-w-6xl mx-auto px-4 py-20">
-                <FadeIn>
-                    <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4">Projects</h1>
-                    <p className="text-neutral-400 text-base max-w-xl mb-10">
-                        A collection of things I've built — from full-stack web apps to tools and experiments.
-                    </p>
-                </FadeIn>
+        <div className="min-h-screen">
+            <ParallaxHero
+                title="Projects"
+                subtitle="A collection of things I've built — from full-stack web apps to tools and experiments."
+            />
+            <div className="max-w-6xl mx-auto px-4 pb-20">
                 <ProjectsClient projects={projects} />
             </div>
         </div>

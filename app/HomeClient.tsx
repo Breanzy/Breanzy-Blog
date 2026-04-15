@@ -79,7 +79,7 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
 
             {/* Featured projects */}
             {projects.length > 0 && (
-                <section className="bg-neutral-950 py-16">
+                <section className="bg-white/[0.025] py-16 border-t border-b border-white/[0.04]">
                     <div className="max-w-6xl mx-auto px-4">
                         <FadeIn className="flex items-center justify-between mb-8">
                             <h2 className="text-white text-2xl font-semibold">Featured Projects</h2>

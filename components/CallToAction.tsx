@@ -7,7 +7,7 @@ import FadeIn from "./FadeIn";
 export default function CallToAction() {
     return (
         <FadeIn>
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border border-neutral-800 rounded-xl bg-neutral-900 max-w-4xl mx-auto">
+            <div className="glass-card flex flex-col sm:flex-row items-center gap-6 p-6 rounded-xl max-w-4xl mx-auto">
                 <div className="flex-1 flex flex-col gap-3 text-center sm:text-left">
                     <h2 className="text-white text-xl font-semibold">Want to see more projects?</h2>
                     <p className="text-neutral-400 text-sm">
