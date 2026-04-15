@@ -8,10 +8,12 @@ import { useSelector } from "react-redux";
 import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
 import { app } from "@/firebase";
 import Modal from "./Modal";
+import QuillEditor from "./QuillEditor";
 
 const emptyForm = {
     title: "",
     description: "",
+    content: "",
     image: "",
     techStack: "",
     liveUrl: "",
@@ -63,6 +65,15 @@ const ProjectFormFields = ({ formData, setFormData, formError }: any) => {
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
             <textarea className={`${inputCls} resize-none`} placeholder="Description" required rows={3} value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+            <div className="flex flex-col gap-1">
+                <label className="text-neutral-400 text-xs">Content (full write-up — shown on the project page)</label>
+                <QuillEditor
+                    theme="snow"
+                    value={formData.content}
+                    onChange={(value: string) => setFormData({ ...formData, content: value })}
+                    className="bg-neutral-950 text-white rounded-lg"
+                />
+            </div>
 
             <div className="flex gap-3 items-center border border-dashed border-neutral-700 rounded-xl p-3">
                 <input
@@ -180,6 +191,7 @@ export default function DashProjects() {
         setEditFormData({
             title: project.title,
             description: project.description,
+            content: project.content || "",
             image: project.image || "",
             techStack: (project.techStack || []).join(", "),
             liveUrl: project.liveUrl || "",

@@ -12,6 +12,7 @@ const projectSchema = new mongoose.Schema(
         featured: { type: Boolean, default: false },
         category: { type: String, default: "uncategorized" },
         slug: { type: String, required: true, unique: true },
+        content: { type: String, default: "" },
     },
     { timestamps: true }
 );

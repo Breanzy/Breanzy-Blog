@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
         })
             .sort({ updatedAt: sortDirection })
             .skip(startIndex)
-            .limit(limit);
+            .limit(limit)
+            .select(projectId || slug ? "" : "-content") // full content only needed for single-project views
+            .lean();
 
         const totalProjects = await Project.countDocuments();
         const now = new Date();

@@ -34,6 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: { projectI
                     repoUrl: body.repoUrl,
                     featured: body.featured,
                     category: body.category,
+                    content: body.content,
                 },
             },
             { new: true }

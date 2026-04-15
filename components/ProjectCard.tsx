@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { BsGithub } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
@@ -19,9 +20,10 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
     return (
+        <Link href={`/projects/${project.slug}`} className="block w-full sm:w-[430px]">
         <motion.div
-            className="w-full sm:w-[430px] bg-neutral-900 border border-neutral-800 overflow-hidden rounded-xl"
-            whileHover={{ scale: 1.03, y: -6, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", borderColor: "#2563eb" }}
+            className="glass-card w-full rounded-xl"
+            whileHover={{ scale: 1.03, y: -8, boxShadow: "0 28px 56px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.25), 0 0 50px rgba(255,255,255,0.08), inset 0 1.5px 0 rgba(255,255,255,0.8)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
         >
@@ -72,6 +74,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                             href={project.liveUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
                             className="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
                             whileHover={{ x: 3 }}
                             transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
@@ -85,6 +88,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                             href={project.repoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
                             className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
                             whileHover={{ x: 3 }}
                             transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
@@ -96,5 +100,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 </div>
             </div>
         </motion.div>
+        </Link>
     );
 }
