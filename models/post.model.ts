@@ -15,5 +15,8 @@ const postSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Text index on title for fast full-text search
+postSchema.index({ title: "text" });
+
 const Post = (mongoose.models.Post || mongoose.model("Post", postSchema)) as mongoose.Model<any>;
 export default Post;

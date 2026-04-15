@@ -14,7 +14,7 @@ export default function SearchClient() {
     const [sideBarData, setSideBarData] = useState({
         searchTerm: searchParams.get("searchTerm") || "",
         sort: searchParams.get("sort") || "desc",
-        category: searchParams.get("category") || "uncategorized",
+        category: searchParams.get("category") || "",
     });
     const [posts, setPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -82,7 +82,7 @@ export default function SearchClient() {
                     <div className="flex flex-col gap-1">
                         <label htmlFor="category" className="text-neutral-400 text-sm">Category</label>
                         <select id="category" value={sideBarData.category} onChange={handleChange} className={selectCls}>
-                            <option value="uncategorized">All</option>
+                            <option value="">All</option>
                             <option value="reactjs">React.js</option>
                             <option value="nextjs">Next.js</option>
                             <option value="javascript">JavaScript</option>

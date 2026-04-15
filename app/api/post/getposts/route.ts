@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const startIndex = parseInt(searchParams.get("startIndex") || "0");
     const limit = parseInt(searchParams.get("limit") || "9");
-    const sortDirection = searchParams.get("order") === "asc" ? 1 : -1;
+    const sortDirection = searchParams.get("sort") === "asc" ? 1 : -1;
     const userId = searchParams.get("userId");
     const category = searchParams.get("category");
     const slug = searchParams.get("slug");
@@ -20,12 +20,8 @@ export async function GET(request: NextRequest) {
             ...(category && { category }),
             ...(slug && { slug }),
             ...(postId && { _id: postId }),
-            ...(searchTerm && {
-                $or: [
-                    { title: { $regex: searchTerm, $options: "i" } },
-                    { content: { $regex: searchTerm, $options: "i" } },
-                ],
-            }),
+            // $text uses the title text index — much faster than $regex full scan
+            ...(searchTerm && { $text: { $search: searchTerm } }),
         })
             .sort({ updatedAt: sortDirection })
             .skip(startIndex)
