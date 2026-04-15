@@ -14,7 +14,7 @@ interface Stream {
 }
 
 const FONT_SIZE = 15;
-const MAX_STREAMS = 7; // sparse — not a flood
+const MAX_STREAMS = 21;
 const STREAM_LENGTH_MIN = 5;
 const STREAM_LENGTH_MAX = 14;
 const COLOR = "#1a4f8a"; // dark blue
