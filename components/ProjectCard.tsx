@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 interface ProjectCardProps {
     project: {
         _id: string;
+        slug: string;
         title: string;
         description: string;
         image?: string;
