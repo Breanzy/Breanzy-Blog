@@ -22,9 +22,24 @@ export async function PUT(request: NextRequest, { params }: { params: { postId: 
 
     try {
         await connectDB();
+
+        // Regenerate slug from the (possibly updated) title.
+        // Exclude the current post from the uniqueness check so a no-op title
+        // edit doesn't produce a "-2" suffix against itself.
+        const baseSlug = body.title
+            .split(" ")
+            .join("-")
+            .toLowerCase()
+            .replace(/[^a-zA-Z0-9-]/g, "");
+        let slug = baseSlug;
+        let suffix = 2;
+        while (await Post.exists({ slug, _id: { $ne: params.postId } })) {
+            slug = `${baseSlug}-${suffix++}`;
+        }
+
         const updatedPost = await Post.findByIdAndUpdate(
             params.postId,
-            { $set: { title: body.title, content: body.content, category: body.category, image: body.image } },
+            { $set: { title: body.title, content: body.content, category: body.category, image: body.image, slug } },
             { new: true }
         );
         revalidateTag("posts");
