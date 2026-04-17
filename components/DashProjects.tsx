@@ -5,10 +5,9 @@ import Image from "next/image";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
-import { app } from "@/firebase";
 import Modal from "./Modal";
 import QuillEditor from "./QuillEditor";
+import { uploadFirebaseImage, deleteFirebaseImage } from "@/lib/firebaseStorage";
 
 const emptyForm = {
     title: "",
@@ -24,109 +23,78 @@ const emptyForm = {
 
 const inputCls = "w-full bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
 
-/* Shared form fields for add/edit project modals — manages its own image upload state */
-const ProjectFormFields = ({ formData, setFormData, formError }: any) => {
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imageUploadProgress, setImageUploadProgress] = useState<string | null>(null);
-    const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+interface ProjectFormFieldsProps {
+    formData: any;
+    setFormData: (data: any) => void;
+    formError: string | null;
+    onFileSelect: (file: File | null) => void;
+    localPreview: string | null;
+    uploadProgress: number | null;
+}
 
-    const handleUploadImage = async () => {
-        if (!imageFile) { setImageUploadError("Please select an image"); return; }
-        setImageUploadError(null);
-        try {
-            const storage = getStorage(app);
-            const storageRef = ref(storage, new Date().getTime() + "-" + imageFile.name);
-            const uploadTask = uploadBytesResumable(storageRef, imageFile);
-            uploadTask.on(
-                "state_changed",
-                (snapshot) => {
-                    setImageUploadProgress(((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0));
-                },
-                () => {
-                    setImageUploadError("Image upload failed");
-                    setImageUploadProgress(null);
-                },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                        setImageUploadProgress(null);
-                        setFormData({ ...formData, image: url });
-                    });
-                }
-            );
-        } catch {
-            setImageUploadError("Image upload failed");
-            setImageUploadProgress(null);
-        }
-    };
-
-    return (
-        <div className="flex flex-col gap-3">
-            <input className={inputCls} placeholder="Title" required value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
-            <textarea className={`${inputCls} resize-none`} placeholder="Description" required rows={3} value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
-            <div className="flex flex-col gap-1">
-                <label className="text-neutral-400 text-xs">Content (full write-up — shown on the project page)</label>
-                <QuillEditor
-                    theme="snow"
-                    value={formData.content}
-                    onChange={(value: string) => setFormData({ ...formData, content: value })}
-                    className="bg-neutral-950 text-white rounded-lg"
-                />
-            </div>
-
-            <div className="flex gap-3 items-center border border-dashed border-neutral-700 rounded-xl p-3">
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-                    className="text-sm text-neutral-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
-                />
-                <motion.button
-                    type="button"
-                    onClick={handleUploadImage}
-                    disabled={!!imageUploadProgress}
-                    whileHover={!imageUploadProgress ? { scale: 1.03 } : {}}
-                    whileTap={!imageUploadProgress ? { scale: 0.96 } : {}}
-                    transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                    className="shrink-0 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs px-3 py-1.5 rounded-lg transition-colors"
-                >
-                    {imageUploadProgress ? `${imageUploadProgress}%` : "Upload"}
-                </motion.button>
-            </div>
-            {imageUploadError && <p className="text-red-400 text-xs">{imageUploadError}</p>}
-            {formData.image && (
-                <div className="relative w-full h-40 overflow-hidden rounded-lg border border-neutral-800">
-                    <Image src={formData.image} alt="preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
-                </div>
-            )}
-            <input className={inputCls} placeholder="Tech stack (comma-separated: React, Node.js, MongoDB)" value={formData.techStack}
-                onChange={(e) => setFormData({ ...formData, techStack: e.target.value })} />
-            <input className={inputCls} placeholder="Live URL" value={formData.liveUrl}
-                onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })} />
-            <input className={inputCls} placeholder="Repo URL" value={formData.repoUrl}
-                onChange={(e) => setFormData({ ...formData, repoUrl: e.target.value })} />
-            <select className={inputCls} value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                <option value="uncategorized">Select a category</option>
-                <option value="web">Web</option>
-                <option value="mobile">Mobile</option>
-                <option value="tool">Tool</option>
-                <option value="other">Other</option>
-            </select>
-            <label className="flex items-center gap-3 text-sm text-neutral-400 cursor-pointer">
-                <input
-                    type="checkbox"
-                    checked={formData.featured}
-                    onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                    className="w-4 h-4 accent-blue-600"
-                />
-                Featured project
-            </label>
-            {formError && <p className="text-red-400 text-sm">{formError}</p>}
+/* Shared form fields for add/edit project modals */
+const ProjectFormFields = ({ formData, setFormData, formError, onFileSelect, localPreview, uploadProgress }: ProjectFormFieldsProps) => (
+    <div className="flex flex-col gap-3">
+        <input className={inputCls} placeholder="Title" required value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+        <textarea className={`${inputCls} resize-none`} placeholder="Description" required rows={3} value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+        <div className="flex flex-col gap-1">
+            <label className="text-neutral-400 text-xs">Content (full write-up — shown on the project page)</label>
+            <QuillEditor
+                theme="snow"
+                value={formData.content}
+                onChange={(value: string) => setFormData({ ...formData, content: value })}
+                className="bg-neutral-950 text-white rounded-lg"
+            />
         </div>
-    );
-};
+
+        <div className="flex gap-3 items-center border border-dashed border-neutral-700 rounded-xl p-3">
+            <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => onFileSelect(e.target.files?.[0] ?? null)}
+                className="text-sm text-neutral-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
+            />
+            {uploadProgress !== null
+                ? <span className="shrink-0 text-xs text-blue-400">{uploadProgress}%</span>
+                : localPreview && <span className="shrink-0 text-xs text-blue-400">New image ready</span>
+            }
+        </div>
+
+        {/* Show local preview for newly selected file, or existing saved image */}
+        {(localPreview || formData.image) && (
+            <div className="relative w-full h-40 overflow-hidden rounded-lg border border-neutral-800">
+                <Image src={localPreview || formData.image} alt="preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
+            </div>
+        )}
+
+        <input className={inputCls} placeholder="Tech stack (comma-separated: React, Node.js, MongoDB)" value={formData.techStack}
+            onChange={(e) => setFormData({ ...formData, techStack: e.target.value })} />
+        <input className={inputCls} placeholder="Live URL" value={formData.liveUrl}
+            onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })} />
+        <input className={inputCls} placeholder="Repo URL" value={formData.repoUrl}
+            onChange={(e) => setFormData({ ...formData, repoUrl: e.target.value })} />
+        <select className={inputCls} value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+            <option value="uncategorized">Select a category</option>
+            <option value="web">Web</option>
+            <option value="mobile">Mobile</option>
+            <option value="tool">Tool</option>
+            <option value="other">Other</option>
+        </select>
+        <label className="flex items-center gap-3 text-sm text-neutral-400 cursor-pointer">
+            <input
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                className="w-4 h-4 accent-blue-600"
+            />
+            Featured project
+        </label>
+        {formError && <p className="text-red-400 text-sm">{formError}</p>}
+    </div>
+);
 
 export default function DashProjects() {
     const { currentUser } = useSelector((state: any) => state.user);
@@ -139,11 +107,17 @@ export default function DashProjects() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [editFormData, setEditFormData] = useState(emptyForm);
     const [editProjectId, setEditProjectId] = useState("");
+    const [editImageFile, setEditImageFile] = useState<File | null>(null);
+    const [editPreview, setEditPreview] = useState<string | null>(null);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [addFormData, setAddFormData] = useState(emptyForm);
+    const [addImageFile, setAddImageFile] = useState<File | null>(null);
+    const [addPreview, setAddPreview] = useState<string | null>(null);
 
     const [formError, setFormError] = useState<string | null>(null);
+    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -176,11 +150,16 @@ export default function DashProjects() {
 
     const handleDeleteProject = async () => {
         setShowDeleteModal(false);
+        const project = projects.find((p) => p._id === projectIdToDelete);
         try {
             const res = await fetch(`/api/project/deleteproject/${projectIdToDelete}/${currentUser._id}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) console.log(data.message);
-            else setProjects((prev) => prev.filter((p) => p._id !== projectIdToDelete));
+            else {
+                setProjects((prev) => prev.filter((p) => p._id !== projectIdToDelete));
+                // Clean up image from Firebase Storage after successful deletion
+                if (project?.image) await deleteFirebaseImage(project.image);
+            }
         } catch (error: any) {
             console.log(error.message);
         }
@@ -199,55 +178,120 @@ export default function DashProjects() {
             category: project.category,
             featured: project.featured,
         });
+        setEditImageFile(null);
+        if (editPreview) { URL.revokeObjectURL(editPreview); setEditPreview(null); }
         setFormError(null);
         setShowEditModal(true);
+    };
+
+    const handleEditFileSelect = (file: File | null) => {
+        if (editPreview) URL.revokeObjectURL(editPreview);
+        setEditImageFile(file);
+        setEditPreview(file ? URL.createObjectURL(file) : null);
+    };
+
+    const handleAddFileSelect = (file: File | null) => {
+        if (addPreview) URL.revokeObjectURL(addPreview);
+        setAddImageFile(file);
+        setAddPreview(file ? URL.createObjectURL(file) : null);
     };
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
+        setIsSubmitting(true);
+
+        const originalImage = projects.find((p) => p._id === editProjectId)?.image || "";
+        let uploadedUrl: string | null = null;
+
+        if (editImageFile) {
+            try {
+                uploadedUrl = await uploadFirebaseImage(editImageFile, setUploadProgress);
+            } catch {
+                setFormError("Image upload failed");
+                setIsSubmitting(false);
+                setUploadProgress(null);
+                return;
+            }
+            setUploadProgress(null);
+        }
+
+        const payload = {
+            ...editFormData,
+            ...(uploadedUrl ? { image: uploadedUrl } : {}),
+            techStack: editFormData.techStack.split(",").map((s: string) => s.trim()).filter(Boolean),
+        };
+
         try {
             const res = await fetch(`/api/project/updateproject/${editProjectId}/${currentUser._id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...editFormData,
-                    techStack: editFormData.techStack.split(",").map((s: string) => s.trim()).filter(Boolean),
-                }),
+                body: JSON.stringify(payload),
             });
             const data = await res.json();
-            if (!res.ok) setFormError(data.message);
-            else {
+            if (!res.ok) {
+                if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
+                setFormError(data.message);
+            } else {
+                // Delete old image from storage if it was replaced
+                if (uploadedUrl && originalImage) await deleteFirebaseImage(originalImage);
                 setProjects((prev) => prev.map((p) => (p._id === editProjectId ? data : p)));
                 setShowEditModal(false);
             }
         } catch {
+            if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
             setFormError("Something went wrong.");
         }
+        setIsSubmitting(false);
     };
 
     const handleAddSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
+        setIsSubmitting(true);
+
+        let uploadedUrl: string | null = null;
+
+        if (addImageFile) {
+            try {
+                uploadedUrl = await uploadFirebaseImage(addImageFile, setUploadProgress);
+            } catch {
+                setFormError("Image upload failed");
+                setIsSubmitting(false);
+                setUploadProgress(null);
+                return;
+            }
+            setUploadProgress(null);
+        }
+
+        const payload = {
+            ...addFormData,
+            ...(uploadedUrl ? { image: uploadedUrl } : {}),
+            techStack: addFormData.techStack.split(",").map((s: string) => s.trim()).filter(Boolean),
+        };
+
         try {
             const res = await fetch("/api/project/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...addFormData,
-                    techStack: addFormData.techStack.split(",").map((s: string) => s.trim()).filter(Boolean),
-                }),
+                body: JSON.stringify(payload),
             });
             const data = await res.json();
-            if (!res.ok) setFormError(data.message);
-            else {
+            if (!res.ok) {
+                if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
+                setFormError(data.message);
+            } else {
                 setProjects((prev) => [data, ...prev]);
                 setAddFormData(emptyForm);
+                if (addPreview) { URL.revokeObjectURL(addPreview); setAddPreview(null); }
+                setAddImageFile(null);
                 setShowAddModal(false);
             }
         } catch {
+            if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
             setFormError("Something went wrong.");
         }
+        setIsSubmitting(false);
     };
 
     const thCls = "text-left text-neutral-500 font-medium px-4 py-3 text-xs uppercase tracking-wide";
@@ -258,7 +302,7 @@ export default function DashProjects() {
             {currentUser.isAdmin && (
                 <div className="mb-4">
                     <motion.button
-                        onClick={() => { setAddFormData(emptyForm); setFormError(null); setShowAddModal(true); }}
+                        onClick={() => { setAddFormData(emptyForm); setAddImageFile(null); if (addPreview) { URL.revokeObjectURL(addPreview); setAddPreview(null); } setFormError(null); setShowAddModal(true); }}
                         whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }}
                         whileTap={{ scale: 0.96 }}
                         transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
@@ -356,30 +400,44 @@ export default function DashProjects() {
             </Modal>
 
             {/* Edit project modal */}
-            <Modal show={showEditModal} onClose={() => setShowEditModal(false)} title="Edit Project">
+            <Modal show={showEditModal} onClose={() => { setShowEditModal(false); if (editPreview) { URL.revokeObjectURL(editPreview); setEditPreview(null); } }} title="Edit Project">
                 <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
-                    <ProjectFormFields formData={editFormData} setFormData={setEditFormData} formError={formError} />
+                    <ProjectFormFields
+                        formData={editFormData}
+                        setFormData={setEditFormData}
+                        formError={formError}
+                        onFileSelect={handleEditFileSelect}
+                        localPreview={editPreview}
+                        uploadProgress={isSubmitting ? uploadProgress : null}
+                    />
                     <div className="flex justify-end gap-3 mt-2">
-                        <motion.button type="button" onClick={() => setShowEditModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
+                        <motion.button type="button" onClick={() => { setShowEditModal(false); if (editPreview) { URL.revokeObjectURL(editPreview); setEditPreview(null); } }} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
                             Cancel
                         </motion.button>
-                        <motion.button type="submit" whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }} whileTap={{ scale: 0.96 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
-                            Save Changes
+                        <motion.button type="submit" disabled={isSubmitting} whileHover={!isSubmitting ? { scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" } : {}} whileTap={!isSubmitting ? { scale: 0.96 } : {}} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                            {isSubmitting ? "Saving…" : "Save Changes"}
                         </motion.button>
                     </div>
                 </form>
             </Modal>
 
             {/* Add project modal */}
-            <Modal show={showAddModal} onClose={() => setShowAddModal(false)} title="Add New Project">
+            <Modal show={showAddModal} onClose={() => { setShowAddModal(false); if (addPreview) { URL.revokeObjectURL(addPreview); setAddPreview(null); } }} title="Add New Project">
                 <form onSubmit={handleAddSubmit} className="flex flex-col gap-4">
-                    <ProjectFormFields formData={addFormData} setFormData={setAddFormData} formError={formError} />
+                    <ProjectFormFields
+                        formData={addFormData}
+                        setFormData={setAddFormData}
+                        formError={formError}
+                        onFileSelect={handleAddFileSelect}
+                        localPreview={addPreview}
+                        uploadProgress={isSubmitting ? uploadProgress : null}
+                    />
                     <div className="flex justify-end gap-3 mt-2">
-                        <motion.button type="button" onClick={() => setShowAddModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
+                        <motion.button type="button" onClick={() => { setShowAddModal(false); if (addPreview) { URL.revokeObjectURL(addPreview); setAddPreview(null); } }} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="border border-neutral-700 hover:border-neutral-600 text-neutral-300 text-sm px-4 py-2 rounded-lg transition-colors">
                             Cancel
                         </motion.button>
-                        <motion.button type="submit" whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }} whileTap={{ scale: 0.96 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
-                            Add Project
+                        <motion.button type="submit" disabled={isSubmitting} whileHover={!isSubmitting ? { scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" } : {}} whileTap={!isSubmitting ? { scale: 0.96 } : {}} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                            {isSubmitting ? "Saving…" : "Add Project"}
                         </motion.button>
                     </div>
                 </form>

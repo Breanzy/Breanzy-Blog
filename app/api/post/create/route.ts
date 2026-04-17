@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ message: "Please provide all required fields" }, { status: 400 });
     }
 
-    const slug = body.title
+    const baseSlug = body.title
         .split(" ")
         .join("-")
         .toLowerCase()
@@ -33,6 +33,14 @@ export async function POST(request: NextRequest) {
 
     try {
         await connectDB();
+
+        // Find a unique slug — append -2, -3, etc. if the base is already taken
+        let slug = baseSlug;
+        let suffix = 2;
+        while (await Post.exists({ slug })) {
+            slug = `${baseSlug}-${suffix++}`;
+        }
+
         const newPost = new Post({ ...body, slug, userId: authUser.id });
         const savedPost = await newPost.save();
 

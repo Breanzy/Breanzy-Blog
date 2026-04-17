@@ -5,20 +5,20 @@ import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { getDownloadURL, getStorage, uploadBytesResumable, ref } from "firebase/storage";
-import { app } from "@/firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import QuillEditor from "@/components/QuillEditor";
+import { uploadFirebaseImage, deleteFirebaseImage } from "@/lib/firebaseStorage";
 
 const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
 
 export default function UpdatePostPage() {
     const [file, setFile] = useState<File | null>(null);
-    const [imageUploadProgress, setImageUploadProgress] = useState<string | null>(null);
-    const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [publishError, setPublishError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { postId } = useParams<{ postId: string }>();
     const { currentUser } = useSelector((state: any) => state.user);
     const router = useRouter();
@@ -38,51 +38,66 @@ export default function UpdatePostPage() {
         fetchPost();
     }, [postId]);
 
-    const handleUploadImage = async () => {
-        if (!file) { setImageUploadError("Please select an image"); return; }
-        setImageUploadError(null);
-        try {
-            const storage = getStorage(app);
-            const storageRef = ref(storage, new Date().getTime() + "-" + file.name);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            uploadTask.on(
-                "state_changed",
-                (snapshot) => {
-                    setImageUploadProgress(((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0));
-                },
-                () => {
-                    setImageUploadError("Image upload failed");
-                    setImageUploadProgress(null);
-                },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                        setImageUploadProgress(null);
-                        setFormData((prev) => ({ ...prev, image: url }));
-                    });
-                }
-            );
-        } catch {
-            setImageUploadError("Image upload failed");
-            setImageUploadProgress(null);
-        }
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = e.target.files?.[0] ?? null;
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setFile(selected);
+        setPreviewUrl(selected ? URL.createObjectURL(selected) : null);
     };
+
+    useEffect(() => {
+        return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
+    }, [previewUrl]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setPublishError(null);
+        setIsSubmitting(true);
+
+        const originalImage: string = formData.image || "";
+        let uploadedUrl: string | null = null;
+
+        // Upload new image if a file was selected
+        if (file) {
+            try {
+                uploadedUrl = await uploadFirebaseImage(file, setUploadProgress);
+            } catch {
+                setPublishError("Image upload failed");
+                setIsSubmitting(false);
+                setUploadProgress(null);
+                return;
+            }
+            setUploadProgress(null);
+        }
+
+        const payload = { ...formData, ...(uploadedUrl ? { image: uploadedUrl } : {}) };
+
         try {
             const res = await fetch(`/api/post/updatepost/${formData._id}/${currentUser._id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(payload),
             });
             const data = await res.json();
-            if (!res.ok) { setPublishError(data.message); return; }
-            setPublishError(null);
+            if (!res.ok) {
+                // Update failed — clean up the image we just uploaded
+                if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
+                setPublishError(data.message);
+                setIsSubmitting(false);
+                return;
+            }
+            // Update succeeded with a new image — delete the old one from storage
+            if (uploadedUrl && originalImage) await deleteFirebaseImage(originalImage);
             router.push(`/blog/${data.slug}`);
         } catch {
+            if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
             setPublishError("Something went wrong");
+            setIsSubmitting(false);
         }
     };
+
+    // Show local preview if a new file is selected, otherwise show the existing saved image
+    const displayImage = previewUrl || formData.image || null;
 
     return (
         <div className="p-6 max-w-3xl mx-auto min-h-screen">
@@ -110,35 +125,15 @@ export default function UpdatePostPage() {
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                        onChange={handleFileChange}
                         className="text-sm text-neutral-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
                     />
-                    <motion.button
-                        type="button"
-                        onClick={handleUploadImage}
-                        disabled={!!imageUploadProgress}
-                        whileHover={!imageUploadProgress ? { scale: 1.03 } : {}}
-                        whileTap={!imageUploadProgress ? { scale: 0.96 } : {}}
-                        transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                        className="shrink-0 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm px-4 py-1.5 rounded-lg transition-colors flex items-center gap-2"
-                    >
-                        {imageUploadProgress ? (
-                            <span className="w-5 h-5 inline-block">
-                                <CircularProgressbar
-                                    value={Number(imageUploadProgress)}
-                                    text={`${imageUploadProgress}%`}
-                                    strokeWidth={8}
-                                    styles={{ path: { stroke: "#3b82f6" }, text: { fill: "#fff", fontSize: "2rem" } }}
-                                />
-                            </span>
-                        ) : "Upload Image"}
-                    </motion.button>
+                    {file && <span className="shrink-0 text-xs text-blue-400">New image ready</span>}
                 </div>
 
-                {imageUploadError && <p className="text-red-400 text-sm">{imageUploadError}</p>}
-                {formData.image && (
+                {displayImage && (
                     <div className="relative w-full h-64 overflow-hidden rounded-xl border border-neutral-800">
-                        <Image src={formData.image} alt="upload preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
+                        <Image src={displayImage} alt="preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
                     </div>
                 )}
 
@@ -152,12 +147,25 @@ export default function UpdatePostPage() {
 
                 <motion.button
                     type="submit"
-                    whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }}
-                    whileTap={{ scale: 0.96 }}
+                    disabled={isSubmitting}
+                    whileHover={!isSubmitting ? { scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" } : {}}
+                    whileTap={!isSubmitting ? { scale: 0.96 } : {}}
                     transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
-                    Update Post
+                    {uploadProgress !== null ? (
+                        <>
+                            <span className="w-5 h-5 inline-block">
+                                <CircularProgressbar
+                                    value={uploadProgress}
+                                    text={`${uploadProgress}%`}
+                                    strokeWidth={8}
+                                    styles={{ path: { stroke: "#fff" }, text: { fill: "#fff", fontSize: "2rem" } }}
+                                />
+                            </span>
+                            Uploading image…
+                        </>
+                    ) : isSubmitting ? "Saving…" : "Update Post"}
                 </motion.button>
 
                 {publishError && <p className="text-red-400 text-sm">{publishError}</p>}

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import Modal from "./Modal";
+import { deleteFirebaseImage } from "@/lib/firebaseStorage";
 
 export default function DashPosts() {
     const { currentUser } = useSelector((state: any) => state.user);
@@ -46,11 +47,16 @@ export default function DashPosts() {
 
     const handleDeletePost = async () => {
         setShowModal(false);
+        const post = userPosts.find((p) => p._id === postIdToDelete);
         try {
             const res = await fetch(`/api/post/deletepost/${postIdToDelete}/${currentUser._id}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) console.log(data.message);
-            else setUserPosts((prev) => prev.filter((post) => post._id !== postIdToDelete));
+            else {
+                setUserPosts((prev) => prev.filter((p) => p._id !== postIdToDelete));
+                // Clean up the image from Firebase Storage after successful deletion
+                if (post?.image) await deleteFirebaseImage(post.image);
+            }
         } catch (error: any) {
             console.log(error.message);
         }
