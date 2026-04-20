@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 /* Paths that require a valid JWT cookie to access */
 const PROTECTED_PREFIXES = ["/dashboard", "/create-post", "/update-post"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const isProtected = PROTECTED_PREFIXES.some((p) => req.nextUrl.pathname.startsWith(p));
     if (!isProtected) return NextResponse.next();
 

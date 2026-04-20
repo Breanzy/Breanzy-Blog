@@ -5,10 +5,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    webpack(config) {
-        config.resolve.alias["@"] = __dirname;
-        return config;
-    },
+    serverExternalPackages: ["mongoose"],
+    turbopack: { root: __dirname },
     images: {
         remotePatterns: [
             { protocol: "https", hostname: "firebasestorage.googleapis.com" },
@@ -17,9 +15,6 @@ const nextConfig = {
             { protocol: "https", hostname: "assets.vercel.com" },
             { protocol: "https", hostname: "www.hostinger.com" },
         ],
-    },
-    experimental: {
-        serverComponentsExternalPackages: ["mongoose"],
     },
 };
 
