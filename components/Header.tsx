@@ -57,9 +57,9 @@ export default function Header() {
 
             <div className="relative max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
                 {/* Logo */}
-                <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}>
-                    <Link href="/" className="text-white font-bold text-lg whitespace-nowrap shrink-0">
-                        Brean<span className="text-blue-500">zy</span>
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="shrink-0">
+                    <Link href="/" aria-label="Breanzy home" className="block">
+                        <Image src="/logo.png" alt="Breanzy" width={36} height={36} priority className="rounded-md" />
                     </Link>
                 </motion.div>
 
