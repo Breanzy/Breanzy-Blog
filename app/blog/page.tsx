@@ -8,10 +8,11 @@ import CallToAction from "@/components/CallToAction";
 import NewsletterSubscribe from "@/components/NewsletterSubscribe";
 import FadeIn from "@/components/FadeIn";
 import ParallaxHero from "@/components/ParallaxHero";
+import { BreadcrumbSchema } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
     title: "Blog",
-    description: "Thoughts, tutorials, and write-ups on web development, full-stack projects, and everything in between.",
+    description: "Personal notes on life as a software developer — lessons, reflections, and stories from the journey.",
 };
 
 const getPosts = unstable_cache(
@@ -29,9 +30,15 @@ export default async function BlogPage() {
 
     return (
         <div className="min-h-screen">
+            <BreadcrumbSchema
+                items={[
+                    { name: "Home", path: "/" },
+                    { name: "Blog", path: "/blog" },
+                ]}
+            />
             <ParallaxHero
                 title="Blog"
-                subtitle="Thoughts, tutorials, and write-ups on web development, full-stack projects, and everything in between."
+                subtitle="Notes on life as a software developer — the good days, the stuck days, and the lessons along the way."
             >
                 <Link href="/search" className="inline-block mt-4 text-sm text-blue-500 hover:text-blue-400 transition-colors">
                     Browse all posts →

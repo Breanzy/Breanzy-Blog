@@ -49,7 +49,7 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
                             Hi, I'm <span className="text-blue-500">Brean</span>
                         </motion.h1>
                         <motion.p variants={heroItem} className="text-neutral-400 text-base max-w-xl leading-relaxed mb-6">
-                            I build things for the web — from full-stack applications to personal tools. I write about what I learn and share it here.
+                            I build things for the web, and write about life as a software developer — the good days, the stuck days, and everything I pick up along the way.
                         </motion.p>
                         <motion.div variants={heroItem} className="flex gap-3 flex-wrap">
                             <motion.div

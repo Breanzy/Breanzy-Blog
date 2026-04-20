@@ -9,6 +9,7 @@ import CommentSection from "@/components/CommentSection";
 import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/PostCard";
 import FadeIn from "@/components/FadeIn";
+import { ArticleSchema, BreadcrumbSchema } from "@/components/JsonLd";
 
 const getPost = unstable_cache(
     async (slug: string) => {
@@ -37,8 +38,9 @@ export async function generateStaticParams() {
     return (posts as any[]).map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const post = await getPost(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const post = await getPost(slug);
     if (!post) return {};
     const description = post.content.replace(/<[^>]+>/g, "").slice(0, 160).trim();
     return {
@@ -55,12 +57,30 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-    const [post, recentPosts] = await Promise.all([getPost(params.slug), getRecentPosts()]);
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const [post, recentPosts] = await Promise.all([getPost(slug), getRecentPosts()]);
     if (!post) notFound();
+
+    const description = post.content.replace(/<[^>]+>/g, "").slice(0, 160).trim();
 
     return (
         <main className="bg-black min-h-screen">
+            <ArticleSchema
+                title={post.title}
+                description={description}
+                image={post.image}
+                slug={post.slug}
+                createdAt={post.createdAt}
+                updatedAt={post.updatedAt}
+            />
+            <BreadcrumbSchema
+                items={[
+                    { name: "Home", path: "/" },
+                    { name: "Blog", path: "/blog" },
+                    { name: post.title, path: `/blog/${post.slug}` },
+                ]}
+            />
             <div className="max-w-3xl mx-auto px-4 pt-12 pb-20">
                 <FadeIn>
                     <h1 className="text-3xl lg:text-4xl font-bold text-white text-center leading-tight mb-5">

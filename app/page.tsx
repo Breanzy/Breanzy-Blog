@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import Project from "@/models/project.model";
 import HomeClient from "./HomeClient";
+import { PersonSchema, WebSiteSchema } from "@/components/JsonLd";
 
 const getHomeData = unstable_cache(
     async () => {
@@ -22,5 +23,11 @@ const getHomeData = unstable_cache(
 
 export default async function HomePage() {
     const { posts, projects } = await getHomeData();
-    return <HomeClient posts={posts} projects={projects} />;
+    return (
+        <>
+            <PersonSchema />
+            <WebSiteSchema />
+            <HomeClient posts={posts} projects={projects} />
+        </>
+    );
 }

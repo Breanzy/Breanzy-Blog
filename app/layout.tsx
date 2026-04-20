@@ -12,7 +12,10 @@ export const metadata: Metadata = {
         template: "%s | Breanzy",
     },
     description:
-        "Full-stack developer based in the Philippines. I build web apps and write about what I learn.",
+        "Brean Julius Carbonilla — full-stack developer in the Philippines. Projects, and notes on life as a software developer.",
+    keywords: ["Brean Carbonilla", "Brean Julius Carbonilla", "Breanzy", "full-stack developer Philippines", "software developer blog"],
+    authors: [{ name: "Brean Julius Carbonilla" }],
+    creator: "Brean Julius Carbonilla",
     metadataBase: new URL(process.env.SITE_URL ?? "https://breanzy.com"),
     openGraph: {
         siteName: "Breanzy",

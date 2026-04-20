@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 import ParallaxHero from "@/components/ParallaxHero";
 import ProjectsClient from "./ProjectsClient";
+import { BreadcrumbSchema } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
     title: "Projects",
@@ -25,6 +26,12 @@ export default async function ProjectsPage() {
 
     return (
         <div className="min-h-screen">
+            <BreadcrumbSchema
+                items={[
+                    { name: "Home", path: "/" },
+                    { name: "Projects", path: "/projects" },
+                ]}
+            />
             <ParallaxHero
                 title="Projects"
                 subtitle="A collection of things I've built — from full-stack web apps to tools and experiments."

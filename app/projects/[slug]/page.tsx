@@ -7,6 +7,7 @@ import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 import ProjectPageHero from "@/components/ProjectPageHero";
 import FadeIn from "@/components/FadeIn";
+import { BreadcrumbSchema } from "@/components/JsonLd";
 
 const getProject = unstable_cache(
     async (slug: string) => {
@@ -49,8 +50,9 @@ export async function generateStaticParams() {
     return (projects as any[]).map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const project = await getProject(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const project = await getProject(slug);
     if (!project) return {};
     return {
         title: project.title,
@@ -66,16 +68,24 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function ProjectPage({ params }: { params: { slug: string } }) {
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
     const [project, { prev, next }] = await Promise.all([
-        getProject(params.slug),
-        getAdjacentProjects(params.slug),
+        getProject(slug),
+        getAdjacentProjects(slug),
     ]);
 
     if (!project) notFound();
 
     return (
         <main className="min-h-screen">
+            <BreadcrumbSchema
+                items={[
+                    { name: "Home", path: "/" },
+                    { name: "Projects", path: "/projects" },
+                    { name: project.title, path: `/projects/${project.slug}` },
+                ]}
+            />
             <ProjectPageHero
                 title={project.title}
                 image={project.image}
