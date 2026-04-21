@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import QuillEditor from "@/components/QuillEditor";
+import TiptapEditor from "@/components/TiptapEditor";
 import { uploadFirebaseImage, deleteFirebaseImage } from "@/lib/firebaseStorage";
 
 const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
@@ -137,10 +137,8 @@ export default function UpdatePostPage() {
                     </div>
                 )}
 
-                <QuillEditor
-                    theme="snow"
+                <TiptapEditor
                     placeholder="Write something..."
-                    className="h-72 mb-12"
                     value={formData.content || ""}
                     onChange={(value: string) => setFormData((prev) => ({ ...prev, content: value }))}
                 />

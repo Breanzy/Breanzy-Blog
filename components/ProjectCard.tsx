@@ -71,32 +71,28 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
                 <div className="flex gap-4 mt-2">
                     {project.liveUrl && (
-                        <motion.a
-                            href={project.liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                        <motion.span
+                            role="link"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.liveUrl, "_blank", "noopener,noreferrer"); }}
+                            className="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
                             whileHover={{ x: 3 }}
                             transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
                         >
                             <FaExternalLinkAlt className="text-xs" />
                             Live Demo
-                        </motion.a>
+                        </motion.span>
                     )}
                     {project.repoUrl && (
-                        <motion.a
-                            href={project.repoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
+                        <motion.span
+                            role="link"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.repoUrl, "_blank", "noopener,noreferrer"); }}
+                            className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors cursor-pointer"
                             whileHover={{ x: 3 }}
                             transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
                         >
                             <BsGithub />
                             Repo
-                        </motion.a>
+                        </motion.span>
                     )}
                 </div>
             </div>
