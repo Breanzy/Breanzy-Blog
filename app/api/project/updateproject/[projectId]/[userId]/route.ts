@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 
-export async function PUT(request: NextRequest, { params }: { params: { projectId: string; userId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ projectId: string; userId: string }> }) {
+    const { projectId, userId } = await params;
     const token = request.cookies.get("access_token")?.value;
     if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
@@ -14,7 +15,7 @@ export async function PUT(request: NextRequest, { params }: { params: { projectI
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!authUser.isAdmin || authUser.id !== params.userId) {
+    if (!authUser.isAdmin || authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to update this project" }, { status: 403 });
     }
 
@@ -23,7 +24,7 @@ export async function PUT(request: NextRequest, { params }: { params: { projectI
     try {
         await connectDB();
         const updatedProject = await Project.findByIdAndUpdate(
-            params.projectId,
+            projectId,
             {
                 $set: {
                     title: body.title,
@@ -39,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { projectI
             },
             { new: true }
         );
-        revalidateTag("projects");
+        updateTag("projects");
         return NextResponse.json(updatedProject, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

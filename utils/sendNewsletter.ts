@@ -1,11 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.SITE_URL || "https://breanzy.com";
 
 /* Send a new-post notification to all subscribers via Resend batch API */
 export const sendNewsletter = async (post: any, subscribers: any[]) => {
     if (!subscribers.length || !process.env.RESEND_API_KEY) return;
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const emails = subscribers.map((sub) => ({
         from: "Breanzy Newsletter <newsletter@breanzy.com>",

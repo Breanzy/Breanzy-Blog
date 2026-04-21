@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import Comment from "@/models/comment.model";
 
-export async function DELETE(request: NextRequest, { params }: { params: { commentId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ commentId: string }> }) {
+    const { commentId } = await params;
     const token = request.cookies.get("access_token")?.value;
     if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
@@ -15,12 +16,12 @@ export async function DELETE(request: NextRequest, { params }: { params: { comme
 
     try {
         await connectDB();
-        const comment = await Comment.findById(params.commentId);
+        const comment = await Comment.findById(commentId);
         if (!comment) return NextResponse.json({ message: "Comment not found" }, { status: 404 });
         if (comment.userId !== authUser.id && !authUser.isAdmin) {
             return NextResponse.json({ message: "You are not allowed to delete this comment" }, { status: 403 });
         }
-        await Comment.findByIdAndDelete(params.commentId);
+        await Comment.findByIdAndDelete(commentId);
         return NextResponse.json("Comment has been deleted", { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

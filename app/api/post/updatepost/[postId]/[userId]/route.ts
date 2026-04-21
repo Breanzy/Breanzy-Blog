@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 
-export async function PUT(request: NextRequest, { params }: { params: { postId: string; userId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ postId: string; userId: string }> }) {
+    const { postId, userId } = await params;
     const token = request.cookies.get("access_token")?.value;
     if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
@@ -14,7 +15,7 @@ export async function PUT(request: NextRequest, { params }: { params: { postId: 
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!authUser.isAdmin || authUser.id !== params.userId) {
+    if (!authUser.isAdmin || authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to update" }, { status: 403 });
     }
 
@@ -33,16 +34,16 @@ export async function PUT(request: NextRequest, { params }: { params: { postId: 
             .replace(/[^a-zA-Z0-9-]/g, "");
         let slug = baseSlug;
         let suffix = 2;
-        while (await Post.exists({ slug, _id: { $ne: params.postId } })) {
+        while (await Post.exists({ slug, _id: { $ne: postId } })) {
             slug = `${baseSlug}-${suffix++}`;
         }
 
         const updatedPost = await Post.findByIdAndUpdate(
-            params.postId,
+            postId,
             { $set: { title: body.title, content: body.content, category: body.category, image: body.image, slug } },
             { new: true }
         );
-        revalidateTag("posts");
+        updateTag("posts");
         return NextResponse.json(updatedPost, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

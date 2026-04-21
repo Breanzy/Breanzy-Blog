@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import Subscriber from "@/models/subscriber.model";
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         const newPost = new Post({ ...body, slug, userId: authUser.id });
         const savedPost = await newPost.save();
 
-        revalidateTag("posts"); // Bust ISR cache for all public post pages
+        updateTag("posts"); // Bust ISR cache for all public post pages
 
         const subscribers = await Subscriber.find({}, "email unsubscribeToken");
         sendNewsletter(savedPost, subscribers); // Fire-and-forget

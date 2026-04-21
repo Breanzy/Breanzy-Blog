@@ -6,7 +6,7 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import Modal from "./Modal";
-import QuillEditor from "./QuillEditor";
+import TiptapEditor from "./TiptapEditor";
 import { uploadFirebaseImage, deleteFirebaseImage } from "@/lib/firebaseStorage";
 
 const emptyForm = {
@@ -41,11 +41,9 @@ const ProjectFormFields = ({ formData, setFormData, formError, onFileSelect, loc
             onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
         <div className="flex flex-col gap-1">
             <label className="text-neutral-400 text-xs">Content (full write-up — shown on the project page)</label>
-            <QuillEditor
-                theme="snow"
+            <TiptapEditor
                 value={formData.content}
                 onChange={(value: string) => setFormData({ ...formData, content: value })}
-                className="bg-neutral-950 text-white rounded-lg"
             />
         </div>
 

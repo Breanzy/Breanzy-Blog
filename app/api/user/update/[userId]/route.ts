@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import User from "@/models/user.model";
 
-export async function PUT(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+    const { userId } = await params;
     const token = request.cookies.get("access_token")?.value;
     if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
@@ -14,7 +15,7 @@ export async function PUT(request: NextRequest, { params }: { params: { userId: 
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (authUser.id !== params.userId) {
+    if (authUser.id !== userId) {
         return NextResponse.json({ message: "You are not allowed to update this user." }, { status: 403 });
     }
 
@@ -45,7 +46,7 @@ export async function PUT(request: NextRequest, { params }: { params: { userId: 
     try {
         await connectDB();
         const updatedUser = await User.findByIdAndUpdate(
-            params.userId,
+            userId,
             { $set: { username: body.username, email: body.email, profilePicture: body.profilePicture, password: body.password } },
             { new: true }
         );

@@ -43,7 +43,7 @@ export default function TiptapEditor({ value, onChange, placeholder = "Write som
     useEffect(() => {
         if (!editor || value === undefined) return;
         if (editor.getHTML() !== value) {
-            editor.commands.setContent(value, false);
+            editor.commands.setContent(value, { emitUpdate: false });
         }
     }, [value, editor]);
 
