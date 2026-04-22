@@ -1,25 +1,60 @@
 import { Resend } from "resend";
 
 const SITE_URL = process.env.SITE_URL || "https://breanzy.com";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Newsletter <onboarding@resend.dev>";
 
-/* Send a new-post notification to all subscribers via Resend batch API */
+type NewsletterResult = {
+    attempted: number;
+    delivered: number;
+    failed: number;
+    errors: string[];
+};
+
+/* Send a new-post notification to all subscribers via Resend */
 export const sendNewsletter = async (post: any, subscribers: any[]) => {
-    if (!subscribers.length || !process.env.RESEND_API_KEY) return;
+    if (!subscribers.length) {
+        return { attempted: 0, delivered: 0, failed: 0, errors: [] } satisfies NewsletterResult;
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+        return {
+            attempted: subscribers.length,
+            delivered: 0,
+            failed: subscribers.length,
+            errors: ["Missing RESEND_API_KEY"],
+        } satisfies NewsletterResult;
+    }
+
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const emails = subscribers.map((sub) => ({
-        from: "Breanzy Newsletter <newsletter@breanzy.com>",
-        to: sub.email,
-        subject: `New post: ${post.title}`,
-        html: buildTemplate(post, sub.unsubscribeToken),
-    }));
+    const deliveries = await Promise.allSettled(
+        subscribers.map(async (sub) => {
+            const { error } = await resend.emails.send({
+                from: FROM_EMAIL,
+                to: sub.email,
+                subject: `New post: ${post.title}`,
+                html: buildTemplate(post, sub.unsubscribeToken),
+            });
 
-    try {
-        await resend.batch.send(emails);
-    } catch (err: any) {
-        // Non-fatal — log but don't crash the publish request
-        console.error("Newsletter send error:", err.message);
-    }
+            if (error) {
+                throw new Error(`${sub.email}: ${error.message}`);
+            }
+
+            return sub.email;
+        })
+    );
+
+    const errors = deliveries.flatMap((result) => {
+        if (result.status === "fulfilled") return [];
+        return [result.reason instanceof Error ? result.reason.message : String(result.reason)];
+    });
+
+    return {
+        attempted: subscribers.length,
+        delivered: deliveries.length - errors.length,
+        failed: errors.length,
+        errors,
+    } satisfies NewsletterResult;
 };
 
 function buildTemplate(post: any, token: string) {

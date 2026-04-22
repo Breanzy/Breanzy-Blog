@@ -43,13 +43,17 @@ export async function POST(request: NextRequest) {
 
         const newPost = new Post({ ...body, slug, userId: authUser.id });
         const savedPost = await newPost.save();
+        const postJson = savedPost.toObject();
 
         updateTag("posts"); // Bust ISR cache for all public post pages
 
         const subscribers = await Subscriber.find({}, "email unsubscribeToken");
-        sendNewsletter(savedPost, subscribers); // Fire-and-forget
+        const newsletter = await sendNewsletter(postJson, subscribers);
+        if (newsletter.failed > 0) {
+            console.error("Newsletter send error:", newsletter.errors.join(" | "));
+        }
 
-        return NextResponse.json(savedPost, { status: 201 });
+        return NextResponse.json({ ...postJson, newsletter }, { status: 201 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
