@@ -8,6 +8,7 @@ import {
     HiAnnotation,
     HiChartPie,
     HiCollection,
+    HiMail,
 } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -94,6 +95,7 @@ export default function DashSidebar() {
                         {navItem("/dashboard?tab=projects", "Projects", HiCollection, "projects")}
                         {navItem("/dashboard?tab=users", "Users", HiOutlineUserGroup, "users")}
                         {navItem("/dashboard?tab=comments", "Comments", HiAnnotation, "comments")}
+                        {navItem("/dashboard?tab=subscribers", "Subscribers", HiMail, "subscribers")}
                     </>
                 )}
 

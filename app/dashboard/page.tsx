@@ -11,6 +11,7 @@ import DashUsers from "@/components/DashUsers";
 import DashComments from "@/components/DashComments";
 import DashboardComponent from "@/components/DashboardComponent";
 import DashProjects from "@/components/DashProjects";
+import DashSubscribers from "@/components/DashSubscribers";
 
 function DashboardInner() {
     const searchParams = useSearchParams();
@@ -27,6 +28,7 @@ function DashboardInner() {
         projects: <DashProjects />,
         users: <DashUsers />,
         comments: <DashComments />,
+        subscribers: <DashSubscribers />,
         dash: <DashboardComponent />,
     };
 
