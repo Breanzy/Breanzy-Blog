@@ -32,4 +32,5 @@ next-env.d.ts
 
 # Claude Code context files
 CLAUDE.md
+AGENTS.md
 .claude/
