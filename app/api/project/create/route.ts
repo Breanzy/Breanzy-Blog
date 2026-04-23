@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         await connectDB();
         const newProject = new Project({ ...body, slug, userId: authUser.id });
         const savedProject = await newProject.save();
-        updateTag("projects");
+        revalidateTag("projects", { expire: 0 });
         return NextResponse.json(savedProject, { status: 201 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

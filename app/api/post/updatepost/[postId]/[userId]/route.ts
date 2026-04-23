@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             { $set: { title: body.title, content: body.content, category: body.category, image: body.image, slug } },
             { new: true }
         );
-        updateTag("posts");
+        revalidateTag("posts", { expire: 0 });
         return NextResponse.json(updatedPost, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

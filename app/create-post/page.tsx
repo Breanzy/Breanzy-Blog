@@ -15,7 +15,11 @@ export default function CreatePostPage() {
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-    const [formData, setFormData] = useState<Record<string, any>>({});
+    const [formData, setFormData] = useState<Record<string, any>>({
+        title: "",
+        category: "uncategorized",
+        content: "",
+    });
     const [publishError, setPublishError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -86,10 +90,15 @@ export default function CreatePostPage() {
                         type="text"
                         placeholder="Title"
                         required
+                        value={formData.title}
                         className={`${inputCls} flex-1`}
                         onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                     />
-                    <select className={inputCls} onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}>
+                    <select
+                        className={inputCls}
+                        value={formData.category}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                    >
                         <option value="uncategorized">Select a category</option>
                         <option value="javascript">Javascript</option>
                         <option value="reactjs">React.js</option>

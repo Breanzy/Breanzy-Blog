@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 
@@ -22,7 +22,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     try {
         await connectDB();
         await Post.findByIdAndDelete(postId);
-        updateTag("posts");
+        revalidateTag("posts", { expire: 0 });
         return NextResponse.json("The post has been deleted", { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
