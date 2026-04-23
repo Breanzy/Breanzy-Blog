@@ -28,10 +28,20 @@ export async function POST(request: NextRequest) {
 
         const newsletter = await sendNewsletter(
             {
-                title: "Test newsletter from Breanzy",
+                title: "Test newsletter from Breanzy Blog",
                 slug: "newsletter-test",
                 category: "test",
                 image: "",
+                content: `
+                    <p>This is a preview of the newsletter layout for Breanzy Blog.</p>
+                    <p>It now sends the article content directly in the email instead of only linking people back to the site.</p>
+                    <h2>What changed</h2>
+                    <ul>
+                      <li>Your logo and brand name appear in the header.</li>
+                      <li>The email shows an estimated read time.</li>
+                      <li>The article body is included inline.</li>
+                    </ul>
+                `,
             },
             [{ email, unsubscribeToken: "test-newsletter-preview" }]
         );
