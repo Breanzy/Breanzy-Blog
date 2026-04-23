@@ -104,16 +104,20 @@ export default function UpdatePostPage() {
             <h1 className="text-white text-3xl font-semibold text-center mb-8">Update Post</h1>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1.5fr)_minmax(14rem,1fr)] gap-4">
                     <input
                         type="text"
                         placeholder="Title"
                         required
                         value={formData.title || ""}
-                        className={`${inputCls} flex-1`}
+                        className={`${inputCls} min-w-0`}
                         onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                     />
-                    <select className={inputCls} value={formData.category || "uncategorized"} onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}>
+                    <select
+                        className={`${inputCls} min-w-0`}
+                        value={formData.category || "uncategorized"}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                    >
                         <option value="uncategorized">Select a category</option>
                         <option value="javascript">Javascript</option>
                         <option value="reactjs">React.js</option>
