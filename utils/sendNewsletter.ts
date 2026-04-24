@@ -61,7 +61,6 @@ export const sendNewsletter = async (post: any, subscribers: any[]) => {
 function buildTemplate(post: any, token: string) {
     const postUrl = `${SITE_URL}/blog/${post.slug}`;
     const unsubUrl = `${SITE_URL}/api/subscriber/unsubscribe?token=${encodeURIComponent(token)}`;
-    const logoUrl = `${SITE_URL}/logo.png`;
     const readTimeMinutes = getReadTimeMinutes(post.content || "");
     const imageHtml = post.image
         ? `<img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" style="display:block;width:100%;max-height:320px;object-fit:cover;border-radius:14px;margin:24px 0 28px;">`
@@ -88,9 +87,6 @@ function buildTemplate(post: any, token: string) {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       margin-bottom: 28px;
       text-decoration: none;
     }
@@ -181,12 +177,12 @@ function buildTemplate(post: any, token: string) {
       overflow-x: auto;
     }
     .footer {
-      margin-top: 28px;
-      padding-top: 22px;
+      margin-top: 18px;
+      padding-top: 14px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       color: #71717a;
       font-size: 12px;
-      line-height: 1.6;
+      line-height: 1.45;
     }
     .footer a {
       color: #60a5fa;
@@ -197,7 +193,6 @@ function buildTemplate(post: any, token: string) {
 <body>
   <div class="container">
     <a href="${postUrl}" class="brand">
-      <img src="${logoUrl}" alt="${BRAND_NAME} logo" width="40" height="40" style="display:block;border-radius:10px;">
       <span class="brand-title">${BRAND_NAME}</span>
     </a>
     <div class="card">
@@ -208,9 +203,7 @@ function buildTemplate(post: any, token: string) {
       ${contentHtml}
     </div>
     <div class="footer">
-      You're receiving this because you subscribed to ${BRAND_NAME} updates.<br>
-      <a href="${postUrl}">Open this post on the site</a> |
-      <a href="${unsubUrl}">Unsubscribe</a>
+      You're receiving this because you subscribed to ${BRAND_NAME} updates. <a href="${postUrl}">Open on site</a> | <a href="${unsubUrl}">Unsubscribe</a>
     </div>
   </div>
 </body>
