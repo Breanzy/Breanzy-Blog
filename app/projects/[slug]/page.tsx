@@ -94,6 +94,28 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                 repoUrl={project.repoUrl}
             />
 
+            <section className="max-w-4xl mx-auto px-4 pt-12">
+                <FadeIn>
+                    <div className="grid gap-4 md:grid-cols-[1.3fr_0.7fr] border-b border-white/[0.06] pb-10">
+                        <div>
+                            <p className="text-blue-500 text-sm font-medium mb-3">Case Study</p>
+                            <h2 className="text-white text-2xl font-semibold mb-4">What this project is about</h2>
+                            <p className="text-neutral-400 leading-relaxed">{project.description}</p>
+                        </div>
+                        <div className="flex flex-col gap-3 text-sm">
+                            <div className="border border-neutral-800 rounded-xl p-4">
+                                <p className="text-neutral-500 mb-1">Category</p>
+                                <p className="text-white capitalize">{project.category}</p>
+                            </div>
+                            <div className="border border-neutral-800 rounded-xl p-4">
+                                <p className="text-neutral-500 mb-1">Focus</p>
+                                <p className="text-white">Build decisions, implementation notes, and lessons learned.</p>
+                            </div>
+                        </div>
+                    </div>
+                </FadeIn>
+            </section>
+
             {/* Rich content */}
             {project.content && (
                 <div className="max-w-3xl mx-auto px-4 pt-12 pb-20">

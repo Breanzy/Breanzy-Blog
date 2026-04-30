@@ -44,6 +44,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 </motion.div>
             )}
             <div className="p-4 flex flex-col gap-2">
+                <span className="text-blue-400 text-xs uppercase tracking-[0.14em]">Case study</span>
                 <p className="text-white text-lg font-semibold line-clamp-2">{project.title}</p>
                 <p className="text-neutral-400 text-sm line-clamp-2">{project.description}</p>
 
@@ -82,6 +83,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                             Live Demo
                         </motion.span>
                     )}
+                    <span className="text-sm text-blue-400">
+                        View case study
+                    </span>
                     {project.repoUrl && (
                         <motion.span
                             role="link"
