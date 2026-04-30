@@ -10,6 +10,7 @@ import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/PostCard";
 import FadeIn from "@/components/FadeIn";
 import { ArticleSchema, BreadcrumbSchema } from "@/components/JsonLd";
+import { getReadingTimeMinutes } from "@/utils/readingTime";
 
 const getPost = unstable_cache(
     async (slug: string) => {
@@ -24,7 +25,7 @@ const getPost = unstable_cache(
 const getRecentPosts = unstable_cache(
     async () => {
         await connectDB();
-        const posts = await Post.find().sort({ updatedAt: -1 }).limit(3).select("-content").lean();
+        const posts = await Post.find().sort({ updatedAt: -1 }).limit(3).select("title slug image category content createdAt").lean();
         return JSON.parse(JSON.stringify(posts));
     },
     ["recent-posts"],
@@ -111,7 +112,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 {/* Meta */}
                 <FadeIn delay={0.15} className="flex justify-between items-center text-neutral-500 text-xs mb-8 pb-4 border-b border-neutral-800">
                     <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                    <span className="italic">{(post.content.length / 1000).toFixed(0)} mins read</span>
+                    <span className="italic">{getReadingTimeMinutes(post.content)} min read</span>
                 </FadeIn>
 
                 {/* Post body — HTML from rich text editor */}

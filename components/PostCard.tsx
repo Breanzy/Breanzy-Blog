@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { formatPostDate, getReadingTimeMinutes } from "@/utils/readingTime";
 
 interface PostCardProps {
     post: {
@@ -11,10 +12,15 @@ interface PostCardProps {
         image: string;
         title: string;
         category: string;
+        content?: string;
+        createdAt?: string | Date;
     };
 }
 
 export default function PostCard({ post }: PostCardProps) {
+    const readTime = getReadingTimeMinutes(post.content || "");
+    const publishedAt = post.createdAt ? formatPostDate(post.createdAt) : null;
+
     return (
         <motion.div
             className="glass-card relative w-full sm:w-[430px] h-[400px] rounded-xl"
@@ -39,7 +45,11 @@ export default function PostCard({ post }: PostCardProps) {
                 </motion.div>
                 <div className="p-3 flex flex-col gap-2">
                     <p className="text-white text-lg font-semibold line-clamp-2">{post.title}</p>
-                    <span className="text-neutral-500 italic text-sm">{post.category}</span>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-neutral-500 text-sm">
+                        <span className="italic capitalize">{post.category}</span>
+                        {publishedAt && <span>{publishedAt}</span>}
+                        <span>{readTime} min read</span>
+                    </div>
                 </div>
                 <motion.div
                     className="absolute left-0 right-0 bottom-0 border border-blue-600 text-blue-400 text-center py-2 rounded-b-xl"
