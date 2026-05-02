@@ -29,6 +29,7 @@ dist-ssr
 # Next.js
 .next/
 next-env.d.ts
+*.tsbuildinfo
 
 # Claude Code context files
 CLAUDE.md
