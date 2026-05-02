@@ -5,10 +5,16 @@ import Subscriber from "@/models/subscriber.model";
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
+    if (!token) {
+        return NextResponse.json({ message: "Unsubscribe token is required" }, { status: 400 });
+    }
 
     try {
         await connectDB();
-        await Subscriber.findOneAndDelete({ unsubscribeToken: token });
+        const deletedSubscriber = await Subscriber.findOneAndDelete({ unsubscribeToken: token });
+        if (!deletedSubscriber) {
+            return NextResponse.json({ message: "Invalid unsubscribe token" }, { status: 404 });
+        }
         return new NextResponse(
             `<!DOCTYPE html>
 <html>

@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
+import Comment from "@/models/comment.model";
+import { auditEvent } from "@/lib/audit";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ postId: string; userId: string }> }) {
     const { postId, userId } = await params;
@@ -21,10 +23,16 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     try {
         await connectDB();
-        await Post.findByIdAndDelete(postId);
+        const deletedPost = await Post.findByIdAndDelete(postId);
+        if (!deletedPost) {
+            return NextResponse.json({ message: "Post not found" }, { status: 404 });
+        }
+        await Comment.deleteMany({ postId });
         revalidateTag("posts", { expire: 0 });
+        auditEvent("post.delete", { actorId: authUser.id, targetId: postId, status: "success" });
         return NextResponse.json("The post has been deleted", { status: 200 });
     } catch (error: any) {
+        auditEvent("post.delete", { actorId: authUser.id, targetId: postId, status: "failure", detail: error.message });
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }

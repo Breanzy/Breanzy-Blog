@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import Subscriber from "@/models/subscriber.model";
+import { auditEvent } from "@/lib/audit";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ subscriberId: string }> }) {
     const { subscriberId } = await params;
@@ -26,8 +27,10 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             return NextResponse.json({ message: "Subscriber not found." }, { status: 404 });
         }
 
+        auditEvent("subscriber.delete", { actorId: authUser.id, targetId: subscriberId, status: "success" });
         return NextResponse.json({ message: "Subscriber has been removed." }, { status: 200 });
     } catch (error: any) {
+        auditEvent("subscriber.delete", { actorId: authUser.id, targetId: subscriberId, status: "failure", detail: error.message });
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
