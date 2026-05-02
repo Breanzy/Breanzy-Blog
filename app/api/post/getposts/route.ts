@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { getPagination } from "@/lib/validation";
 import Post from "@/models/post.model";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
-    const startIndex = parseInt(searchParams.get("startIndex") || "0");
-    const limit = parseInt(searchParams.get("limit") || "9");
+    const { startIndex, limit } = getPagination(searchParams);
     const sortDirection = searchParams.get("sort") === "asc" ? 1 : -1;
     const userId = searchParams.get("userId");
     const category = searchParams.get("category");
     const slug = searchParams.get("slug");
     const postId = searchParams.get("postId");
-    const searchTerm = searchParams.get("searchTerm");
+    const searchTerm = searchParams.get("searchTerm")?.slice(0, 120);
 
     try {
         await connectDB();
