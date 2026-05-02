@@ -16,19 +16,20 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     try {
         await connectDB();
-        const comment = await Comment.findById(commentId);
-        if (!comment) return NextResponse.json({ message: "Comment not found" }, { status: 404 });
+        const likedComment = await Comment.findOneAndUpdate(
+            { _id: commentId, likes: { $ne: authUser.id } },
+            { $addToSet: { likes: authUser.id }, $inc: { numberOfLikes: 1 } },
+            { new: true }
+        );
+        if (likedComment) return NextResponse.json(likedComment, { status: 200 });
 
-        const userIndex = comment.likes.indexOf(authUser.id);
-        if (userIndex === -1) {
-            comment.numberOfLikes += 1;
-            comment.likes.push(authUser.id);
-        } else {
-            comment.numberOfLikes -= 1;
-            comment.likes.splice(userIndex, 1);
-        }
-        await comment.save();
-        return NextResponse.json(comment, { status: 200 });
+        const unlikedComment = await Comment.findOneAndUpdate(
+            { _id: commentId, likes: authUser.id },
+            { $pull: { likes: authUser.id }, $inc: { numberOfLikes: -1 } },
+            { new: true }
+        );
+        if (!unlikedComment) return NextResponse.json({ message: "Comment not found" }, { status: 404 });
+        return NextResponse.json(unlikedComment, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }

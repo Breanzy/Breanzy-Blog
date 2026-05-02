@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import Comment from "@/models/comment.model";
+import { readJsonObject, requiredString } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
     const token = request.cookies.get("access_token")?.value;
@@ -13,12 +14,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { content, postId, userId } = await request.json();
-    if (userId !== authUser.id) {
-        return NextResponse.json({ message: "You are not allowed to create this comment" }, { status: 403 });
-    }
-
     try {
+        const body = await readJsonObject(request);
+        const content = requiredString(body, "content", 5000);
+        const postId = requiredString(body, "postId", 80);
+        const userId = requiredString(body, "userId", 80);
+        if (userId !== authUser.id) {
+            return NextResponse.json({ message: "You are not allowed to create this comment" }, { status: 403 });
+        }
+
         await connectDB();
         const newComment = new Comment({ content, postId, userId });
         await newComment.save();
