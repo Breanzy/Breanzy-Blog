@@ -11,6 +11,8 @@ const postSchema = new mongoose.Schema(
         },
         category: { type: String, default: "uncategorized" },
         slug: { type: String, required: true, unique: true },
+        idempotencyKey: { type: String, unique: true, sparse: true },
+        newsletterSentAt: { type: Date },
     },
     { timestamps: true }
 );

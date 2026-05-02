@@ -1,8 +1,11 @@
 import { Resend } from "resend";
+import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
 
 const SITE_URL = process.env.SITE_URL || "https://breanzy.com";
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <onboarding@resend.dev>";
 const BRAND_NAME = "Breanzy Blog";
+const SEND_TIMEOUT_MS = 10000;
+const BATCH_SIZE = 10;
 
 type NewsletterResult = {
     attempted: number;
@@ -28,22 +31,12 @@ export const sendNewsletter = async (post: any, subscribers: any[]) => {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const deliveries = await Promise.allSettled(
-        subscribers.map(async (sub) => {
-            const { error } = await resend.emails.send({
-                from: FROM_EMAIL,
-                to: sub.email,
-                subject: `${BRAND_NAME}: ${post.title}`,
-                html: buildTemplate(post, sub.unsubscribeToken),
-            });
-
-            if (error) {
-                throw new Error(`${sub.email}: ${error.message}`);
-            }
-
-            return sub.email;
-        })
-    );
+    const deliveries: PromiseSettledResult<string>[] = [];
+    for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
+        const batch = subscribers.slice(i, i + BATCH_SIZE);
+        const results = await Promise.allSettled(batch.map((sub) => sendSingleNewsletter(resend, post, sub)));
+        deliveries.push(...results);
+    }
 
     const errors = deliveries.flatMap((result) => {
         if (result.status === "fulfilled") return [];
@@ -58,6 +51,31 @@ export const sendNewsletter = async (post: any, subscribers: any[]) => {
     } satisfies NewsletterResult;
 };
 
+/* Sends one newsletter with a hard timeout so one provider call cannot hang creation forever. */
+async function sendSingleNewsletter(resend: Resend, post: any, sub: any) {
+    const sendPromise = resend.emails.send({
+        from: FROM_EMAIL,
+        to: sub.email,
+        subject: `${BRAND_NAME}: ${post.title}`,
+        html: buildTemplate(post, sub.unsubscribeToken),
+    });
+    const { error } = await withTimeout(sendPromise, SEND_TIMEOUT_MS, `Timed out sending to ${sub.email}`);
+    if (error) {
+        throw new Error(`${sub.email}: ${error.message}`);
+    }
+    return sub.email;
+}
+
+/* Rejects a promise after timeoutMs to prevent degraded dependencies from hanging callers. */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string) {
+    return Promise.race([
+        promise,
+        new Promise<T>((_, reject) => {
+            setTimeout(() => reject(new Error(message)), timeoutMs);
+        }),
+    ]);
+}
+
 function buildTemplate(post: any, token: string) {
     const postUrl = `${SITE_URL}/blog/${post.slug}`;
     const unsubUrl = `${SITE_URL}/api/subscriber/unsubscribe?token=${encodeURIComponent(token)}`;
@@ -65,8 +83,9 @@ function buildTemplate(post: any, token: string) {
     const imageHtml = post.image
         ? `<img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" style="display:block;width:100%;max-height:320px;object-fit:cover;border-radius:14px;margin:24px 0 28px;">`
         : "";
-    const contentHtml = post.content
-        ? `<div class="post-content">${post.content}</div>`
+    const safeContent = sanitizeRichHtml(post.content || "");
+    const contentHtml = safeContent
+        ? `<div class="post-content">${safeContent}</div>`
         : `<p style="color:#d4d4d8;font-size:15px;line-height:1.8;margin:0;">No article content was included in this newsletter.</p>`;
 
     return `<!DOCTYPE html>

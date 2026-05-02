@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -22,6 +22,7 @@ export default function CreatePostPage() {
     });
     const [publishError, setPublishError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const idempotencyKeyRef = useRef(globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`);
     const router = useRouter();
 
     // Revoke the blob URL when a new file is selected or component unmounts
@@ -61,7 +62,7 @@ export default function CreatePostPage() {
         try {
             const res = await fetch("/api/post/create", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKeyRef.current },
                 body: JSON.stringify(payload),
             });
             const data = await res.json();
