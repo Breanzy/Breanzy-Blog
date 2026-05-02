@@ -20,14 +20,9 @@ export default function Footer() {
                     <div className="flex gap-12 flex-wrap text-sm">
                         <div className="flex flex-col gap-2">
                             <span className="text-neutral-400 font-medium mb-1">Site</span>
-                            <Link href="/about" className="text-neutral-500 hover:text-white transition-colors">About</Link>
                             <Link href="/blog" className="text-neutral-500 hover:text-white transition-colors">Blog</Link>
                             <Link href="/projects" className="text-neutral-500 hover:text-white transition-colors">Projects</Link>
                             <Link href="/resume" className="text-neutral-500 hover:text-white transition-colors">Resume</Link>
-                            <Link href="/now" className="text-neutral-500 hover:text-white transition-colors">Now</Link>
-                            <Link href="/uses" className="text-neutral-500 hover:text-white transition-colors">Uses</Link>
-                            <Link href="/guestbook" className="text-neutral-500 hover:text-white transition-colors">Guestbook</Link>
-                            <Link href="/contact" className="text-neutral-500 hover:text-white transition-colors">Contact</Link>
                         </div>
                         <div className="flex flex-col gap-2">
                             <span className="text-neutral-400 font-medium mb-1">Legal</span>
