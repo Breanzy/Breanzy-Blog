@@ -125,20 +125,12 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
                 </section>
             )}
 
-            {/* About / now */}
+            {/* Current focus */}
             <section className="py-16 bg-white/[0.025] border-b border-white/[0.04]">
-                <div className="max-w-6xl mx-auto px-4 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-                    <FadeIn>
-                        <p className="text-blue-500 text-sm font-medium mb-3">About</p>
-                        <h2 className="text-white text-3xl font-semibold mb-4">I build, write, and keep the work visible.</h2>
-                        <div className="flex flex-col gap-4 text-neutral-400 leading-relaxed">
-                            <p>
-                                I'm Brean Julius Carbonilla, a full-stack developer based in the Philippines. I like building web applications that feel useful, maintainable, and honest about how they work.
-                            </p>
-                            <p>
-                                This site is where the threads meet: the things I ship, the notes I write, the stack I use, and the occasional lesson that was expensive enough to remember.
-                            </p>
-                        </div>
+                <div className="max-w-6xl mx-auto px-4">
+                    <FadeIn className="mb-8 max-w-2xl">
+                        <p className="text-blue-500 text-sm font-medium mb-3">Now</p>
+                        <h2 className="text-white text-3xl font-semibold">What has my attention lately</h2>
                     </FadeIn>
                     <div className="grid gap-4 sm:grid-cols-3">
                         {current.map((item, index) => (
