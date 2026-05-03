@@ -6,7 +6,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const { postId } = await params;
     try {
         await connectDB();
-        const comments = await Comment.find({ postId: postId }).sort({ createdAt: -1 });
+        const comments = await Comment.find({ postId: postId }).sort({ createdAt: -1 }).limit(100);
         return NextResponse.json(comments, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
