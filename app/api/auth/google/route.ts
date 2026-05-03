@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import { verifyFirebaseIdToken } from "@/lib/auth";
 import { auditEvent } from "@/lib/audit";
+import { checkRateLimit, clientRateKey } from "@/lib/rateLimit";
 import { readJsonObject } from "@/lib/validation";
 import User from "@/models/user.model";
 
@@ -16,6 +17,10 @@ const COOKIE_OPTS = {
 
 export async function POST(request: NextRequest) {
     try {
+        if (!checkRateLimit(clientRateKey(request, "google-auth"), 20, 15 * 60 * 1000)) {
+            return NextResponse.json({ message: "Too many Google sign-in attempts. Please try again later." }, { status: 429 });
+        }
+
         const body = await readJsonObject(request);
         if (typeof body.idToken !== "string" || !body.idToken) {
             return NextResponse.json({ message: "Google token is required" }, { status: 400 });
@@ -25,7 +30,7 @@ export async function POST(request: NextRequest) {
         await connectDB();
         const user = await User.findOne({ email });
         if (user) {
-            const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET!);
+            const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET!, { expiresIn: "30d" });
             const { password: _pass, ...rest } = user._doc;
             const res = NextResponse.json(rest, { status: 200 });
             res.cookies.set("access_token", token, COOKIE_OPTS);
@@ -43,7 +48,7 @@ export async function POST(request: NextRequest) {
                 profilePicture: picture,
             });
             await newUser.save();
-            const token = jwt.sign({ id: newUser._id, isAdmin: newUser.isAdmin }, process.env.JWT_SECRET!);
+            const token = jwt.sign({ id: newUser._id, isAdmin: newUser.isAdmin }, process.env.JWT_SECRET!, { expiresIn: "30d" });
             const { password: _pass, ...rest } = newUser._doc;
             const res = NextResponse.json(rest, { status: 200 });
             res.cookies.set("access_token", token, COOKIE_OPTS);

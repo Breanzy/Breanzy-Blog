@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectDB } from "@/lib/db";
+import { checkRateLimit, clientRateKey } from "@/lib/rateLimit";
 import Subscriber from "@/models/subscriber.model";
 
 export async function POST(request: NextRequest) {
+    if (!checkRateLimit(clientRateKey(request, "subscribe"), 8, 60 * 60 * 1000)) {
+        return NextResponse.json({ success: false, message: "Too many subscription attempts. Please try again later." }, { status: 429 });
+    }
+
     const { email } = await request.json();
     if (!email) {
         return NextResponse.json({ success: false, message: "Email is required." }, { status: 400 });
