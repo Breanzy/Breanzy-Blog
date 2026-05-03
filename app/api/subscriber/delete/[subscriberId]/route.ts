@@ -1,23 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import Subscriber from "@/models/subscriber.model";
 import { auditEvent } from "@/lib/audit";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ subscriberId: string }> }) {
     const { subscriberId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
-    } catch {
+        authUser = await requireAdmin(request);
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return NextResponse.json({ message: "You do not have permission to delete this subscriber." }, { status: 403 });
+        }
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    if (!authUser.isAdmin) {
-        return NextResponse.json({ message: "You do not have permission to delete this subscriber." }, { status: 403 });
     }
 
     try {

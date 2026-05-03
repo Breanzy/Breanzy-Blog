@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import { auditEvent } from "@/lib/audit";
+import { requireAdmin } from "@/lib/auth";
 import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
 import { ensureSlug, slugifyTitle } from "@/lib/slug";
 import { optionalString, readJsonObject, requiredString } from "@/lib/validation";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ postId: string; userId: string }> }) {
     const { postId, userId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
-    } catch {
+        authUser = await requireAdmin(request);
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return NextResponse.json({ message: "You do not have permission to update" }, { status: 403 });
+        }
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!authUser.isAdmin || authUser.id !== userId) {
+    if (authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to update" }, { status: 403 });
     }
 
@@ -42,8 +43,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             slug = `${baseSlug}-${suffix++}`;
         }
 
-        const updatedPost = await Post.findByIdAndUpdate(
-            postId,
+        const updatedPost = await Post.findOneAndUpdate(
+            { _id: postId, userId: authUser.id },
             {
                 $set: {
                     title,
@@ -55,6 +56,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             },
             { new: true }
         );
+        if (!updatedPost) {
+            return NextResponse.json({ message: "Post not found" }, { status: 404 });
+        }
         revalidateTag("posts", { expire: 0 });
         auditEvent("post.update", { actorId: authUser.id, targetId: postId, status: "success" });
         return NextResponse.json(updatedPost, { status: 200 });

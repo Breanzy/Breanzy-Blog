@@ -1,29 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import Comment from "@/models/comment.model";
 import { auditEvent } from "@/lib/audit";
+import { requireAdmin } from "@/lib/auth";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ postId: string; userId: string }> }) {
     const { postId, userId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
-    } catch {
+        authUser = await requireAdmin(request);
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return NextResponse.json({ message: "You do not have permission to delete" }, { status: 403 });
+        }
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!authUser.isAdmin || authUser.id !== userId) {
+    if (authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to delete" }, { status: 403 });
     }
 
     try {
         await connectDB();
-        const deletedPost = await Post.findByIdAndDelete(postId);
+        const deletedPost = await Post.findOneAndDelete({ _id: postId, userId: authUser.id });
         if (!deletedPost) {
             return NextResponse.json({ message: "Post not found" }, { status: 404 });
         }

@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
+import { getPagination } from "@/lib/validation";
 import Comment from "@/models/comment.model";
 
 export async function GET(request: NextRequest) {
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
-    } catch {
+        await requireAdmin(request);
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return NextResponse.json({ message: "You are not allowed to get all comments" }, { status: 403 });
+        }
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!authUser.isAdmin) {
-        return NextResponse.json({ message: "You are not allowed to get all comments" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
-    const startIndex = parseInt(searchParams.get("startIndex") || "0");
-    const limit = parseInt(searchParams.get("limit") || "9");
+    const { startIndex, limit } = getPagination(searchParams);
     const sortDirection = searchParams.get("sort") === "asc" ? 1 : -1;
 
     try {

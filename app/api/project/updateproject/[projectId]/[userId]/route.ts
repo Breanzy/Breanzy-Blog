@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 import { auditEvent } from "@/lib/audit";
+import { requireAdmin } from "@/lib/auth";
 import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
 import { ensureSlug, slugifyTitle } from "@/lib/slug";
 import { optionalString, readJsonObject, requiredString } from "@/lib/validation";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ projectId: string; userId: string }> }) {
     const { projectId, userId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
-    } catch {
+        authUser = await requireAdmin(request);
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return NextResponse.json({ message: "You do not have permission to update this project" }, { status: 403 });
+        }
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!authUser.isAdmin || authUser.id !== userId) {
+    if (authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to update this project" }, { status: 403 });
     }
 
@@ -35,8 +36,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         while (await Project.exists({ slug, _id: { $ne: projectId } })) {
             slug = `${baseSlug}-${suffix++}`;
         }
-        const updatedProject = await Project.findByIdAndUpdate(
-            projectId,
+        const updatedProject = await Project.findOneAndUpdate(
+            { _id: projectId, userId: authUser.id },
             {
                 $set: {
                     title,
@@ -53,6 +54,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             },
             { new: true }
         );
+        if (!updatedProject) {
+            return NextResponse.json({ message: "Project not found" }, { status: 404 });
+        }
         revalidateTag("projects", { expire: 0 });
         auditEvent("project.update", { actorId: authUser.id, targetId: projectId, status: "success" });
         return NextResponse.json(updatedProject, { status: 200 });

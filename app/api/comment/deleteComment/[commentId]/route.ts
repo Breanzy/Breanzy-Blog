@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 import Comment from "@/models/comment.model";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ commentId: string }> }) {
     const { commentId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
+        authUser = await requireAuth(request);
     } catch {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

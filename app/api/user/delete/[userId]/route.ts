@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import User from "@/models/user.model";
@@ -7,14 +6,13 @@ import Post from "@/models/post.model";
 import Project from "@/models/project.model";
 import Comment from "@/models/comment.model";
 import { auditEvent } from "@/lib/audit";
+import { requireAuth } from "@/lib/auth";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
+        authUser = await requireAuth(request);
     } catch {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

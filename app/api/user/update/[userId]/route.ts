@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 import User from "@/models/user.model";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
+        authUser = await requireAuth(request);
     } catch {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -50,6 +48,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             { $set: { username: body.username, email: body.email, profilePicture: body.profilePicture, password: body.password } },
             { new: true }
         );
+        if (!updatedUser) {
+            return NextResponse.json({ message: "User not found" }, { status: 404 });
+        }
         const { password, ...rest } = updatedUser._doc;
         return NextResponse.json(rest, { status: 200 });
     } catch (error: any) {

@@ -1,4 +1,8 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import jwt from "jsonwebtoken";
+import { NextRequest } from "next/server";
+import { connectDB } from "@/lib/db";
+import User from "@/models/user.model";
 
 const firebaseJwks = createRemoteJWKSet(
     new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
@@ -8,6 +12,11 @@ type FirebaseUser = {
     email: string;
     name: string;
     picture: string;
+};
+
+export type AuthUser = {
+    id: string;
+    isAdmin: boolean;
 };
 
 /* Verifies a Firebase Auth ID token and returns the trusted user identity. */
@@ -38,4 +47,36 @@ export async function verifyFirebaseIdToken(idToken: string): Promise<FirebaseUs
         name: typeof payload.name === "string" && payload.name.trim() ? payload.name : payload.email.split("@")[0],
         picture: typeof payload.picture === "string" ? payload.picture : "",
     };
+}
+
+/* Verifies the app JWT and reloads the user so deleted or demoted users lose access immediately. */
+export async function requireAuth(request: NextRequest): Promise<AuthUser> {
+    const token = request.cookies.get("access_token")?.value;
+    if (!token) {
+        throw new Error("Unauthorized");
+    }
+
+    let payload: { id: string };
+    try {
+        payload = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
+    } catch {
+        throw new Error("Unauthorized");
+    }
+
+    await connectDB();
+    const user = await User.findById(payload.id).select("_id isAdmin").lean() as any;
+    if (!user) {
+        throw new Error("Unauthorized");
+    }
+
+    return { id: String(user._id), isAdmin: Boolean((user as any).isAdmin) };
+}
+
+/* Verifies the current user and requires their current database role to be admin. */
+export async function requireAdmin(request: NextRequest): Promise<AuthUser> {
+    const authUser = await requireAuth(request);
+    if (!authUser.isAdmin) {
+        throw new Error("Forbidden");
+    }
+    return authUser;
 }

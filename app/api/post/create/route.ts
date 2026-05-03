@@ -1,27 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import Subscriber from "@/models/subscriber.model";
 import { sendNewsletter } from "@/utils/sendNewsletter";
 import { auditEvent } from "@/lib/audit";
+import { requireAdmin } from "@/lib/auth";
 import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
 import { ensureSlug, slugifyTitle } from "@/lib/slug";
 import { optionalString, readJsonObject, requiredString } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
-    const token = request.cookies.get("access_token")?.value;
-    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     let authUser: { id: string; isAdmin: boolean };
     try {
-        authUser = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin: boolean };
-    } catch {
+        authUser = await requireAdmin(request);
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return NextResponse.json({ message: "You are not allowed to create a post" }, { status: 403 });
+        }
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    if (!authUser.isAdmin) {
-        return NextResponse.json({ message: "You are not allowed to create a post" }, { status: 403 });
     }
 
     try {
