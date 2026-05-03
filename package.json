@@ -29,8 +29,12 @@
         "react-icons": "^5.3.0",
         "react-redux": "^9.1.2",
         "redux-persist": "^6.0.0",
-        "resend": "^6.10.0",
+        "resend": "^6.12.2",
         "sanitize-html": "^2.17.3"
+    },
+    "overrides": {
+        "postcss": "8.5.13",
+        "svix": "1.92.2"
     },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.6",
@@ -42,7 +46,7 @@
         "autoprefixer": "^10.4.20",
         "eslint": "^8.57.0",
         "eslint-config-next": "^16.2.4",
-        "postcss": "^8.4.45",
+        "postcss": "8.5.13",
         "tailwind-scrollbar": "^3.1.0",
         "tailwindcss": "^3.4.10",
         "typescript": "^5.5.0"
