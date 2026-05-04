@@ -1,48 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import Modal from "./Modal";
+import { useDashboardCollection } from "@/lib/useDashboardCollection";
 
 export default function DashUsers() {
     const { currentUser } = useSelector((state: any) => state.user);
-    const [users, setUsers] = useState<any[]>([]);
-    const [showMore, setShowMore] = useState(true);
+    const { items: users, showMore, loadMore, removeById } = useDashboardCollection<any>({
+        enabled: Boolean(currentUser.isAdmin),
+        initialUrl: "/api/user/getusers",
+        pageUrl: (startIndex) => `/api/user/getusers?startIndex=${startIndex}`,
+        resultKey: "users",
+    });
     const [showModal, setShowModal] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState("");
-
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await fetch(`/api/user/getusers`);
-                const data = await res.json();
-                if (res.ok) {
-                    setUsers(data.users);
-                    if (data.users.length < 9) setShowMore(false);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        if (currentUser.isAdmin) fetchUsers();
-    }, [currentUser._id]);
-
-    const handleShowMore = async () => {
-        try {
-            const res = await fetch(`/api/user/getusers?startIndex=${users.length}`);
-            const data = await res.json();
-            if (res.ok) {
-                setUsers((prev) => [...prev, ...data.users]);
-                if (data.users.length < 9) setShowMore(false);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const handleDeleteUser = async () => {
         setShowModal(false);
@@ -50,7 +26,7 @@ export default function DashUsers() {
             const res = await fetch(`/api/user/delete/${userIdToDelete}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) console.log(data.message);
-            else setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+            else removeById(userIdToDelete);
         } catch (error: any) {
             console.log(error.message);
         }
@@ -104,7 +80,7 @@ export default function DashUsers() {
                         </table>
                     </div>
                     {showMore && (
-                        <button onClick={handleShowMore} className="mt-4 w-full text-blue-500 hover:text-blue-400 text-sm py-3 transition-colors">
+                        <button onClick={loadMore} className="mt-4 w-full text-blue-500 hover:text-blue-400 text-sm py-3 transition-colors">
                             Show more
                         </button>
                     )}

@@ -1,46 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import Modal from "./Modal";
+import { useDashboardCollection } from "@/lib/useDashboardCollection";
 
 export default function DashComments() {
     const { currentUser } = useSelector((state: any) => state.user);
-    const [comments, setComments] = useState<any[]>([]);
-    const [showMore, setShowMore] = useState(true);
+    const { items: comments, showMore, loadMore, removeById } = useDashboardCollection<any>({
+        enabled: Boolean(currentUser.isAdmin),
+        initialUrl: "/api/comment/getcomments",
+        pageUrl: (startIndex) => `/api/comment/getcomments?startIndex=${startIndex}`,
+        resultKey: "comments",
+    });
     const [showModal, setShowModal] = useState(false);
     const [commentIdToDelete, setCommentIdToDelete] = useState("");
-
-    useEffect(() => {
-        const fetchComments = async () => {
-            try {
-                const res = await fetch(`/api/comment/getcomments`);
-                const data = await res.json();
-                if (res.ok) {
-                    setComments(data.comments);
-                    if (data.comments.length < 9) setShowMore(false);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        if (currentUser.isAdmin) fetchComments();
-    }, [currentUser._id]);
-
-    const handleShowMore = async () => {
-        try {
-            const res = await fetch(`/api/comment/getcomments?startIndex=${comments.length}`);
-            const data = await res.json();
-            if (res.ok) {
-                setComments((prev) => [...prev, ...data.comments]);
-                if (data.comments.length < 9) setShowMore(false);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const handleDeleteComment = async () => {
         setShowModal(false);
@@ -48,7 +24,7 @@ export default function DashComments() {
             const res = await fetch(`/api/comment/deleteComment/${commentIdToDelete}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) console.log(data.message);
-            else setComments((prev) => prev.filter((c) => c._id !== commentIdToDelete));
+            else removeById(commentIdToDelete);
         } catch (error: any) {
             console.log(error.message);
         }
@@ -97,7 +73,7 @@ export default function DashComments() {
                         </table>
                     </div>
                     {showMore && (
-                        <button onClick={handleShowMore} className="mt-4 w-full text-blue-500 hover:text-blue-400 text-sm py-3 transition-colors">
+                        <button onClick={loadMore} className="mt-4 w-full text-blue-500 hover:text-blue-400 text-sm py-3 transition-colors">
                             Show more
                         </button>
                     )}

@@ -1,55 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { HiOutlineExclamationCircle, HiMail } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import { useDashboardCollection } from "@/lib/useDashboardCollection";
 import Modal from "./Modal";
 
 export default function DashSubscribers() {
     const { currentUser } = useSelector((state: any) => state.user);
-    const [subscribers, setSubscribers] = useState<any[]>([]);
-    const [showMore, setShowMore] = useState(true);
+    const {
+        items: subscribers,
+        showMore,
+        loading,
+        loadMore,
+        removeById,
+    } = useDashboardCollection<any>({
+        enabled: Boolean(currentUser.isAdmin),
+        initialUrl: "/api/subscriber/getsubscribers",
+        pageUrl: (startIndex) => `/api/subscriber/getsubscribers?startIndex=${startIndex}`,
+        resultKey: "subscribers",
+    });
     const [showModal, setShowModal] = useState(false);
     const [subscriberIdToDelete, setSubscriberIdToDelete] = useState("");
     const [testEmail, setTestEmail] = useState("");
     const [isSendingTest, setIsSendingTest] = useState(false);
     const [testMessage, setTestMessage] = useState("");
     const [testStatus, setTestStatus] = useState<"success" | "error" | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchSubscribers = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch("/api/subscriber/getsubscribers");
-                const data = await res.json();
-                if (res.ok) {
-                    setSubscribers(data.subscribers);
-                    if (data.subscribers.length < 9) setShowMore(false);
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (currentUser.isAdmin) fetchSubscribers();
-    }, [currentUser._id, currentUser.isAdmin]);
-
-    const handleShowMore = async () => {
-        try {
-            const res = await fetch(`/api/subscriber/getsubscribers?startIndex=${subscribers.length}`);
-            const data = await res.json();
-            if (res.ok) {
-                setSubscribers((prev) => [...prev, ...data.subscribers]);
-                if (data.subscribers.length < 9) setShowMore(false);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const handleDeleteSubscriber = async () => {
         setShowModal(false);
@@ -57,7 +34,7 @@ export default function DashSubscribers() {
             const res = await fetch(`/api/subscriber/delete/${subscriberIdToDelete}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) console.log(data.message);
-            else setSubscribers((prev) => prev.filter((subscriber) => subscriber._id !== subscriberIdToDelete));
+            else removeById(subscriberIdToDelete);
         } catch (error: any) {
             console.log(error.message);
         }
@@ -172,7 +149,7 @@ export default function DashSubscribers() {
                     </div>
 
                     {showMore && (
-                        <button onClick={handleShowMore} className="mt-4 w-full text-blue-500 hover:text-blue-400 text-sm py-3 transition-colors">
+                        <button onClick={loadMore} className="mt-4 w-full text-blue-500 hover:text-blue-400 text-sm py-3 transition-colors">
                             Show more
                         </button>
                     )}
