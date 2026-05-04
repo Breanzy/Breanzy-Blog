@@ -3,57 +3,28 @@ import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import { auditEvent } from "@/lib/audit";
-import { requireAdmin } from "@/lib/auth";
-import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
-import { ensureSlug, slugifyTitle } from "@/lib/slug";
-import { optionalString, readJsonObject, requiredString } from "@/lib/validation";
+import { requireAdminAccess } from "@/lib/auth";
+import { getUniquePostSlug, readPostWritePayload } from "@/lib/publishing";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ postId: string; userId: string }> }) {
     const { postId, userId } = await params;
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You do not have permission to update" }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You do not have permission to update");
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     if (authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to update" }, { status: 403 });
     }
 
     try {
-        const body = await readJsonObject(request);
-        const title = requiredString(body, "title", 180);
-        const content = sanitizeRichHtml(requiredString(body, "content", 250000));
-        if (!content) {
-            return NextResponse.json({ message: "Content is required" }, { status: 400 });
-        }
+        const postPayload = await readPostWritePayload(request);
         await connectDB();
 
-        // Regenerate slug from the (possibly updated) title.
-        // Exclude the current post from the uniqueness check so a no-op title
-        // edit doesn't produce a "-2" suffix against itself.
-        const baseSlug = ensureSlug(slugifyTitle(title));
-        let slug = baseSlug;
-        let suffix = 2;
-        while (await Post.exists({ slug, _id: { $ne: postId } })) {
-            slug = `${baseSlug}-${suffix++}`;
-        }
+        const slug = await getUniquePostSlug(postPayload.title, postId);
 
         const updatedPost = await Post.findOneAndUpdate(
             { _id: postId, userId: authUser.id },
-            {
-                $set: {
-                    title,
-                    content,
-                    category: optionalString(body, "category", 80) || "uncategorized",
-                    image: optionalString(body, "image", 2000),
-                    slug,
-                },
-            },
+            { $set: { ...postPayload, image: postPayload.image || "", slug } },
             { new: true }
         );
         if (!updatedPost) {

@@ -2,32 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
-import Subscriber from "@/models/subscriber.model";
-import { sendNewsletter } from "@/utils/sendNewsletter";
 import { auditEvent } from "@/lib/audit";
-import { requireAdmin } from "@/lib/auth";
-import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
-import { ensureSlug, slugifyTitle } from "@/lib/slug";
-import { optionalString, readJsonObject, requiredString } from "@/lib/validation";
+import { requireAdminAccess } from "@/lib/auth";
+import { deliverPostNewsletter } from "@/lib/newsletterDelivery";
+import { getUniquePostSlug, readPostWritePayload } from "@/lib/publishing";
 
 export async function POST(request: NextRequest) {
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You are not allowed to create a post" }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You are not allowed to create a post");
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     try {
-        const body = await readJsonObject(request);
-        const title = requiredString(body, "title", 180);
-        const content = sanitizeRichHtml(requiredString(body, "content", 250000));
-        if (!content) {
-            return NextResponse.json({ message: "Content is required" }, { status: 400 });
-        }
+        const postPayload = await readPostWritePayload(request);
         const idempotencyKey = request.headers.get("Idempotency-Key")?.trim();
 
         await connectDB();
@@ -38,19 +24,10 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Find a unique slug — append -2, -3, etc. if the base is already taken
-        const baseSlug = ensureSlug(slugifyTitle(title));
-        let slug = baseSlug;
-        let suffix = 2;
-        while (await Post.exists({ slug })) {
-            slug = `${baseSlug}-${suffix++}`;
-        }
+        const slug = await getUniquePostSlug(postPayload.title);
 
         const newPost = new Post({
-            title,
-            content,
-            category: optionalString(body, "category", 80) || "uncategorized",
-            image: optionalString(body, "image", 2000) || undefined,
+            ...postPayload,
             slug,
             idempotencyKey: idempotencyKey || undefined,
             userId: authUser.id,
@@ -60,20 +37,7 @@ export async function POST(request: NextRequest) {
 
         revalidateTag("posts", { expire: 0 }); // Bust ISR cache for all public post pages
 
-        const subscribers = await Subscriber.find({}, "email unsubscribeToken");
-        const newsletter = await sendNewsletter(postJson, subscribers);
-        if (newsletter.delivered > 0) {
-            await Post.findByIdAndUpdate(savedPost._id, { $set: { newsletterSentAt: new Date() } });
-        }
-        if (newsletter.failed > 0) {
-            auditEvent("newsletter.post_send", {
-                actorId: authUser.id,
-                targetId: String(savedPost._id),
-                status: "failure",
-                detail: newsletter.errors.join(" | ").slice(0, 1000),
-            });
-        }
-
+        const newsletter = await deliverPostNewsletter(postJson, authUser.id);
         auditEvent("post.create", { actorId: authUser.id, targetId: String(savedPost._id), status: "success" });
         return NextResponse.json({ ...postJson, newsletter }, { status: 201 });
     } catch (error: any) {
