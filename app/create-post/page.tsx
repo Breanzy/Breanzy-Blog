@@ -1,20 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import TiptapEditor from "@/components/TiptapEditor";
-import { uploadFirebaseImage, deleteFirebaseImage } from "@/lib/firebaseStorage";
+import { useMediaLifecycle } from "@/lib/useMediaLifecycle";
 
 const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
 
 export default function CreatePostPage() {
-    const [file, setFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+    const media = useMediaLifecycle();
     const [formData, setFormData] = useState<Record<string, any>>({
         title: "",
         category: "uncategorized",
@@ -25,17 +23,9 @@ export default function CreatePostPage() {
     const idempotencyKeyRef = useRef(globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`);
     const router = useRouter();
 
-    // Revoke the blob URL when a new file is selected or component unmounts
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selected = e.target.files?.[0] ?? null;
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        setFile(selected);
-        setPreviewUrl(selected ? URL.createObjectURL(selected) : null);
+        media.selectFile(e.target.files?.[0] ?? null);
     };
-
-    useEffect(() => {
-        return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
-    }, [previewUrl]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,17 +34,12 @@ export default function CreatePostPage() {
 
         let uploadedUrl: string | null = null;
 
-        // Upload the image first if a file was selected
-        if (file) {
-            try {
-                uploadedUrl = await uploadFirebaseImage(file, setUploadProgress);
-            } catch {
-                setPublishError("Image upload failed");
-                setIsSubmitting(false);
-                setUploadProgress(null);
-                return;
-            }
-            setUploadProgress(null);
+        try {
+            uploadedUrl = await media.uploadSelected();
+        } catch {
+            setPublishError("Image upload failed");
+            setIsSubmitting(false);
+            return;
         }
 
         const payload = { ...formData, ...(uploadedUrl ? { image: uploadedUrl } : {}) };
@@ -67,15 +52,15 @@ export default function CreatePostPage() {
             });
             const data = await res.json();
             if (!res.ok) {
-                // Post creation failed — clean up the image we just uploaded
-                if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
+                // Post creation failed; clean up the image we just uploaded.
+                await media.rollbackUpload(uploadedUrl);
                 setPublishError(data.message);
                 setIsSubmitting(false);
                 return;
             }
             router.push(`/blog/${data.slug}`);
         } catch {
-            if (uploadedUrl) await deleteFirebaseImage(uploadedUrl);
+            await media.rollbackUpload(uploadedUrl);
             setPublishError("Something went wrong");
             setIsSubmitting(false);
         }
@@ -114,12 +99,12 @@ export default function CreatePostPage() {
                         onChange={handleFileChange}
                         className="text-sm text-neutral-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-800 file:text-neutral-300 hover:file:bg-neutral-700 flex-1"
                     />
-                    {file && <span className="shrink-0 text-xs text-blue-400">Ready to upload</span>}
+                    {media.file && <span className="shrink-0 text-xs text-blue-400">Ready to upload</span>}
                 </div>
 
-                {previewUrl && (
+                {media.previewUrl && (
                     <div className="relative w-full h-64 overflow-hidden rounded-xl border border-neutral-800">
-                        <Image src={previewUrl} alt="upload preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
+                        <Image src={media.previewUrl} alt="upload preview" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
                     </div>
                 )}
 
@@ -136,12 +121,12 @@ export default function CreatePostPage() {
                     transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
                     className="bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
-                    {uploadProgress !== null ? (
+                    {media.uploadProgress !== null ? (
                         <>
                             <span className="w-5 h-5 inline-block">
                                 <CircularProgressbar
-                                    value={uploadProgress}
-                                    text={`${uploadProgress}%`}
+                                    value={media.uploadProgress}
+                                    text={`${media.uploadProgress}%`}
                                     strokeWidth={8}
                                     styles={{ path: { stroke: "#fff" }, text: { fill: "#fff", fontSize: "2rem" } }}
                                 />
