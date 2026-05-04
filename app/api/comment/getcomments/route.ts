@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAccess } from "@/lib/auth";
 import { getPagination } from "@/lib/validation";
 import Comment from "@/models/comment.model";
 
 export async function GET(request: NextRequest) {
-    try {
-        await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You are not allowed to get all comments" }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You are not allowed to get all comments");
+    if (access.response) return access.response;
 
     const { searchParams } = new URL(request.url);
     const { startIndex, limit } = getPagination(searchParams);

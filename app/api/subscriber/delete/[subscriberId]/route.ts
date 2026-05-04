@@ -1,20 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAccess } from "@/lib/auth";
 import Subscriber from "@/models/subscriber.model";
 import { auditEvent } from "@/lib/audit";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ subscriberId: string }> }) {
     const { subscriberId } = await params;
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You do not have permission to delete this subscriber." }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You do not have permission to delete this subscriber.");
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     try {
         await connectDB();

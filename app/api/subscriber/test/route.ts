@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAccess } from "@/lib/auth";
 import { sendNewsletter } from "@/utils/sendNewsletter";
 
 export async function POST(request: NextRequest) {
-    try {
-        await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You are not allowed to send test newsletters" }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You are not allowed to send test newsletters");
+    if (access.response) return access.response;
 
     const { email } = await request.json();
     if (!email) {

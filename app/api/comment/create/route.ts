@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
+import { requireUserAccess } from "@/lib/auth";
 import Comment from "@/models/comment.model";
 import { readJsonObject, requiredString } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAuth(request);
-    } catch {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireUserAccess(request);
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     try {
         const body = await readJsonObject(request);

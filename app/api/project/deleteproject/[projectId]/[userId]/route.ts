@@ -3,19 +3,13 @@ import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 import { auditEvent } from "@/lib/audit";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAccess } from "@/lib/auth";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ projectId: string; userId: string }> }) {
     const { projectId, userId } = await params;
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You do not have permission to delete this project" }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You do not have permission to delete this project");
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     if (authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to delete this project" }, { status: 403 });

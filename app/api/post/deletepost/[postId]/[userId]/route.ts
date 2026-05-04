@@ -4,19 +4,13 @@ import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import Comment from "@/models/comment.model";
 import { auditEvent } from "@/lib/audit";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAccess } from "@/lib/auth";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ postId: string; userId: string }> }) {
     const { postId, userId } = await params;
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAdmin(request);
-    } catch (error: any) {
-        if (error.message === "Forbidden") {
-            return NextResponse.json({ message: "You do not have permission to delete" }, { status: 403 });
-        }
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireAdminAccess(request, "You do not have permission to delete");
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     if (authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to delete" }, { status: 403 });

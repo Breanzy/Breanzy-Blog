@@ -6,16 +6,13 @@ import Post from "@/models/post.model";
 import Project from "@/models/project.model";
 import Comment from "@/models/comment.model";
 import { auditEvent } from "@/lib/audit";
-import { requireAuth } from "@/lib/auth";
+import { requireUserAccess } from "@/lib/auth";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAuth(request);
-    } catch {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireUserAccess(request);
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     if (!authUser.isAdmin && authUser.id !== userId) {
         return NextResponse.json({ message: "You do not have permission to delete this user." }, { status: 403 });

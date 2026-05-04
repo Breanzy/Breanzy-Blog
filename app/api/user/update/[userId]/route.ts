@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { connectDB } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
+import { requireUserAccess } from "@/lib/auth";
 import User from "@/models/user.model";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;
-    let authUser: { id: string; isAdmin: boolean };
-    try {
-        authUser = await requireAuth(request);
-    } catch {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const access = await requireUserAccess(request);
+    if (access.response) return access.response;
+    const { authUser } = access;
 
     if (authUser.id !== userId) {
         return NextResponse.json({ message: "You are not allowed to update this user." }, { status: 403 });

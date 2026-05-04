@@ -1,5 +1,6 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/user.model";
@@ -18,6 +19,8 @@ export type AuthUser = {
     id: string;
     isAdmin: boolean;
 };
+
+type AccessResult = { authUser: AuthUser; response?: never } | { authUser?: never; response: NextResponse };
 
 /* Verifies a Firebase Auth ID token and returns the trusted user identity. */
 export async function verifyFirebaseIdToken(idToken: string): Promise<FirebaseUser> {
@@ -79,4 +82,25 @@ export async function requireAdmin(request: NextRequest): Promise<AuthUser> {
         throw new Error("Forbidden");
     }
     return authUser;
+}
+
+/* Returns a current user or a ready unauthorized response for route handlers. */
+export async function requireUserAccess(request: NextRequest): Promise<AccessResult> {
+    try {
+        return { authUser: await requireAuth(request) };
+    } catch {
+        return { response: NextResponse.json({ message: "Unauthorized" }, { status: 401 }) };
+    }
+}
+
+/* Returns a current admin or a ready unauthorized/forbidden response for route handlers. */
+export async function requireAdminAccess(request: NextRequest, forbiddenMessage: string): Promise<AccessResult> {
+    try {
+        return { authUser: await requireAdmin(request) };
+    } catch (error: any) {
+        if (error.message === "Forbidden") {
+            return { response: NextResponse.json({ message: forbiddenMessage }, { status: 403 }) };
+        }
+        return { response: NextResponse.json({ message: "Unauthorized" }, { status: 401 }) };
+    }
 }
