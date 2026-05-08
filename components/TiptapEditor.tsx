@@ -12,6 +12,28 @@ interface TiptapEditorProps {
     placeholder?: string;
 }
 
+// Escapes pasted plain text before turning it into editor HTML.
+function escapeHtml(value: string) {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+// Converts blank-line-separated pasted text into paragraphs for Tiptap.
+function plainTextToEditorHtml(text: string) {
+    return text
+        .replace(/\r\n/g, "\n")
+        .trim()
+        .split(/\n{2,}/)
+        .map((block) => block.trim())
+        .filter(Boolean)
+        .map((block) => `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`)
+        .join("");
+}
+
 const ToolbarButton = ({ onClick, active, title, children }: { onClick: () => void; active?: boolean; title: string; children: React.ReactNode }) => (
     <button
         type="button"
@@ -33,6 +55,14 @@ export default function TiptapEditor({ value, onChange, placeholder = "Write som
         content: value || "",
         editorProps: {
             attributes: { class: "tiptap-editor min-h-[300px] outline-none px-4 py-3 text-neutral-200 leading-relaxed" },
+            handlePaste(view, event) {
+                const pastedText = event.clipboardData?.getData("text/plain");
+                if (!pastedText || !/\n{2,}/.test(pastedText)) return false;
+
+                event.preventDefault();
+                editor?.chain().focus().insertContent(plainTextToEditorHtml(pastedText)).run();
+                return true;
+            },
         },
         onUpdate({ editor }) {
             onChange?.(editor.getHTML());
