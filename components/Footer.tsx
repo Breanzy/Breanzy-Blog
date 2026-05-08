@@ -22,7 +22,6 @@ export default function Footer() {
                             <span className="text-neutral-400 font-medium mb-1">Site</span>
                             <Link href="/blog" className="text-neutral-500 hover:text-white transition-colors">Blog</Link>
                             <Link href="/projects" className="text-neutral-500 hover:text-white transition-colors">Projects</Link>
-                            <Link href="/resume" className="text-neutral-500 hover:text-white transition-colors">Resume</Link>
                         </div>
                         <div className="flex flex-col gap-2">
                             <span className="text-neutral-400 font-medium mb-1">Legal</span>

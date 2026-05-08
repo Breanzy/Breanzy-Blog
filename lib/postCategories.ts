@@ -1,8 +1,8 @@
 export const POST_CATEGORIES = [
     { value: "dev-journal", label: "Dev Journal" },
-    { value: "tech-opinions", label: "Tech Opinions" },
-    { value: "emerging-tech", label: "Emerging Tech" },
+    { value: "tech-takes", label: "Tech Takes" },
     { value: "build-notes", label: "Build Notes" },
+    { value: "learning-notes", label: "Learning Notes" },
     { value: "career-growth", label: "Career Growth" },
     { value: "random-tangents", label: "Random Tangents" },
 ] as const;

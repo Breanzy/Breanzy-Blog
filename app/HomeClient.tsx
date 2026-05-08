@@ -7,7 +7,6 @@ import PostCard from "@/components/PostCard";
 import ProjectCard from "@/components/ProjectCard";
 import FadeIn from "@/components/FadeIn";
 import MatrixRain from "@/components/MatrixRain";
-import { HiOutlineBriefcase, HiOutlineChatAlt2, HiOutlineLightBulb, HiOutlineMail } from "react-icons/hi";
 
 const gridVariants = {
     hidden: {},
@@ -25,29 +24,6 @@ const heroItem = {
     hidden: { opacity: 0, y: 40 },
     show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 80, damping: 15 } },
 };
-const current = [
-    {
-        label: "Building",
-        text: "Polishing this site into a sharper writing space and portfolio.",
-    },
-    {
-        label: "Learning",
-        text: "Deeper Next.js patterns, product thinking, and cleaner publishing workflows.",
-    },
-    {
-        label: "Focusing",
-        text: "Shipping small improvements consistently and turning projects into better case studies.",
-    },
-];
-const tools = ["Next.js", "React", "TypeScript", "Tailwind CSS", "Node.js", "MongoDB", "Vercel", "Firebase", "Resend"];
-const email = "hello@breanzy.com";
-const contactIntents = [
-    { label: "Hire me", icon: HiOutlineBriefcase, href: `mailto:${email}?subject=Work%20opportunity%20for%20Breanzy` },
-    { label: "Collaborate", icon: HiOutlineLightBulb, href: `mailto:${email}?subject=Collaboration%20idea` },
-    { label: "Ask about a project", icon: HiOutlineChatAlt2, href: `mailto:${email}?subject=Question%20about%20your%20project` },
-    { label: "Say hi", icon: HiOutlineMail, href: `mailto:${email}?subject=Hello%20Breanzy` },
-];
-
 interface HomeClientProps {
     posts: any[];
     projects: any[];
@@ -125,26 +101,6 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
                 </section>
             )}
 
-            {/* Current focus */}
-            <section className="py-16 bg-white/[0.025] border-b border-white/[0.04]">
-                <div className="max-w-6xl mx-auto px-4">
-                    <FadeIn className="mb-8 max-w-2xl">
-                        <p className="text-blue-500 text-sm font-medium mb-3">Now</p>
-                        <h2 className="text-white text-3xl font-semibold">What has my attention lately</h2>
-                    </FadeIn>
-                    <div className="grid gap-4 sm:grid-cols-3">
-                        {current.map((item, index) => (
-                            <FadeIn key={item.label} delay={index * 0.08}>
-                                <div className="border border-neutral-800 bg-black rounded-xl p-5 h-full">
-                                    <h3 className="text-white font-semibold mb-3">{item.label}</h3>
-                                    <p className="text-neutral-500 text-sm leading-relaxed">{item.text}</p>
-                                </div>
-                            </FadeIn>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* Featured projects */}
             {projects.length > 0 && (
                 <section className="py-16">
@@ -169,38 +125,6 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
                     </div>
                 </section>
             )}
-
-            {/* Uses / contact */}
-            <section className="bg-white/[0.025] py-16 border-t border-white/[0.04]">
-                <div className="max-w-6xl mx-auto px-4 grid gap-10 lg:grid-cols-[1fr_0.9fr]">
-                    <FadeIn>
-                        <p className="text-blue-500 text-sm font-medium mb-3">Uses</p>
-                        <h2 className="text-white text-2xl font-semibold mb-5">Tools I keep coming back to</h2>
-                        <div className="flex flex-wrap gap-2">
-                            {tools.map((tool) => (
-                                <span key={tool} className="text-xs bg-neutral-900 border border-neutral-800 text-neutral-300 px-3 py-1 rounded-full">
-                                    {tool}
-                                </span>
-                            ))}
-                        </div>
-                    </FadeIn>
-                    <FadeIn delay={0.1}>
-                        <p className="text-blue-500 text-sm font-medium mb-3">Contact</p>
-                        <h2 className="text-white text-2xl font-semibold mb-5">Reach out with a clear starting point</h2>
-                        <div className="grid gap-3 sm:grid-cols-2">
-                            {contactIntents.map((intent) => {
-                                const Icon = intent.icon;
-                                return (
-                                    <a key={intent.label} href={intent.href} className="flex items-center gap-3 border border-neutral-800 bg-black rounded-xl px-4 py-3 text-neutral-300 hover:text-white hover:border-blue-700 transition-colors">
-                                        <Icon className="text-blue-500 text-lg shrink-0" />
-                                        <span className="text-sm font-medium">{intent.label}</span>
-                                    </a>
-                                );
-                            })}
-                        </div>
-                    </FadeIn>
-                </div>
-            </section>
         </div>
     );
 }
