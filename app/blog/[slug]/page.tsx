@@ -10,6 +10,7 @@ import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/PostCard";
 import FadeIn from "@/components/FadeIn";
 import { ArticleSchema, BreadcrumbSchema } from "@/components/JsonLd";
+import { getPostCategoryLabel } from "@/lib/postCategories";
 import { getReadingTimeMinutes } from "@/utils/readingTime";
 
 const getPost = unstable_cache(
@@ -64,6 +65,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     if (!post) notFound();
 
     const description = post.content.replace(/<[^>]+>/g, "").slice(0, 160).trim();
+    const categoryLabel = getPostCategoryLabel(post.category);
 
     return (
         <main className="bg-black min-h-screen">
@@ -91,8 +93,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
                 <FadeIn delay={0.05} className="flex justify-center mb-8">
                     <Link href={`/search?category=${post.category}`}>
-                        <span className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-3 py-1 rounded-full capitalize cursor-pointer hover:bg-blue-900/40 transition-colors">
-                            {post.category}
+                        <span className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-900/40 transition-colors">
+                            {categoryLabel}
                         </span>
                     </Link>
                 </FadeIn>

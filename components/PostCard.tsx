@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { getPostCategoryLabel } from "@/lib/postCategories";
 import { formatPostDate, getReadingTimeMinutes } from "@/utils/readingTime";
 
 interface PostCardProps {
@@ -20,6 +21,7 @@ interface PostCardProps {
 export default function PostCard({ post }: PostCardProps) {
     const readTime = getReadingTimeMinutes(post.content || "");
     const publishedAt = post.createdAt ? formatPostDate(post.createdAt) : null;
+    const categoryLabel = getPostCategoryLabel(post.category);
 
     return (
         <motion.div
@@ -46,7 +48,7 @@ export default function PostCard({ post }: PostCardProps) {
                 <div className="p-3 flex flex-col gap-2">
                     <p className="text-white text-lg font-semibold line-clamp-2">{post.title}</p>
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-neutral-500 text-sm">
-                        <span className="italic capitalize">{post.category}</span>
+                        <span className="italic">{categoryLabel}</span>
                         {publishedAt && <span>{publishedAt}</span>}
                         <span>{readTime} min read</span>
                     </div>

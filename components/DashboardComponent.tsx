@@ -11,6 +11,7 @@ import {
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { getPostCategoryLabel } from "@/lib/postCategories";
 
 export default function DashboardComponent() {
     const [users, setUsers] = useState<any[]>([]);
@@ -199,7 +200,7 @@ export default function DashboardComponent() {
                                     <td className="px-4 py-2 text-neutral-300 max-w-[180px]">
                                         <p className="line-clamp-1">{post.title}</p>
                                     </td>
-                                    <td className="px-4 py-2 text-neutral-500">{post.category}</td>
+                                    <td className="px-4 py-2 text-neutral-500">{getPostCategoryLabel(post.category)}</td>
                                 </tr>
                             ))}
                         </tbody>

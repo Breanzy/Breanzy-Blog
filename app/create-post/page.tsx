@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import TiptapEditor from "@/components/TiptapEditor";
+import { POST_CATEGORIES } from "@/lib/postCategories";
 import { useMediaLifecycle } from "@/lib/useMediaLifecycle";
 
 const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
@@ -86,9 +87,9 @@ export default function CreatePostPage() {
                         onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
                     >
                         <option value="uncategorized">Select a category</option>
-                        <option value="javascript">Javascript</option>
-                        <option value="reactjs">React.js</option>
-                        <option value="nextjs">Next.js</option>
+                        {POST_CATEGORIES.map((category) => (
+                            <option key={category.value} value={category.value}>{category.label}</option>
+                        ))}
                     </select>
                 </div>
 

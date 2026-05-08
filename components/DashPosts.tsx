@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import Modal from "./Modal";
 import { deleteFirebaseImage } from "@/lib/firebaseStorage";
+import { getPostCategoryLabel } from "@/lib/postCategories";
 
 export default function DashPosts() {
     const { currentUser } = useSelector((state: any) => state.user);
@@ -97,7 +98,7 @@ export default function DashPosts() {
                                                 {post.title}
                                             </Link>
                                         </td>
-                                        <td className={tdCls}>{post.category}</td>
+                                        <td className={tdCls}>{getPostCategoryLabel(post.category)}</td>
                                         <td className={tdCls}>
                                             <button
                                                 onClick={() => { setShowModal(true); setPostIdToDelete(post._id); }}

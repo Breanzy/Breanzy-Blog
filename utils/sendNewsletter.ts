@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getPostCategoryLabel } from "@/lib/postCategories";
 import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
 
 const SITE_URL = process.env.SITE_URL || "https://breanzy.com";
@@ -215,7 +216,7 @@ function buildTemplate(post: any, token: string) {
       <span class="brand-title">${BRAND_NAME}</span>
     </a>
     <div class="card">
-      <p class="eyebrow">${escapeHtml(post.category || "article")} | ${readTimeMinutes} min read</p>
+      <p class="eyebrow">${escapeHtml(getPostCategoryLabel(post.category))} | ${readTimeMinutes} min read</p>
       <h1 class="title">${escapeHtml(post.title)}</h1>
       <p class="subtitle">Full article delivered straight to your inbox.</p>
       ${imageHtml}

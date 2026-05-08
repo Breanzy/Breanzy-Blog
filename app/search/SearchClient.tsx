@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import PostCard from "@/components/PostCard";
+import { POST_CATEGORIES } from "@/lib/postCategories";
 
 const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
 const selectCls = "w-full bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
@@ -83,9 +84,9 @@ export default function SearchClient() {
                         <label htmlFor="category" className="text-neutral-400 text-sm">Category</label>
                         <select id="category" value={sideBarData.category} onChange={handleChange} className={selectCls}>
                             <option value="">All</option>
-                            <option value="reactjs">React.js</option>
-                            <option value="nextjs">Next.js</option>
-                            <option value="javascript">JavaScript</option>
+                            {POST_CATEGORIES.map((category) => (
+                                <option key={category.value} value={category.value}>{category.label}</option>
+                            ))}
                         </select>
                     </div>
                     <button
