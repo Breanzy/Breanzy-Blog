@@ -56,6 +56,9 @@ export default function TiptapEditor({ value, onChange, placeholder = "Write som
         editorProps: {
             attributes: { class: "tiptap-editor min-h-[300px] outline-none px-4 py-3 text-neutral-200 leading-relaxed" },
             handlePaste(view, event) {
+                const pastedHtml = event.clipboardData?.getData("text/html");
+                if (pastedHtml) return false;
+
                 const pastedText = event.clipboardData?.getData("text/plain");
                 if (!pastedText || !/\n{2,}/.test(pastedText)) return false;
 
