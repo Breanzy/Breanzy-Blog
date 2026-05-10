@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
             // $text uses the title text index — much faster than $regex full scan
             ...(searchTerm && { $text: { $search: searchTerm } }),
         })
-            .sort({ updatedAt: sortDirection })
+            .sort({ createdAt: sortDirection })
             .skip(startIndex)
             .limit(limit)
             .select(postId ? "" : "-content") // update-post fetches by postId and needs content for the editor
