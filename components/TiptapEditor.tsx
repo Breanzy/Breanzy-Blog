@@ -22,16 +22,117 @@ function escapeHtml(value: string) {
         .replace(/'/g, "&#39;");
 }
 
-// Converts blank-line-separated pasted text into paragraphs for Tiptap.
-function plainTextToEditorHtml(text: string) {
-    return text
-        .replace(/\r\n/g, "\n")
-        .trim()
-        .split(/\n{2,}/)
-        .map((block) => block.trim())
-        .filter(Boolean)
-        .map((block) => `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`)
-        .join("");
+// Converts common ChatGPT Markdown pasted as plain text into editor HTML.
+function markdownTextToEditorHtml(text: string) {
+    const html: string[] = [];
+    let paragraph: string[] = [];
+    let listType: "ul" | "ol" | null = null;
+    let listItems: string[] = [];
+    let codeLines: string[] = [];
+    let inCodeBlock = false;
+
+    const flushParagraph = () => {
+        if (!paragraph.length) return;
+        html.push(`<p>${paragraph.map(inlineMarkdownToHtml).join("<br>")}</p>`);
+        paragraph = [];
+    };
+
+    const flushList = () => {
+        if (!listType || !listItems.length) return;
+        html.push(`<${listType}>${listItems.map((item) => `<li>${inlineMarkdownToHtml(item)}</li>`).join("")}</${listType}>`);
+        listType = null;
+        listItems = [];
+    };
+
+    for (const rawLine of text.replace(/\r\n/g, "\n").trim().split("\n")) {
+        const line = rawLine.trim();
+
+        if (line.startsWith("```")) {
+            if (inCodeBlock) {
+                html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+                codeLines = [];
+                inCodeBlock = false;
+            } else {
+                flushParagraph();
+                flushList();
+                inCodeBlock = true;
+            }
+            continue;
+        }
+
+        if (inCodeBlock) {
+            codeLines.push(rawLine);
+            continue;
+        }
+
+        if (!line) {
+            flushParagraph();
+            flushList();
+            continue;
+        }
+
+        const heading = line.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+            flushParagraph();
+            flushList();
+            html.push(`<h${heading[1].length}>${inlineMarkdownToHtml(heading[2])}</h${heading[1].length}>`);
+            continue;
+        }
+
+        const bullet = line.match(/^[-*+]\s+(.+)$/);
+        if (bullet) {
+            flushParagraph();
+            if (listType !== "ul") flushList();
+            listType = "ul";
+            listItems.push(bullet[1]);
+            continue;
+        }
+
+        const numbered = line.match(/^\d+[.)]\s+(.+)$/);
+        if (numbered) {
+            flushParagraph();
+            if (listType !== "ol") flushList();
+            listType = "ol";
+            listItems.push(numbered[1]);
+            continue;
+        }
+
+        const quote = line.match(/^>\s?(.+)$/);
+        if (quote) {
+            flushParagraph();
+            flushList();
+            html.push(`<blockquote><p>${inlineMarkdownToHtml(quote[1])}</p></blockquote>`);
+            continue;
+        }
+
+        flushList();
+        paragraph.push(line);
+    }
+
+    if (inCodeBlock && codeLines.length) {
+        html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+    }
+
+    flushParagraph();
+    flushList();
+
+    return html.join("");
+}
+
+// Converts safe inline Markdown marks after escaping the source text.
+function inlineMarkdownToHtml(value: string) {
+    return escapeHtml(value)
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|mailto:[^)\s]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+        .replace(/\*([^*\n]+)\*/g, "<em>$1</em>")
+        .replace(/_([^_\n]+)_/g, "<em>$1</em>");
+}
+
+// Detects plain-text Markdown that should become rich editor content on paste.
+function isMarkdownLike(value: string) {
+    return /(^|\n)(#{1,3}\s|[-*+]\s|\d+[.)]\s|>\s?|```)/.test(value) || /(\*\*[^*]+\*\*|__[^_]+__|`[^`]+`|\[[^\]]+\]\((https?:\/\/|mailto:))/i.test(value);
 }
 
 const ToolbarButton = ({ onClick, active, title, children }: { onClick: () => void; active?: boolean; title: string; children: React.ReactNode }) => (
@@ -60,10 +161,10 @@ export default function TiptapEditor({ value, onChange, placeholder = "Write som
                 if (pastedHtml) return false;
 
                 const pastedText = event.clipboardData?.getData("text/plain");
-                if (!pastedText || !/\n{2,}/.test(pastedText)) return false;
+                if (!pastedText || (!/\n{2,}/.test(pastedText) && !isMarkdownLike(pastedText))) return false;
 
                 event.preventDefault();
-                editor?.chain().focus().insertContent(plainTextToEditorHtml(pastedText)).run();
+                editor?.chain().focus().insertContent(markdownTextToEditorHtml(pastedText)).run();
                 return true;
             },
         },
