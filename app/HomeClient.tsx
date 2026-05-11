@@ -7,6 +7,7 @@ import PostCard from "@/components/PostCard";
 import ProjectCard from "@/components/ProjectCard";
 import FadeIn from "@/components/FadeIn";
 import MatrixRain from "@/components/MatrixRain";
+import ContactForm from "@/components/ContactForm";
 
 const gridVariants = {
     hidden: {},
@@ -125,6 +126,12 @@ export default function HomeClient({ posts, projects }: HomeClientProps) {
                     </div>
                 </section>
             )}
+            {/* Contact */}
+            <section className="py-16 border-t border-white/[0.04]">
+                <div className="max-w-6xl mx-auto px-4">
+                    <ContactForm />
+                </div>
+            </section>
         </div>
     );
 }
