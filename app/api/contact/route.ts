@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
     if (!name || !email || !subject || !message) {
         return NextResponse.json({ success: false, message: "All fields are required." }, { status: 400 });
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return NextResponse.json({ success: false, message: "Please enter a valid email address." }, { status: 400 });
+    }
 
     const { error } = await resend.emails.send({
         from: FROM_EMAIL,

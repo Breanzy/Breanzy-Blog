@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
     }
 
     const { email } = await request.json();
-    if (!email) {
-        return NextResponse.json({ success: false, message: "Email is required." }, { status: 400 });
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return NextResponse.json({ success: false, message: "A valid email address is required." }, { status: 400 });
     }
 
     try {
