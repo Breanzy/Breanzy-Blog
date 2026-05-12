@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import moment from "moment";
 import { FaThumbsUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
@@ -12,6 +11,17 @@ interface CommentProps {
     onLike: (id: string) => void;
     onEdit: (comment: any, content: string) => void;
     onDelete: (id: string) => void;
+}
+
+const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+function timeAgo(date: string | Date): string {
+    const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+    if (seconds < 60) return rtf.format(-seconds, "second");
+    if (seconds < 3600) return rtf.format(-Math.floor(seconds / 60), "minute");
+    if (seconds < 86400) return rtf.format(-Math.floor(seconds / 3600), "hour");
+    if (seconds < 2592000) return rtf.format(-Math.floor(seconds / 86400), "day");
+    if (seconds < 31536000) return rtf.format(-Math.floor(seconds / 2592000), "month");
+    return rtf.format(-Math.floor(seconds / 31536000), "year");
 }
 
 export default function Comment({ comment, onLike, onEdit, onDelete }: CommentProps) {
@@ -31,7 +41,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }: CommentPr
             }
         };
         getUser();
-    }, [comment]);
+    }, [comment.userId]);
 
     const handleSave = async () => {
         try {
@@ -68,7 +78,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }: CommentPr
                         {user ? `@${user.username}` : "anonymous"}
                     </span>
                     <span className="text-neutral-600 text-xs">
-                        {moment(comment.createdAt).fromNow()}
+                        {timeAgo(comment.createdAt)}
                     </span>
                 </div>
 
