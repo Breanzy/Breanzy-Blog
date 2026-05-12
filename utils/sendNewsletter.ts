@@ -1,6 +1,8 @@
 import { Resend } from "resend";
 import { getPostCategoryLabel } from "@/lib/postCategories";
 import { sanitizeRichHtml } from "@/lib/sanitizeHtml";
+import { escapeHtml } from "@/lib/html";
+import { stripHtml, getReadingTimeMinutes } from "@/utils/readingTime";
 
 const SITE_URL = process.env.SITE_URL || "https://breanzy.com";
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <onboarding@resend.dev>";
@@ -80,7 +82,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string)
 function buildTemplate(post: any, token: string) {
     const postUrl = `${SITE_URL}/blog/${post.slug}`;
     const unsubUrl = `${SITE_URL}/api/subscriber/unsubscribe?token=${encodeURIComponent(token)}`;
-    const readTimeMinutes = getReadTimeMinutes(post.content || "");
+    const readTimeMinutes = getReadingTimeMinutes(post.content || "");
     const imageHtml = post.image
         ? `<img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" style="display:block;width:100%;max-height:320px;object-fit:cover;border-radius:14px;margin:24px 0 28px;">`
         : "";
@@ -230,20 +232,3 @@ function buildTemplate(post: any, token: string) {
 </html>`;
 }
 
-function stripHtml(input: string) {
-    return input.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-}
-
-function getReadTimeMinutes(content: string) {
-    const words = stripHtml(content).split(" ").filter(Boolean).length;
-    return Math.max(1, Math.ceil(words / 200));
-}
-
-function escapeHtml(input: string) {
-    return input
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-}
