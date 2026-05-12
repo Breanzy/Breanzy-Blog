@@ -1,31 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { escapeHtml } from "@/lib/html";
+import { checkRateLimit, clientRateKey } from "@/lib/rateLimit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <onboarding@resend.dev>";
 const TO_EMAIL = "julius.carbonilla@gmail.com";
 
-// In-memory rate limit: max 3 submissions per IP per 10 minutes
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const WINDOW_MS = 10 * 60 * 1000;
-
-function isRateLimited(ip: string): boolean {
-    const now = Date.now();
-    const entry = rateLimitMap.get(ip);
-    if (!entry || now > entry.resetAt) {
-        rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-        return false;
-    }
-    if (entry.count >= RATE_LIMIT) return true;
-    entry.count++;
-    return false;
-}
-
 export async function POST(req: NextRequest) {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-    if (isRateLimited(ip)) {
+    if (!checkRateLimit(clientRateKey(req, "contact"), 3, 10 * 60 * 1000)) {
         return NextResponse.json({ success: false, message: "Too many requests. Please wait a few minutes." }, { status: 429 });
     }
 
