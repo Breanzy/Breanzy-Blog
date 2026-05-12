@@ -9,7 +9,7 @@ const COOKIE_OPTS = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60,
 };
 
 export async function POST(request: NextRequest) {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: "Invalid email or password" }, { status: 400 });
         }
 
-        const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+        const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin }, process.env.JWT_SECRET!, { expiresIn: "30d" });
         const { password: _pass, ...rest } = validUser._doc;
 
         const res = NextResponse.json(rest, { status: 200 });
