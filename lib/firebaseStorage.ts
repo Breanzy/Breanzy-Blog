@@ -1,14 +1,20 @@
 import { getStorage, ref, deleteObject, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { app } from "@/firebase";
 
-/**
- * Uploads a file to Firebase Storage and returns the public download URL.
- * onProgress is called with 0-100 as the upload proceeds.
- */
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+/* Uploads a file to Firebase Storage and returns the public download URL. onProgress is called with 0–100. */
 export function uploadFirebaseImage(
     file: File,
     onProgress?: (progress: number) => void
 ): Promise<string> {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+        return Promise.reject(new Error("Only JPEG, PNG, WebP, and GIF images are allowed."));
+    }
+    if (file.size > MAX_SIZE_BYTES) {
+        return Promise.reject(new Error("Image must be smaller than 5 MB."));
+    }
     return new Promise((resolve, reject) => {
         const storage = getStorage(app);
         const storageRef = ref(storage, `${Date.now()}-${file.name}`);
@@ -26,10 +32,7 @@ export function uploadFirebaseImage(
     });
 }
 
-/**
- * Deletes a file from Firebase Storage by its download URL.
- * Silently ignores non-Firebase URLs and errors so callers don't need to handle cleanup failures.
- */
+/* Deletes a file from Firebase Storage by its download URL. Silently ignores non-Firebase URLs. */
 export async function deleteFirebaseImage(url: string): Promise<void> {
     if (!url || !url.includes("firebasestorage.googleapis.com")) return;
     try {
