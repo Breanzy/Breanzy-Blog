@@ -72,6 +72,98 @@ body {
 .tiptap-editor pre { background: #1e1e2e; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
 .tiptap-editor pre code { background: none; padding: 0; color: #e2e8f0; }
 
+/* ─── Dark Neumorphism ──────────────────────────────────────────── */
+.neuro-card {
+    background: #0d0d1c;
+    border-radius: 14px;
+    box-shadow:
+        5px 5px 12px rgba(0, 0, 0, 0.75),
+        -3px -3px 8px rgba(255, 255, 255, 0.025),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.neuro-inset {
+    background: #0d0d1c;
+    border-radius: 10px;
+    box-shadow:
+        inset 4px 4px 10px rgba(0, 0, 0, 0.7),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.025);
+}
+
+/* ─── Dynamic gradient text ─────────────────────────────────────── */
+@keyframes gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399, #60a5fa);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 6s ease infinite;
+}
+
+/* ─── Animated gradient orbs ────────────────────────────────────── */
+@keyframes orb-drift-a {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(80px, -60px) scale(1.15); }
+    66%       { transform: translate(-40px, 40px) scale(0.9); }
+}
+@keyframes orb-drift-b {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    40%       { transform: translate(-70px, 50px) scale(1.1); }
+    70%       { transform: translate(50px, -30px) scale(0.95); }
+}
+@keyframes orb-drift-c {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%       { transform: translate(40px, 70px) scale(1.2); }
+}
+
+.orb-a { animation: orb-drift-a 22s ease-in-out infinite; }
+.orb-b { animation: orb-drift-b 18s ease-in-out infinite; }
+.orb-c { animation: orb-drift-c 26s ease-in-out infinite; }
+
+/* ─── Isometric grid overlay ────────────────────────────────────── */
+.iso-grid {
+    background-image:
+        linear-gradient(60deg,  rgba(37, 99, 235, 0.10) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(37, 99, 235, 0.10) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
+    background-size: 40px 70px, 40px 70px, 40px 70px;
+    background-position: 0 0, 20px 0, 0 0;
+}
+
+/* ─── Scrollytelling progress bar ───────────────────────────────── */
+.story-progress-track {
+    position: absolute;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 10rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+}
+
+/* ─── Section divider flow ──────────────────────────────────────── */
+@keyframes divider-flow {
+    from { background-position: 0 0; }
+    to   { background-position: 60px 0; }
+}
+
+.divider-flow {
+    height: 1px;
+    background-image:
+        linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.6), transparent),
+        linear-gradient(90deg, transparent 0 10px, rgba(37, 99, 235, 0.4) 10px 14px, transparent 14px 24px);
+    background-size: 100% 100%, 24px 100%;
+    background-repeat: no-repeat, repeat-x;
+    animation: divider-flow 4.5s linear infinite;
+}
+
 /* Post rendering styles */
 .post-content p { margin-bottom: 0.75rem; }
 .post-content h1 { font-size: 1.75rem; font-weight: 700; margin: 2rem 0 0.75rem; }
