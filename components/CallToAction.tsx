@@ -1,40 +1,34 @@
 "use client";
 
-import Image from "next/image";
-import { motion } from "framer-motion";
-import FadeIn from "./FadeIn";
+import Link from "next/link";
 
 export default function CallToAction() {
     return (
-        <FadeIn>
-            <div className="glass-card flex flex-col sm:flex-row items-center gap-6 p-6 rounded-xl max-w-4xl mx-auto">
-                <div className="flex-1 flex flex-col gap-3 text-center sm:text-left">
-                    <h2 className="text-white text-xl font-semibold">Want to see more projects?</h2>
-                    <p className="text-neutral-400 text-sm">
-                        Check out my open-source work and experiments on GitHub.
-                    </p>
-                    <motion.a
-                        href="https://github.com/Breanzy"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }}
-                        whileTap={{ scale: 0.96 }}
-                        transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                        className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors self-start sm:self-start"
-                    >
-                        View GitHub
-                    </motion.a>
+        <div
+            className="relative rounded-xl overflow-hidden border p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+            style={{
+                background: "rgba(10,16,30,0.6)",
+                backdropFilter: "blur(12px)",
+                borderColor: "rgba(255,255,255,0.08)",
+            }}
+        >
+            <div className="flex-1">
+                <div
+                    className="text-xs mb-2 uppercase tracking-[0.2em] font-mono"
+                    style={{ color: "rgb(80 140 230)" }}
+                >
+                    {"// note"}
                 </div>
-                <div className="flex-1 flex justify-center">
-                    <Image
-                        src="https://assets.vercel.com/image/upload/contentful/image/e5382hct74si/2EP14mWkbx9sq03nWnRSGT/f1d22d88bb5dde030275f9520c0f2e92/React_YT_Thumbnail.png"
-                        alt="React"
-                        width={320}
-                        height={180}
-                        className="max-h-40 rounded-lg object-contain opacity-80"
-                    />
-                </div>
+                <h3 className="font-serif font-black text-white text-2xl uppercase tracking-tight leading-[0.95] mb-2">
+                    like what you read?
+                </h3>
+                <p className="text-neutral-400 text-sm leading-relaxed">
+                    check out projects i&apos;m working on or reach out for collaboration.
+                </p>
             </div>
-        </FadeIn>
+            <Link href="/projects" className="btn-primary shrink-0">
+                see projects →
+            </Link>
+        </div>
     );
 }

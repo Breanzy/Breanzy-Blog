@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import FadeIn from "./FadeIn";
 
 export default function NewsletterSubscribe() {
     const [email, setEmail] = useState("");
@@ -29,22 +28,37 @@ export default function NewsletterSubscribe() {
     };
 
     return (
-        <FadeIn>
-            <div className="glass-card flex flex-col sm:flex-row items-center gap-6 p-6 rounded-xl max-w-4xl mx-auto">
-                <div className="flex-1 flex flex-col gap-2 text-center sm:text-left">
-                    <h2 className="text-white text-xl font-semibold">Stay in the loop</h2>
-                    <p className="text-neutral-400 text-sm">
-                        Get notified whenever I publish a new article. No spam — just new posts.
-                    </p>
+        <div
+            className="relative rounded-xl overflow-hidden border p-6 md:p-8"
+            style={{ background: "rgba(8,12,24,0.7)", backdropFilter: "blur(12px)", borderColor: "rgba(255,255,255,0.08)" }}
+        >
+            <div className="flex items-start gap-4">
+                <div
+                    className="w-12 h-12 rounded-xl grid place-items-center shrink-0"
+                    style={{
+                        background: "rgb(80 140 230 / 0.15)",
+                        border: "1px solid rgb(80 140 230 / 0.3)",
+                    }}
+                >
+                    <span className="text-2xl">📬</span>
                 </div>
-                <div className="flex-1 w-full">
+                <div className="flex-1">
+                    <h3 className="font-serif font-black text-white text-2xl uppercase tracking-tight leading-[0.95] mb-1">
+                        subscribe to the{" "}
+                        <span style={{ color: "rgb(80 140 230)" }}>newsletter</span>
+                    </h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed mb-4">
+                        one email every other week. new posts, things i&apos;m building, occasional reflections.
+                        no spam. unsubscribe whenever.
+                    </p>
+
                     <AnimatePresence mode="wait">
                         {status === "success" ? (
                             <motion.p
                                 key="success"
                                 initial={{ opacity: 0, y: 6 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-green-400 text-sm text-center sm:text-left"
+                                className="text-emerald-400 text-sm font-mono"
                             >
                                 {message}
                             </motion.p>
@@ -54,43 +68,49 @@ export default function NewsletterSubscribe() {
                                 onSubmit={handleSubmit}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="flex gap-2"
+                                className="flex flex-col sm:flex-row gap-2 max-w-md"
                             >
                                 <input
                                     type="email"
                                     required
-                                    placeholder="you@example.com"
+                                    placeholder="you@somewhere.cool"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="flex-1 min-w-0 bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-2 text-sm backdrop-blur-sm"
+                                    className="flex-1 bg-black/40 border text-white placeholder:text-neutral-600 outline-none rounded-lg px-3 py-2.5 text-sm transition-colors border-white/10 focus:border-[rgb(80_140_230)]"
                                 />
-                                <motion.button
+                                <button
                                     type="submit"
                                     disabled={status === "loading"}
-                                    whileHover={status !== "loading" ? { scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" } : {}}
-                                    whileTap={status !== "loading" ? { scale: 0.96 } : {}}
-                                    animate={{ opacity: status === "loading" ? 0.7 : 1 }}
-                                    transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                                    className="shrink-0 bg-blue-600 hover:bg-blue-500 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                                    className="btn-primary shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    style={{ padding: "10px 18px" }}
                                 >
                                     {status === "loading" ? (
                                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    ) : "Subscribe"}
-                                </motion.button>
+                                    ) : (
+                                        "subscribe"
+                                    )}
+                                </button>
                             </motion.form>
                         )}
                     </AnimatePresence>
+
                     {status === "error" && (
                         <motion.p
                             initial={{ opacity: 0, y: -4 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-red-400 text-xs mt-2"
+                            className="text-red-400 text-xs mt-2 font-mono"
                         >
                             {message}
                         </motion.p>
                     )}
+
+                    <div className="mt-3 text-xs text-neutral-500 flex items-center gap-3 font-mono">
+                        <span className="inline-flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> 0 spam ever
+                        </span>
+                    </div>
                 </div>
             </div>
-        </FadeIn>
+        </div>
     );
 }

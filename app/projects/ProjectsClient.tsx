@@ -35,30 +35,33 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
             {/* Category filter */}
             {categories.length > 1 && (
                 <FadeIn delay={0.1} className="mb-10">
+                    <div className="text-xs text-neutral-500 mb-3 font-mono uppercase tracking-[0.2em]">
+                        filter ──
+                    </div>
                     <div className="flex flex-wrap gap-2">
-                        {categories.map((cat) => (
-                            <motion.button
-                                key={cat}
-                                onClick={() => setActiveCategory(cat)}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                                className={`relative px-4 py-1.5 rounded-full text-sm border transition-colors capitalize ${
-                                    activeCategory === cat
-                                        ? "text-white border-blue-600"
-                                        : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-white"
-                                }`}
-                            >
-                                {activeCategory === cat && (
-                                    <motion.span
-                                        layoutId="filter-pill"
-                                        className="absolute inset-0 bg-blue-600 rounded-full"
-                                        transition={{ type: "spring" as const, stiffness: 300, damping: 25 }}
-                                    />
-                                )}
-                                <span className="relative z-10">{cat}</span>
-                            </motion.button>
-                        ))}
+                        {categories.map((cat) => {
+                            const isActive = activeCategory === cat;
+                            return (
+                                <button
+                                    key={cat}
+                                    onClick={() => setActiveCategory(cat)}
+                                    className="relative px-4 py-1.5 rounded-full text-sm border transition-all capitalize font-mono"
+                                    style={{
+                                        borderColor: isActive ? "rgb(80 140 230 / 0.6)" : "rgb(64 64 64)",
+                                        background: isActive ? "rgb(80 140 230 / 0.15)" : "transparent",
+                                        color: isActive ? "#fff" : "rgb(163 163 163)",
+                                        boxShadow: isActive ? "0 0 18px rgb(80 140 230 / 0.2)" : "none",
+                                    }}
+                                >
+                                    {cat}
+                                    {isActive && (
+                                        <span style={{ color: "rgb(80 140 230)" }} className="ml-2">
+                                            _
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </div>
                 </FadeIn>
             )}

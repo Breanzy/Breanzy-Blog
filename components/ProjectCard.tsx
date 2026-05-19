@@ -4,8 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BsGithub } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { motion } from "framer-motion";
-import TiltCard from "./TiltCard";
+import GlassCard from "@/components/GlassCard";
 
 interface ProjectCardProps {
     project: {
@@ -20,113 +19,113 @@ interface ProjectCardProps {
     };
 }
 
-const card = {
-    idle:    { scale: 1,    y: 0,  boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 10px rgba(255,255,255,0.18), 0 0 35px rgba(255,255,255,0.06), inset 0 1.5px 0 rgba(255,255,255,0.65), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 14px rgba(255,255,255,0.04)" },
-    hovered: { scale: 1.03, y: -8, boxShadow: "0 28px 56px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.25), 0 0 50px rgba(255,255,255,0.08), inset 0 1.5px 0 rgba(255,255,255,0.8)" },
-};
-
-const imageWrap = {
-    idle:    { scale: 1 },
-    hovered: { scale: 1.05 },
-};
-
 export default function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <Link href={`/projects/${project.slug}`} className="block w-full sm:w-[430px]">
-            {/* TiltCard owns the 3D perspective + glare overlay */}
-            <TiltCard className="w-full rounded-xl">
-                {/* motion.div owns hover-state and propagates it via named variants */}
-                <motion.div
-                    className="glass-card w-full rounded-xl overflow-hidden"
-                    variants={card}
-                    initial="idle"
-                    whileHover="hovered"
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        <Link href={`/projects/${project.slug}`} className="group block w-full sm:w-[430px]">
+            <GlassCard className="flex flex-col w-full">
+                {/* Cover */}
+                <div
+                    className="cover-frame relative h-48 overflow-hidden"
+                    style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
-                    {project.image && (
-                        <div className="relative h-[220px] w-full overflow-hidden">
-                            <motion.div
-                                className="relative w-full h-full"
-                                variants={imageWrap}
-                                transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                    <div className="absolute inset-0" style={{ background: "#060e1f" }} />
+                    <div aria-hidden className="cover-grid" />
+                    <div
+                        aria-hidden
+                        className="absolute inset-0 opacity-30"
+                        style={{
+                            backgroundImage:
+                                "repeating-linear-gradient(-45deg, rgba(80,140,230,0.06) 0 2px, transparent 2px 12px)",
+                        }}
+                    />
+                    {project.image ? (
+                        <Image
+                            src={project.image}
+                            alt={project.title}
+                            fill
+                            className="object-cover opacity-60"
+                            sizes="(max-width: 640px) 100vw, 430px"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 grid place-items-center">
+                            <span
+                                className="cover-emoji-wrap float-y slow text-6xl opacity-90"
+                                style={{ filter: "drop-shadow(0 0 20px rgba(80,140,230,0.4))" }}
                             >
-                                <Image
-                                    src={project.image}
-                                    alt={project.title}
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 640px) 100vw, 430px"
-                                />
-                            </motion.div>
+                                🛠️
+                            </span>
+                        </div>
+                    )}
+                    <span
+                        className="absolute top-3 right-3 text-[11px] text-neutral-300 px-2 py-1 rounded inline-flex items-center gap-1.5"
+                        style={{ background: "rgba(3,5,12,0.7)", border: "1px solid var(--hairline)" }}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        live
+                    </span>
+                </div>
+
+                {/* Body */}
+                <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-serif font-bold text-white text-lg tracking-tight mb-1.5 uppercase">
+                        {project.title}
+                    </h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                        {project.description}
+                    </p>
+
+                    {project.techStack && project.techStack.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                            {project.techStack.map((t) => (
+                                <span
+                                    key={t}
+                                    className="font-mono text-[10px] px-2 py-0.5 rounded text-neutral-400"
+                                    style={{ background: "var(--ink-1)", border: "1px solid var(--hairline)" }}
+                                >
+                                    {t}
+                                </span>
+                            ))}
                         </div>
                     )}
 
-                    <div className="p-4 flex flex-col gap-2">
-                        <span className="text-blue-400 text-xs uppercase tracking-[0.14em]">Case study</span>
-                        <p className="text-white text-lg font-semibold line-clamp-2">{project.title}</p>
-                        <p className="text-neutral-400 text-sm line-clamp-2">{project.description}</p>
-
-                        {project.techStack && project.techStack.length > 0 && (
-                            <motion.div
-                                className="flex flex-wrap gap-1.5 mt-1"
-                                initial="hidden"
-                                whileInView="show"
-                                viewport={{ once: true }}
-                                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+                    <div
+                        className="mt-auto flex items-center justify-between text-xs pt-3"
+                        style={{ borderTop: "1px solid var(--hairline)" }}
+                    >
+                        {project.liveUrl ? (
+                            <span
+                                role="link"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.open(project.liveUrl, "_blank", "noopener,noreferrer");
+                                }}
+                                className="inline-flex items-center gap-1.5 font-mono cursor-pointer transition-colors"
+                                style={{ color: "rgb(80 140 230)" }}
                             >
-                                {project.techStack.map((tech) => (
-                                    <motion.span
-                                        key={tech}
-                                        variants={{ hidden: { opacity: 0, scale: 0.8 }, show: { opacity: 1, scale: 1 } }}
-                                        whileHover={{ scale: 1.1, y: -2 }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                        className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-2 py-0.5 rounded-full cursor-default"
-                                    >
-                                        {tech}
-                                    </motion.span>
-                                ))}
-                            </motion.div>
+                                <FaExternalLinkAlt className="text-[10px]" /> live demo
+                            </span>
+                        ) : (
+                            <span style={{ color: "rgb(80 140 230)" }} className="font-mono">
+                                ↗ view project
+                            </span>
                         )}
-
-                        <div className="flex gap-4 mt-2">
-                            {project.liveUrl && (
-                                <motion.span
-                                    role="link"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        window.open(project.liveUrl, "_blank", "noopener,noreferrer");
-                                    }}
-                                    className="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
-                                    whileHover={{ x: 3 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                >
-                                    <FaExternalLinkAlt className="text-xs" />
-                                    Live Demo
-                                </motion.span>
-                            )}
-                            <span className="text-sm text-blue-400">View case study</span>
-                            {project.repoUrl && (
-                                <motion.span
-                                    role="link"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        window.open(project.repoUrl, "_blank", "noopener,noreferrer");
-                                    }}
-                                    className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors cursor-pointer"
-                                    whileHover={{ x: 3 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                >
-                                    <BsGithub />
-                                    Repo
-                                </motion.span>
-                            )}
-                        </div>
+                        {project.repoUrl && (
+                            <span
+                                role="link"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.open(project.repoUrl, "_blank", "noopener,noreferrer");
+                                }}
+                                className="inline-flex items-center gap-1.5 text-neutral-500 hover:text-white transition-colors font-mono cursor-pointer"
+                            >
+                                <BsGithub /> repo
+                            </span>
+                        )}
                     </div>
-                </motion.div>
-            </TiltCard>
+                </div>
+            </GlassCard>
         </Link>
     );
 }

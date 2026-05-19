@@ -36,16 +36,14 @@ export default function OAuth() {
     };
 
     return (
-        <motion.button
+        <button
             type="button"
             onClick={handleGoogleClick}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-            className="w-full flex items-center justify-center gap-2 border border-neutral-700 hover:border-blue-600 text-neutral-300 hover:text-white py-2 rounded-lg transition-colors text-sm"
+            className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-lg text-sm text-neutral-300 hover:text-white transition-all backdrop-blur-md"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}
         >
             <AiFillGoogleCircle className="text-xl" />
-            Continue with Google
-        </motion.button>
+            continue with google
+        </button>
     );
 }

@@ -3,13 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { AiOutlineSearch } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { signoutSuccess } from "@/redux/user/userSlice";
 import { useState } from "react";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { RootState } from "@/redux/store";
 
 export default function Header() {
@@ -19,11 +18,6 @@ export default function Header() {
     const dispatch = useDispatch();
     const [searchTerm, setSearchTerm] = useState("");
     const [mobileOpen, setMobileOpen] = useState(false);
-
-    /* Scroll-aware header background — fades from transparent to solid */
-    const { scrollY } = useScroll();
-    const bgOpacity = useTransform(scrollY, [0, 60], [0, 1]);
-    const borderOpacity = useTransform(scrollY, [0, 60], [0, 1]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,112 +35,135 @@ export default function Header() {
         }
     };
 
-    const navLinks = [
-        { href: "/", label: "Home", active: pathname === "/" },
-        { href: "/blog", label: "Blog", active: pathname === "/blog" || pathname.startsWith("/blog/") },
-        { href: "/projects", label: "Projects", active: pathname === "/projects" },
+    const links = [
+        { href: "/",         label: "home",     active: pathname === "/" },
+        { href: "/blog",     label: "blog",     active: pathname === "/blog" || pathname.startsWith("/blog/") },
+        { href: "/projects", label: "projects", active: pathname === "/projects" || pathname.startsWith("/projects/") },
     ];
 
     return (
-        <header className="sticky top-0 z-40">
-            {/* Animated glass bg that fades in on scroll */}
-            <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 bg-black/60 backdrop-blur-xl pointer-events-none" />
-            <motion.div style={{ opacity: borderOpacity }} className="absolute bottom-0 left-0 right-0 h-px bg-white/[0.06] pointer-events-none" />
-
-            <div className="relative max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <header
+            className="sticky top-0 z-50"
+            style={{
+                backgroundColor: "rgba(3,5,12,0.78)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderBottom: "1px solid var(--hairline)",
+            }}
+        >
+            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
                 {/* Logo */}
-                <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring" as const, stiffness: 400, damping: 17 }} className="shrink-0">
-                    <Link href="/" aria-label="Breanzy home" className="block">
-                        <Image src="/logo.png" alt="Breanzy" width={36} height={36} priority className="rounded-md" />
-                    </Link>
-                </motion.div>
+                <Link href="/" className="flex items-center gap-2.5 reveal-slide shrink-0">
+                    <span
+                        className="relative w-8 h-8 grid place-items-center rounded-md"
+                        style={{ background: "var(--ink-3)", border: "1px solid rgba(80,140,230,0.3)" }}
+                    >
+                        <span className="text-[rgb(80_140_230)] text-sm font-black font-serif">B</span>
+                    </span>
+                    <span className="font-serif font-black text-lg text-white tracking-tight uppercase">
+                        Breanzy
+                    </span>
+                </Link>
 
                 {/* Search — hidden on mobile */}
-                <form onSubmit={handleSearch} className="hidden lg:flex items-center flex-1 max-w-sm">
-                    <div className="relative w-full">
-                        <motion.input
-                            type="text"
-                            placeholder="Search..."
+                <form onSubmit={handleSearch} className="hidden lg:flex items-center flex-1 max-w-xs reveal-fade">
+                    <div
+                        className="relative flex items-center gap-2 rounded-md px-3 py-1.5 w-full"
+                        style={{ background: "var(--ink-1)", border: "1px solid var(--hairline)" }}
+                    >
+                        <span className="text-neutral-500 text-xs font-mono">/&gt;</span>
+                        <input
+                            className="flex-1 bg-transparent outline-none text-sm text-neutral-300 placeholder:text-neutral-600"
+                            placeholder="search for a post..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            whileFocus={{ scale: 1.02 }}
-                            transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
-                            className="w-full bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-1.5 text-sm pr-9 backdrop-blur-sm"
                         />
-                        <AiOutlineSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 text-base" />
+                        <span className="text-[10px] font-mono text-neutral-600 border border-white/10 rounded px-1.5 py-0.5">
+                            ⌘K
+                        </span>
                     </div>
                 </form>
 
-                {/* Desktop nav with animated active pill */}
-                <nav className="hidden md:flex items-center gap-1">
-                    {navLinks.map((link) => (
+                {/* Desktop nav */}
+                <nav className="hidden md:flex items-center gap-1 text-sm reveal-fade">
+                    {links.map((l) => (
                         <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`relative px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                                link.active ? "text-white" : "text-neutral-400 hover:text-white"
-                            }`}
+                            key={l.href}
+                            href={l.href}
+                            className="nav-link relative px-3.5 py-1.5 transition-colors"
+                            style={{ color: l.active ? "#fff" : "rgb(160 160 170)" }}
                         >
-                            {link.active && (
-                                <motion.span
-                                    layoutId="nav-pill"
-                                    className="absolute inset-0 bg-white/[0.08] backdrop-blur-sm border border-white/10 rounded-lg"
-                                    transition={{ type: "spring" as const, stiffness: 300, damping: 25 }}
+                            {l.active && (
+                                <span
+                                    className="absolute inset-0 rounded-md"
+                                    style={{
+                                        background: "rgba(80,140,230,0.08)",
+                                        border: "1px solid rgba(80,140,230,0.22)",
+                                    }}
                                 />
                             )}
-                            <span className="relative z-10">{link.label}</span>
+                            <span className="relative">{l.label}</span>
                         </Link>
                     ))}
                 </nav>
 
-                {/* Right side: user or sign-in */}
-                <div className="flex items-center gap-3 shrink-0">
+                {/* Right side */}
+                <div className="flex items-center gap-3 shrink-0 reveal-slide">
                     {currentUser ? (
                         <Menu as="div" className="relative">
                             <MenuButton className="focus:outline-none">
-                                <motion.div
-                                    className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-700 hover:border-blue-500 transition-colors"
-                                    whileHover={{ scale: 1.1 }}
-                                    transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                                >
-                                    <Image src={currentUser.profilePicture} alt="avatar" fill className="object-cover" sizes="32px" />
-                                </motion.div>
+                                <div className="relative w-8 h-8 rounded-md overflow-hidden border transition-colors"
+                                    style={{ borderColor: "rgba(80,140,230,0.3)" }}>
+                                    <Image
+                                        src={currentUser.profilePicture}
+                                        alt="avatar"
+                                        fill
+                                        className="object-cover"
+                                        sizes="32px"
+                                    />
+                                </div>
                             </MenuButton>
-                            <MenuItems className="absolute right-0 mt-2 w-48 glass-card rounded-xl shadow-2xl focus:outline-none overflow-hidden">
+                            <MenuItems
+                                className="absolute right-0 mt-2 w-48 rounded-xl shadow-2xl focus:outline-none overflow-hidden"
+                                style={{
+                                    background: "rgba(6,11,24,0.95)",
+                                    border: "1px solid var(--hairline)",
+                                    backdropFilter: "blur(20px)",
+                                }}
+                            >
                                 <div className="px-4 py-3 border-b border-white/[0.06]">
                                     <p className="text-white text-sm font-medium truncate">{currentUser.username}</p>
                                     <p className="text-neutral-500 text-xs truncate">{currentUser.email}</p>
                                 </div>
                                 <MenuItem>
-                                    <Link href="/dashboard?tab=profile" className="block px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white transition-colors">
-                                        Profile
+                                    <Link
+                                        href="/dashboard?tab=profile"
+                                        className="block px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white transition-colors font-mono"
+                                    >
+                                        profile
                                     </Link>
                                 </MenuItem>
                                 <MenuItem>
-                                    <button onClick={handleSignout} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white transition-colors border-t border-white/[0.06]">
-                                        Sign Out
+                                    <button
+                                        onClick={handleSignout}
+                                        className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white transition-colors border-t border-white/[0.06] font-mono"
+                                    >
+                                        sign out
                                     </button>
                                 </MenuItem>
                             </MenuItems>
                         </Menu>
                     ) : (
-                        <motion.div
-                            whileHover={{ scale: 1.06, boxShadow: "0 0 20px rgba(37,99,235,0.4)" }}
-                            whileTap={{ scale: 0.96 }}
-                            transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                            className="rounded-lg"
-                        >
-                            <Link href="/sign-in" className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-1.5 rounded-lg transition-colors block">
-                                Sign In
-                            </Link>
-                        </motion.div>
+                        <Link href="/sign-in" className="btn-primary" style={{ padding: "8px 18px" }}>
+                            <span className="opacity-50">&gt;</span> sign in
+                        </Link>
                     )}
 
                     {/* Mobile hamburger */}
                     <motion.button
                         onClick={() => setMobileOpen(!mobileOpen)}
                         animate={{ rotate: mobileOpen ? 90 : 0 }}
-                        transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         className="md:hidden text-neutral-400 hover:text-white transition-colors"
                         aria-label="Toggle menu"
                     >
@@ -155,7 +172,7 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Mobile nav — animated slide down */}
+            {/* Mobile nav */}
             <AnimatePresence>
                 {mobileOpen && (
                     <motion.div
@@ -163,37 +180,43 @@ export default function Header() {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="md:hidden border-t border-white/[0.06] bg-black/70 backdrop-blur-xl overflow-hidden"
+                        className="md:hidden overflow-hidden"
+                        style={{ borderTop: "1px solid var(--hairline)", background: "rgba(3,5,12,0.9)" }}
                     >
                         <div className="px-4 pb-4">
                             <form onSubmit={handleSearch} className="mt-3 mb-2">
-                                <div className="relative">
+                                <div
+                                    className="flex items-center gap-2 rounded-md px-3 py-2"
+                                    style={{ background: "var(--ink-1)", border: "1px solid var(--hairline)" }}
+                                >
+                                    <span className="text-neutral-500 text-xs font-mono">/&gt;</span>
                                     <input
-                                        type="text"
-                                        placeholder="Search..."
+                                        className="flex-1 bg-transparent outline-none text-sm text-neutral-300 placeholder:text-neutral-600"
+                                        placeholder="search..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-2 text-sm pr-9"
                                     />
-                                    <AiOutlineSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 text-base" />
                                 </div>
                             </form>
                             <nav className="flex flex-col gap-1">
-                                {navLinks.map((link, i) => (
+                                {links.map((l, i) => (
                                     <motion.div
-                                        key={link.href}
+                                        key={l.href}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: i * 0.05 }}
                                     >
                                         <Link
-                                            href={link.href}
+                                            href={l.href}
                                             onClick={() => setMobileOpen(false)}
-                                            className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                                                link.active ? "text-white bg-white/[0.08] border border-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
-                                            }`}
+                                            className="block px-3 py-2 rounded-lg text-sm transition-colors font-mono"
+                                            style={{
+                                                color: l.active ? "#fff" : "rgb(160 160 170)",
+                                                background: l.active ? "rgba(80,140,230,0.08)" : "transparent",
+                                                border: l.active ? "1px solid rgba(80,140,230,0.22)" : "1px solid transparent",
+                                            }}
                                         >
-                                            {link.label}
+                                            {l.label}
                                         </Link>
                                     </motion.div>
                                 ))}

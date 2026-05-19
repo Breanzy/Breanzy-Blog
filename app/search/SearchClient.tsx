@@ -5,8 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import PostCard from "@/components/PostCard";
 import { POST_CATEGORIES } from "@/lib/postCategories";
 
-const inputCls = "w-full bg-neutral-900 border border-neutral-800 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
-const selectCls = "w-full bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-blue-600 rounded-lg px-3 py-2 text-sm";
+const inputCls = "w-full bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 outline-none focus:border-[rgb(80_140_230)] rounded-lg px-3 py-2 text-sm transition-colors";
+const selectCls = "w-full bg-black/40 border border-white/10 text-white outline-none focus:border-[rgb(80_140_230)] rounded-lg px-3 py-2 text-sm transition-colors";
 
 export default function SearchClient() {
     const searchParams = useSearchParams();
@@ -58,68 +58,125 @@ export default function SearchClient() {
     };
 
     return (
-        <div className="min-h-screen bg-black flex flex-col md:flex-row">
+        <div
+            className="min-h-screen flex flex-col md:flex-row"
+            style={{ background: "var(--ink-0)" }}
+        >
             {/* Sidebar filters */}
-            <aside className="md:w-64 shrink-0 p-6 border-b md:border-b-0 md:border-r border-neutral-800 bg-neutral-950">
-                <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="searchTerm" className="text-neutral-400 text-sm">Search</label>
+            <aside
+                className="md:w-72 shrink-0 p-6 border-b md:border-b-0 md:border-r"
+                style={{
+                    borderColor: "rgba(255,255,255,0.06)",
+                    background: "rgba(6,10,22,0.6)",
+                    backdropFilter: "blur(12px)",
+                }}
+            >
+                <div
+                    className="text-xs mb-4 uppercase tracking-[0.2em] font-mono"
+                    style={{ color: "rgb(80 140 230)" }}
+                >
+                    {"// filters"}
+                </div>
+                <h2 className="font-serif font-black text-white text-xl uppercase tracking-tight leading-[0.95] mb-6">
+                    refine <span style={{ color: "rgb(80 140 230)" }}>results</span>
+                </h2>
+
+                <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="searchTerm" className="text-neutral-400 text-xs uppercase tracking-[0.15em] font-mono">
+                            search
+                        </label>
                         <input
                             id="searchTerm"
                             type="text"
-                            placeholder="Search posts..."
+                            placeholder="search posts..."
                             value={sideBarData.searchTerm}
                             onChange={handleChange}
                             className={inputCls}
                         />
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="sort" className="text-neutral-400 text-sm">Sort</label>
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="sort" className="text-neutral-400 text-xs uppercase tracking-[0.15em] font-mono">
+                            sort
+                        </label>
                         <select id="sort" value={sideBarData.sort} onChange={handleChange} className={selectCls}>
-                            <option value="desc">Latest</option>
-                            <option value="asc">Oldest</option>
+                            <option value="desc" className="bg-neutral-900">latest</option>
+                            <option value="asc"  className="bg-neutral-900">oldest</option>
                         </select>
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="category" className="text-neutral-400 text-sm">Category</label>
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="category" className="text-neutral-400 text-xs uppercase tracking-[0.15em] font-mono">
+                            category
+                        </label>
                         <select id="category" value={sideBarData.category} onChange={handleChange} className={selectCls}>
-                            <option value="">All</option>
-                            {POST_CATEGORIES.map((category) => (
-                                <option key={category.value} value={category.value}>{category.label}</option>
+                            <option value="" className="bg-neutral-900">all</option>
+                            {POST_CATEGORIES.map((c) => (
+                                <option key={c.value} value={c.value} className="bg-neutral-900">
+                                    {c.label}
+                                </option>
                             ))}
                         </select>
                     </div>
-                    <button
-                        type="submit"
-                        className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 rounded-lg transition-colors"
-                    >
-                        Apply Filters
+                    <button type="submit" className="btn-primary">
+                        apply filters
                     </button>
                 </form>
             </aside>
 
             {/* Results */}
-            <div className="flex-1 p-6">
-                <h1 className="text-2xl font-semibold text-white mb-6 pb-4 border-b border-neutral-800">
-                    Results
-                </h1>
-                <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex-1 p-6 md:p-8">
+                <div
+                    className="flex items-baseline justify-between mb-6 pb-4"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                >
+                    <div>
+                        <div
+                            className="text-xs mb-2 uppercase tracking-[0.2em] font-mono"
+                            style={{ color: "rgb(80 140 230)" }}
+                        >
+                            {"// found " + posts.length}
+                        </div>
+                        <h1 className="font-serif font-black text-white text-3xl uppercase tracking-tight">
+                            search <span className="text-neutral-500">results</span>
+                        </h1>
+                    </div>
+                    <span className="text-xs text-neutral-500 font-mono">
+                        sorted: {sideBarData.sort === "desc" ? "latest" : "oldest"}
+                    </span>
+                </div>
+
+                <div className="flex flex-wrap gap-4 justify-start">
                     {loading && (
-                        <p className="text-neutral-500 w-full text-center py-12">Loading...</p>
+                        <p className="text-neutral-500 w-full text-center py-12 font-mono">
+                            <span
+                                className="inline-block w-2 h-3.5 mr-2 animate-pulse"
+                                style={{ background: "rgb(80 140 230)" }}
+                            />
+                            loading…
+                        </p>
                     )}
                     {!loading && posts.length === 0 && (
-                        <p className="text-neutral-500 w-full text-center py-12">No posts found.</p>
+                        <p className="text-neutral-500 w-full text-center py-12 font-mono">
+                            no posts found.
+                        </p>
                     )}
                     {!loading && posts.map((post) => (
                         <PostCard key={post._id} post={post} />
                     ))}
                 </div>
+
                 {showMore && (
                     <button
                         onClick={handleShowMore}
-                        className="mt-8 w-full text-blue-500 hover:text-blue-400 text-sm transition-colors py-4"
+                        className="mt-8 w-full transition-colors py-4 rounded-lg text-sm font-mono"
+                        style={{
+                            color: "rgb(80 140 230)",
+                            border: "1px solid rgba(255,255,255,0.06)",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgb(80 140 230)")}
                     >
-                        Show More
+                        show more →
                     </button>
                 )}
             </div>

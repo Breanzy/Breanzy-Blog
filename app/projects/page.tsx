@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
-import ParallaxHero from "@/components/ParallaxHero";
+import MiniHero from "@/components/MiniHero";
 import ProjectsClient from "./ProjectsClient";
 import { BreadcrumbSchema } from "@/components/JsonLd";
 
@@ -25,18 +25,20 @@ export default async function ProjectsPage() {
     const projects = await getProjects();
 
     return (
-        <div className="min-h-screen">
+        <div style={{ background: "var(--ink-0)" }}>
             <BreadcrumbSchema
                 items={[
                     { name: "Home", path: "/" },
                     { name: "Projects", path: "/projects" },
                 ]}
             />
-            <ParallaxHero
-                title="Projects"
-                subtitle="A collection of things I've built — from full-stack web apps to tools and experiments."
+            <MiniHero
+                eyebrow="ls ./projects"
+                title="PROJECTS."
+                accentWord="PROJECTS"
+                subtitle="a collection of things i've built — from full-stack web apps to tools and experiments."
             />
-            <div className="max-w-6xl mx-auto px-4 pb-20">
+            <div className="max-w-6xl mx-auto px-6 pb-20">
                 <ProjectsClient projects={projects} />
             </div>
         </div>

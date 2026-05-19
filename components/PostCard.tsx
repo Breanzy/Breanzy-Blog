@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import TiltCard from "./TiltCard";
+import GlassCard from "@/components/GlassCard";
 import { getPostCategoryLabel } from "@/lib/postCategories";
 import { formatPostDate, getReadingTimeMinutes } from "@/utils/readingTime";
 
@@ -19,78 +18,81 @@ interface PostCardProps {
     };
 }
 
-/*
- * Named variants let the parent motion.div propagate hover state to children,
- * so the image and the "Read article" button both react to hovering the card —
- * without any coupling between siblings.
- */
-const card = {
-    idle:    { scale: 1,    y: 0,  boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 10px rgba(255,255,255,0.18), 0 0 35px rgba(255,255,255,0.06), inset 0 1.5px 0 rgba(255,255,255,0.65), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 14px rgba(255,255,255,0.04)" },
-    hovered: { scale: 1.03, y: -8, boxShadow: "0 28px 56px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.25), 0 0 50px rgba(255,255,255,0.08), inset 0 1.5px 0 rgba(255,255,255,0.8)" },
-};
-
-const imageWrap = {
-    idle:    { height: "260px" },
-    hovered: { height: "200px" },
-};
-
-const readBtn = {
-    idle:    { y: "100%", backgroundColor: "transparent", color: "#60a5fa" },
-    hovered: { y: "0%",   backgroundColor: "#2563eb",      color: "#ffffff"  },
-};
+const COVER_GRADIENTS = [
+    "radial-gradient(circle at 30% 40%, rgba(80,140,230,0.35), transparent 60%), #060e1f",
+    "radial-gradient(circle at 70% 60%, rgba(40,90,190,0.35), transparent 60%), #060e1f",
+    "radial-gradient(circle at 50% 30%, rgba(60,110,220,0.35), transparent 60%), #060e1f",
+];
 
 export default function PostCard({ post }: PostCardProps) {
     const readTime    = getReadingTimeMinutes(post.content || "");
     const publishedAt = post.createdAt ? formatPostDate(post.createdAt) : null;
     const category    = getPostCategoryLabel(post.category);
+    const gradIdx     = Math.abs(post._id.charCodeAt(0) ?? 0) % COVER_GRADIENTS.length;
 
     return (
-        /* TiltCard owns the 3D perspective + glare overlay */
-        <TiltCard className="w-full sm:w-[430px] h-[400px] rounded-xl">
-            {/* motion.div owns hover-state and propagates it via named variants */}
-            <motion.div
-                className="glass-card relative h-full w-full rounded-xl overflow-hidden"
-                variants={card}
-                initial="idle"
-                whileHover="hovered"
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-                <Link href={`/blog/${post.slug}`} className="block h-full">
-                    {/* Image shrinks on hover — driven by parent variant */}
-                    <motion.div
-                        className="relative w-full overflow-hidden"
-                        variants={imageWrap}
-                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    >
+        <Link href={`/blog/${post.slug}`} className="group block w-full sm:w-[430px]">
+            <GlassCard className="block w-full">
+                {/* Cover */}
+                <div
+                    className="cover-frame relative h-44 overflow-hidden"
+                    style={{ borderBottom: "1px solid var(--hairline)" }}
+                >
+                    <div className="absolute inset-0" style={{ background: COVER_GRADIENTS[gradIdx] }} />
+                    <div aria-hidden className="cover-grid" />
+                    {post.image ? (
                         <Image
                             src={post.image}
-                            alt="post cover"
+                            alt={post.title}
                             fill
-                            className="object-cover"
+                            className="object-cover opacity-60"
                             sizes="(max-width: 640px) 100vw, 430px"
                         />
-                    </motion.div>
-
-                    <div className="p-3 flex flex-col gap-2">
-                        <p className="text-white text-lg font-semibold line-clamp-2">{post.title}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-neutral-500 text-sm">
-                            <span className="italic">{category}</span>
-                            {publishedAt && <span>{publishedAt}</span>}
-                            <span>{readTime} min read</span>
+                    ) : (
+                        <div className="absolute inset-0 grid place-items-center">
+                            <span
+                                className="cover-emoji-wrap float-y text-5xl opacity-85"
+                                style={{ filter: "drop-shadow(0 0 20px rgba(0,0,0,0.5))" }}
+                            >
+                                📝
+                            </span>
                         </div>
-                    </div>
-
-                    {/* "Read article" slides up from below on card hover */}
-                    <motion.div
-                        className="absolute left-0 right-0 bottom-0 border border-blue-600 text-center py-2 rounded-b-xl text-sm font-medium"
-                        variants={readBtn}
-                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    )}
+                    <span
+                        className="absolute top-3 left-3 text-[11px] font-mono text-neutral-300 px-2.5 py-1 rounded-md"
+                        style={{ background: "rgba(3,5,12,0.7)", border: "1px solid var(--hairline)" }}
                     >
-                        Read article
-                    </motion.div>
-                </Link>
-            </motion.div>
-        </TiltCard>
+                        <span className="text-[rgb(80_140_230)] mr-1.5">#</span>
+                        {category}
+                    </span>
+                    {readTime > 0 && (
+                        <span
+                            className="absolute bottom-3 right-3 text-[11px] font-mono text-neutral-400 px-2 py-0.5 rounded"
+                            style={{ background: "rgba(3,5,12,0.6)", border: "1px solid var(--hairline)" }}
+                        >
+                            {readTime}m
+                        </span>
+                    )}
+                </div>
+
+                {/* Body */}
+                <div className="p-5">
+                    <div className="text-[11px] text-neutral-500 mb-2 flex items-center gap-2 font-mono">
+                        {publishedAt && <span>{publishedAt}</span>}
+                    </div>
+                    <h3 className="font-serif font-bold text-white group-hover:text-[rgb(80,140,230)] text-lg leading-tight tracking-tight mb-2 line-clamp-2 transition-colors duration-500">
+                        {post.title}
+                    </h3>
+                    <div
+                        className="mt-3 pt-3 flex items-center justify-between text-xs font-mono"
+                        style={{ borderTop: "1px solid var(--hairline)" }}
+                    >
+                        <span style={{ color: "rgb(80 140 230)" }} className="inline-flex items-center gap-1.5">
+                            read article →
+                        </span>
+                    </div>
+                </div>
+            </GlassCard>
+        </Link>
     );
 }

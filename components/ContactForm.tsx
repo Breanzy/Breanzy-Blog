@@ -33,15 +33,13 @@ export default function ContactForm() {
     };
 
     const inputClass =
-        "w-full bg-black/40 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-600/60 rounded-lg px-3 py-2.5 text-sm backdrop-blur-sm transition-colors";
+        "w-full bg-black/40 border text-white placeholder:text-neutral-600 outline-none rounded-lg px-3 py-2.5 text-sm transition-colors"
+        + " border-white/10 focus:border-[rgb(80_140_230)]";
 
     return (
         <FadeIn>
-            <div className="glass-card p-8 rounded-xl max-w-2xl mx-auto">
-                <h2 className="text-white text-2xl font-semibold mb-1">Reach Out to Me</h2>
-                <p className="text-neutral-400 text-sm mb-6">
-                    Whether it's a job opportunity, a project idea, or just a hello — I'd love to hear from you.
-                </p>
+            <div className="max-w-2xl mx-auto">
+
 
                 <AnimatePresence mode="wait">
                     {status === "success" ? (
@@ -110,21 +108,23 @@ export default function ContactForm() {
                                 </motion.p>
                             )}
 
-                            <motion.button
+                            <button
                                 type="submit"
                                 disabled={status === "loading"}
-                                whileHover={status !== "loading" ? { scale: 1.03, boxShadow: "0 0 20px rgba(37,99,235,0.4)" } : {}}
-                                whileTap={status !== "loading" ? { scale: 0.97 } : {}}
-                                transition={{ type: "spring" as const, stiffness: 400, damping: 17 }}
-                                className="self-start bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+                                className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 {status === "loading" ? (
                                     <>
                                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Sending…
+                                        sending…
                                     </>
-                                ) : "Send Message"}
-                            </motion.button>
+                                ) : (
+                                    <>
+                                        <span className="opacity-50">&gt;</span> send message{" "}
+                                        <span className="arrow">→</span>
+                                    </>
+                                )}
+                            </button>
                         </motion.form>
                     )}
                 </AnimatePresence>

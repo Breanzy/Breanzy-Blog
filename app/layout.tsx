@@ -1,10 +1,32 @@
 import type { Metadata } from "next";
+import { Space_Grotesk, JetBrains_Mono, Archivo } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import FetchInterceptor from "@/components/providers/FetchInterceptor";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
+
+const spaceGrotesk = Space_Grotesk({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    variable: "--font-space-grotesk",
+    display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    variable: "--font-jetbrains-mono",
+    display: "swap",
+});
+
+const archivo = Archivo({
+    subsets: ["latin"],
+    weight: ["500", "600", "700", "800", "900"],
+    variable: "--font-archivo",
+    display: "swap",
+});
 
 export const metadata: Metadata = {
     title: {
@@ -29,8 +51,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
-            <body>
+        <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${archivo.variable}`}>
+            <body className={spaceGrotesk.className}>
                 <ReduxProvider>
                     <FetchInterceptor />
                     <Header />
