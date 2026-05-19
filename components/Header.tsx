@@ -54,12 +54,12 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2.5 reveal-slide shrink-0">
-                    <span
-                        className="relative w-8 h-8 grid place-items-center rounded-md"
-                        style={{ background: "var(--ink-3)", border: "1px solid rgba(80,140,230,0.3)" }}
+                    <div
+                        className="relative w-8 h-8 rounded-md overflow-hidden"
+                        style={{ border: "1px solid rgba(80,140,230,0.3)" }}
                     >
-                        <span className="text-[rgb(80_140_230)] text-sm font-black font-serif">B</span>
-                    </span>
+                        <Image src="/logo.png" alt="Breanzy" fill className="object-cover" sizes="32px" priority />
+                    </div>
                     <span className="font-serif font-black text-lg text-white tracking-tight uppercase">
                         Breanzy
                     </span>

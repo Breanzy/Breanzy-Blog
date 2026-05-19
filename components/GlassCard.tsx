@@ -6,11 +6,22 @@ interface GlassCardProps {
     children: React.ReactNode;
     className?: string;
     interactive?: boolean;
+    tilt?: boolean;
     [key: string]: any;
 }
 
-/** Matte glass card with cursor-tracked spotlight on hover. */
-export default function GlassCard({ children, className = "", interactive = true, ...rest }: GlassCardProps) {
+/**
+ * Matte glass card.
+ * - Cursor-tracked spotlight glow on hover
+ * - Optional 3D tilt (perspective rotateX/Y) on mouse move
+ */
+export default function GlassCard({
+    children,
+    className = "",
+    interactive = true,
+    tilt = true,
+    ...rest
+}: GlassCardProps) {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -20,16 +31,32 @@ export default function GlassCard({ children, className = "", interactive = true
 
         const onMove = (e: PointerEvent) => {
             const r = el.getBoundingClientRect();
-            const x = ((e.clientX - r.left) / r.width) * 100;
-            const y = ((e.clientY - r.top) / r.height) * 100;
+            const xFrac = (e.clientX - r.left) / r.width;   // 0→1
+            const yFrac = (e.clientY - r.top)  / r.height;  // 0→1
+
             cancelAnimationFrame(raf);
             raf = requestAnimationFrame(() => {
-                el.style.setProperty("--mx", x + "%");
-                el.style.setProperty("--my", y + "%");
+                // Spotlight
+                el.style.setProperty("--mx", xFrac * 100 + "%");
+                el.style.setProperty("--my", yFrac * 100 + "%");
+
+                // 3D tilt — max ±8°
+                if (tilt) {
+                    const rotX = (yFrac - 0.5) * -8;
+                    const rotY = (xFrac - 0.5) *  8;
+                    el.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-2px)`;
+                }
             });
         };
+
         const onEnter = () => el.style.setProperty("--spot-op", "1");
-        const onLeave = () => el.style.setProperty("--spot-op", "0");
+
+        const onLeave = () => {
+            el.style.setProperty("--spot-op", "0");
+            if (tilt) {
+                el.style.transform = "";
+            }
+        };
 
         el.addEventListener("pointermove", onMove);
         el.addEventListener("pointerenter", onEnter);
@@ -40,12 +67,16 @@ export default function GlassCard({ children, className = "", interactive = true
             el.removeEventListener("pointerenter", onEnter);
             el.removeEventListener("pointerleave", onLeave);
         };
-    }, [interactive]);
+    }, [interactive, tilt]);
 
     return (
         <div
             ref={ref}
-            className={`glass glass-hover relative rounded-2xl overflow-hidden transition-all duration-300 ${className}`}
+            className={`glass glass-hover relative rounded-2xl overflow-hidden ${className}`}
+            style={{
+                transition: "border-color .5s var(--ease-out), box-shadow .5s var(--ease-out), transform .4s var(--ease-out)",
+                willChange: "transform",
+            }}
             {...rest}
         >
             {children}

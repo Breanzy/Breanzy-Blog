@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import Project from "@/models/project.model";
+import { getCurrentStatusTexts } from "@/lib/github";
 import HomeClient from "./HomeClient";
 import { PersonSchema, WebSiteSchema } from "@/components/JsonLd";
 
@@ -9,8 +10,8 @@ const getHomeData = unstable_cache(
     async () => {
         await connectDB();
         const [postsRaw, projectsRaw] = await Promise.all([
-            Post.find().sort({ createdAt: -1 }).limit(3).select("title slug image category content createdAt").lean(),
-            Project.find({ featured: true }).limit(3).lean(),
+            Post.find().sort({ createdAt: -1 }).limit(4).select("title slug image category content createdAt").lean(),
+            Project.find({ featured: true }).limit(4).lean(),
         ]);
         return {
             posts: JSON.parse(JSON.stringify(postsRaw)),
@@ -22,12 +23,16 @@ const getHomeData = unstable_cache(
 );
 
 export default async function HomePage() {
-    const { posts, projects } = await getHomeData();
+    const [{ posts, projects }, statusTexts] = await Promise.all([
+        getHomeData(),
+        getCurrentStatusTexts(),
+    ]);
+
     return (
         <>
             <PersonSchema />
             <WebSiteSchema />
-            <HomeClient posts={posts} projects={projects} />
+            <HomeClient posts={posts} projects={projects} statusTexts={statusTexts} />
         </>
     );
 }
