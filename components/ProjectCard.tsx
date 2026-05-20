@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BsGithub } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import GlassCard from "@/components/GlassCard";
+import MatrixRain from "@/components/MatrixRain";
 
 interface ProjectCardProps {
     project: {
@@ -29,6 +30,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                     style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                     <div className="absolute inset-0" style={{ background: "#060e1f" }} />
+                    <MatrixRain density={0.35} intensity={0.45} />
                     <div aria-hidden className="cover-grid" />
                     <div
                         aria-hidden

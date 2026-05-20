@@ -198,10 +198,10 @@ export default function HomeClient({ posts, projects, statusTexts = [] }: HomeCl
                             <span className="text-neutral-600 font-semibold">{"// "}</span>HI, I&apos;M{" "}
                             <span
                                 className="glitch-text"
-                                data-text="BREAN"
+                                data-text="BREANZY"
                                 style={{ color: "rgb(80 140 230)", textShadow: "0 0 28px rgba(80,140,230,0.35)" }}
                             >
-                                BREAN
+                                BREANZY
                             </span>
                             <span className="animate-pulse" style={{ color: "rgb(80 140 230)" }}>_</span>
                             <br />

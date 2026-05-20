@@ -71,16 +71,13 @@ export default function Header() {
                         className="relative flex items-center gap-2 rounded-md px-3 py-1.5 w-full"
                         style={{ background: "var(--ink-1)", border: "1px solid var(--hairline)" }}
                     >
-                        <span className="text-neutral-500 text-xs font-mono">/&gt;</span>
+                        <span className="text-neutral-500 text-xs font-mono">/</span>
                         <input
                             className="flex-1 bg-transparent outline-none text-sm text-neutral-300 placeholder:text-neutral-600"
                             placeholder="search for a post..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <span className="text-[10px] font-mono text-neutral-600 border border-white/10 rounded px-1.5 py-0.5">
-                            ⌘K
-                        </span>
                     </div>
                 </form>
 
@@ -189,7 +186,7 @@ export default function Header() {
                                     className="flex items-center gap-2 rounded-md px-3 py-2"
                                     style={{ background: "var(--ink-1)", border: "1px solid var(--hairline)" }}
                                 >
-                                    <span className="text-neutral-500 text-xs font-mono">/&gt;</span>
+                                    <span className="text-neutral-500 text-xs font-mono">/</span>
                                     <input
                                         className="flex-1 bg-transparent outline-none text-sm text-neutral-300 placeholder:text-neutral-600"
                                         placeholder="search..."

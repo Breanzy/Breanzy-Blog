@@ -3,7 +3,6 @@ import { unstable_cache } from "next/cache";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/post.model";
 import PostCard from "@/components/PostCard";
-import CallToAction from "@/components/CallToAction";
 import NewsletterSubscribe from "@/components/NewsletterSubscribe";
 import MiniHero from "@/components/MiniHero";
 import AnimatedDivider from "@/components/AnimatedDivider";
@@ -47,11 +46,7 @@ export default async function BlogPage() {
                 subtitle="notes on life as a software developer — the good days, the stuck days, and the lessons along the way."
             />
 
-            <div className="max-w-6xl mx-auto px-6 py-6">
-                <CallToAction />
-            </div>
-
-            <div className="max-w-6xl mx-auto px-6 pb-10">
+            <div className="max-w-6xl mx-auto px-6 py-6 pb-10">
                 <NewsletterSubscribe />
             </div>
 

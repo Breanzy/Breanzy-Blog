@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import GlassCard from "@/components/GlassCard";
+import MatrixRain from "@/components/MatrixRain";
 import { getPostCategoryLabel } from "@/lib/postCategories";
 import { formatPostDate, getReadingTimeMinutes } from "@/utils/readingTime";
 
@@ -39,6 +40,7 @@ export default function PostCard({ post }: PostCardProps) {
                     style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                     <div className="absolute inset-0" style={{ background: COVER_GRADIENTS[gradIdx] }} />
+                    <MatrixRain density={0.35} intensity={0.45} />
                     <div aria-hidden className="cover-grid" />
                     {post.image ? (
                         <Image

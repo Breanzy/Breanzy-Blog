@@ -40,11 +40,12 @@ export default function GlassCard({
                 el.style.setProperty("--mx", xFrac * 100 + "%");
                 el.style.setProperty("--my", yFrac * 100 + "%");
 
-                // 3D tilt — max ±8°
+                // 3D tilt — max ±18°
                 if (tilt) {
-                    const rotX = (yFrac - 0.5) * -8;
-                    const rotY = (xFrac - 0.5) *  8;
-                    el.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-2px)`;
+                    const rotX = (yFrac - 0.5) * -18;
+                    const rotY = (xFrac - 0.5) *  18;
+                    const scaleVal = 1.04;
+                    el.style.transform = `perspective(600px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${scaleVal}) translateZ(10px)`;
                 }
             });
         };
@@ -74,7 +75,7 @@ export default function GlassCard({
             ref={ref}
             className={`glass glass-hover relative rounded-2xl overflow-hidden ${className}`}
             style={{
-                transition: "border-color .5s var(--ease-out), box-shadow .5s var(--ease-out), transform .4s var(--ease-out)",
+                transition: "border-color .4s var(--ease-out), box-shadow .4s var(--ease-out), transform .15s ease-out",
                 willChange: "transform",
             }}
             {...rest}

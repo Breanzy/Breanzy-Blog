@@ -32,17 +32,7 @@ export default function NewsletterSubscribe() {
             className="relative rounded-xl overflow-hidden border p-6 md:p-8"
             style={{ background: "rgba(8,12,24,0.7)", backdropFilter: "blur(12px)", borderColor: "rgba(255,255,255,0.08)" }}
         >
-            <div className="flex items-start gap-4">
-                <div
-                    className="w-12 h-12 rounded-xl grid place-items-center shrink-0"
-                    style={{
-                        background: "rgb(80 140 230 / 0.15)",
-                        border: "1px solid rgb(80 140 230 / 0.3)",
-                    }}
-                >
-                    <span className="text-2xl">📬</span>
-                </div>
-                <div className="flex-1">
+            <div className="flex-1">
                     <h3 className="font-serif font-black text-white text-2xl uppercase tracking-tight leading-[0.95] mb-1">
                         subscribe to the{" "}
                         <span style={{ color: "rgb(80 140 230)" }}>newsletter</span>
@@ -109,7 +99,6 @@ export default function NewsletterSubscribe() {
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> 0 spam ever
                         </span>
                     </div>
-                </div>
             </div>
         </div>
     );
