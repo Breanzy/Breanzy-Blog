@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import PostCard from "@/components/PostCard";
 import ProjectCard from "@/components/ProjectCard";
@@ -100,16 +100,18 @@ export default function HomeClient({ posts, projects, statusTexts = [] }: HomeCl
     const [textIdx, setTextIdx] = useState(0);
     const [fading, setFading] = useState(false);
 
-    useEffect(() => {
-        const id = setInterval(() => {
-            setFading(true);
-            setTimeout(() => {
-                setTextIdx((i) => (i + 1) % allTexts.length);
-                setFading(false);
-            }, 400);
-        }, 4000);
-        return () => clearInterval(id);
+    const advanceText = useCallback(() => {
+        setFading(true);
+        setTimeout(() => {
+            setTextIdx((i) => (i + 1) % allTexts.length);
+            setFading(false);
+        }, 400);
     }, [allTexts.length]);
+
+    useEffect(() => {
+        const id = setInterval(advanceText, 4000);
+        return () => clearInterval(id);
+    }, [advanceText]);
 
     return (
         <div style={{ background: "var(--ink-0)" }}>
@@ -156,9 +158,12 @@ export default function HomeClient({ posts, projects, statusTexts = [] }: HomeCl
                     className="relative z-20 max-w-6xl mx-auto px-6 w-full py-20"
                     style={{ y: contentY }}
                 >
-                    {/* Status badge — rotates through README "currently" items */}
-                    <div
-                        className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md"
+                    {/* Status badge — rotates through README "currently" items; click to skip ahead */}
+                    <button
+                        type="button"
+                        onClick={advanceText}
+                        aria-label="Show next status"
+                        className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md cursor-pointer hover:border-white/20 hover:bg-white/[0.05] transition-colors"
                         style={{ background: "rgba(255,255,255,0.03)", transform: "rotate(-2deg)" }}
                     >
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -169,7 +174,7 @@ export default function HomeClient({ posts, projects, statusTexts = [] }: HomeCl
                             currently:{" "}
                             <span className="text-white">{allTexts[textIdx]}</span>
                         </span>
-                    </div>
+                    </button>
 
                     {/* Headline */}
                     <div className="reveal">
