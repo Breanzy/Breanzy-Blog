@@ -30,33 +30,35 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                     style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                     <div className="absolute inset-0" style={{ background: "#060e1f" }} />
-                    <MatrixRain density={0.35} intensity={0.45} />
-                    <div aria-hidden className="cover-grid" />
-                    <div
-                        aria-hidden
-                        className="absolute inset-0 opacity-30"
-                        style={{
-                            backgroundImage:
-                                "repeating-linear-gradient(-45deg, rgba(80,140,230,0.06) 0 2px, transparent 2px 12px)",
-                        }}
-                    />
                     {project.image ? (
                         <Image
                             src={project.image}
                             alt={project.title}
                             fill
-                            className="object-cover opacity-60"
+                            className="object-cover object-top"
                             sizes="(max-width: 640px) 100vw, 430px"
                         />
                     ) : (
-                        <div className="absolute inset-0 grid place-items-center">
-                            <span
-                                className="cover-emoji-wrap float-y slow text-6xl opacity-90"
-                                style={{ filter: "drop-shadow(0 0 20px rgba(80,140,230,0.4))" }}
-                            >
-                                🛠️
-                            </span>
-                        </div>
+                        <>
+                            <MatrixRain density={0.35} intensity={0.45} />
+                            <div aria-hidden className="cover-grid" />
+                            <div
+                                aria-hidden
+                                className="absolute inset-0 opacity-30"
+                                style={{
+                                    backgroundImage:
+                                        "repeating-linear-gradient(-45deg, rgba(80,140,230,0.06) 0 2px, transparent 2px 12px)",
+                                }}
+                            />
+                            <div className="absolute inset-0 grid place-items-center">
+                                <span
+                                    className="cover-emoji-wrap float-y slow text-6xl opacity-90"
+                                    style={{ filter: "drop-shadow(0 0 20px rgba(80,140,230,0.4))" }}
+                                >
+                                    🛠️
+                                </span>
+                            </div>
+                        </>
                     )}
                     <span
                         className="absolute top-3 right-3 text-[11px] text-neutral-300 px-2 py-1 rounded inline-flex items-center gap-1.5"
