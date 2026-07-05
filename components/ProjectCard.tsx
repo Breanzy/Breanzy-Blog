@@ -22,11 +22,11 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <Link href={`/projects/${project.slug}`} className="group block w-full sm:w-[430px]">
-            <GlassCard className="flex flex-col w-full">
+        <Link href={`/projects/${project.slug}`} className="group flex h-full w-full sm:w-[430px]">
+            <GlassCard className="flex h-full w-full flex-col">
                 {/* Cover */}
                 <div
-                    className="cover-frame relative h-48 overflow-hidden"
+                    className="cover-frame relative h-48 overflow-hidden shrink-0"
                     style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                     <div className="absolute inset-0" style={{ background: "#060e1f" }} />
@@ -71,7 +71,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
                 {/* Body */}
                 <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="font-serif font-bold text-white text-lg tracking-tight mb-1.5 uppercase">
+                    <h3 className="font-serif font-bold text-white text-lg tracking-tight mb-1.5 uppercase line-clamp-2 min-h-[2.5rem]">
                         {project.title}
                     </h3>
                     <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4">

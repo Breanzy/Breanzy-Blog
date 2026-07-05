@@ -32,11 +32,11 @@ export default function PostCard({ post }: PostCardProps) {
     const gradIdx     = Math.abs(post._id.charCodeAt(0) ?? 0) % COVER_GRADIENTS.length;
 
     return (
-        <Link href={`/blog/${post.slug}`} className="group block w-full sm:w-[430px]">
-            <GlassCard className="block w-full">
+        <Link href={`/blog/${post.slug}`} className="group flex h-full w-full sm:w-[430px]">
+            <GlassCard className="flex h-full w-full flex-col">
                 {/* Cover */}
                 <div
-                    className="cover-frame relative h-44 overflow-hidden"
+                    className="cover-frame relative h-44 overflow-hidden shrink-0"
                     style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                     <div className="absolute inset-0" style={{ background: COVER_GRADIENTS[gradIdx] }} />
@@ -78,15 +78,15 @@ export default function PostCard({ post }: PostCardProps) {
                 </div>
 
                 {/* Body */}
-                <div className="p-5">
+                <div className="p-5 flex flex-1 flex-col">
                     <div className="text-[11px] text-neutral-500 mb-2 flex items-center gap-2 font-mono">
                         {publishedAt && <span>{publishedAt}</span>}
                     </div>
-                    <h3 className="font-serif font-bold text-white group-hover:text-[rgb(80,140,230)] text-lg leading-tight tracking-tight mb-2 line-clamp-2 transition-colors duration-500">
+                    <h3 className="font-serif font-bold text-white group-hover:text-[rgb(80,140,230)] text-lg leading-tight tracking-tight mb-2 line-clamp-2 min-h-[2.5rem] transition-colors duration-500">
                         {post.title}
                     </h3>
                     <div
-                        className="mt-3 pt-3 flex items-center justify-between text-xs font-mono"
+                        className="mt-auto pt-3 flex items-center justify-between text-xs font-mono"
                         style={{ borderTop: "1px solid var(--hairline)" }}
                     >
                         <span style={{ color: "rgb(80 140 230)" }} className="inline-flex items-center gap-1.5">
