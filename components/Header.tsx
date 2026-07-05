@@ -39,6 +39,7 @@ export default function Header() {
         { href: "/",         label: "home",     active: pathname === "/" },
         { href: "/blog",     label: "blog",     active: pathname === "/blog" || pathname.startsWith("/blog/") },
         { href: "/projects", label: "projects", active: pathname === "/projects" || pathname.startsWith("/projects/") },
+        { href: "/about",    label: "about",    active: pathname === "/about" },
     ];
 
     return (

@@ -7,6 +7,7 @@ const FOOTER_LINKS = [
             ["Home", "/"],
             ["Blog", "/blog"],
             ["Projects", "/projects"],
+            ["About", "/about"],
         ],
     ],
     [
