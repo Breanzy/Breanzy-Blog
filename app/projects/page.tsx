@@ -4,11 +4,11 @@ import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 import MiniHero from "@/components/MiniHero";
 import ProjectsClient from "./ProjectsClient";
-import { BreadcrumbSchema } from "@/components/JsonLd";
+import { BreadcrumbSchema, ItemListSchema } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
     title: "Projects",
-    description: "A collection of full-stack web apps, tools, and experiments built by Brean Julius Carbonilla.",
+    description: "A collection of full-stack web apps, tools, and experiments built by Breanzy (Brean Julius Carbonilla), a full-stack developer based in Melbourne.",
 };
 
 const getProjects = unstable_cache(
@@ -32,6 +32,11 @@ export default async function ProjectsPage() {
                     { name: "Projects", path: "/projects" },
                 ]}
             />
+            {projects.length > 0 && (
+                <ItemListSchema
+                    items={projects.map((p: any) => ({ name: p.title, path: `/projects/${p.slug}` }))}
+                />
+            )}
             <MiniHero
                 eyebrow="ls ./projects"
                 title="PROJECTS."

@@ -6,12 +6,12 @@ import PostCard from "@/components/PostCard";
 import NewsletterSubscribe from "@/components/NewsletterSubscribe";
 import MiniHero from "@/components/MiniHero";
 import AnimatedDivider from "@/components/AnimatedDivider";
-import { BreadcrumbSchema } from "@/components/JsonLd";
+import { BreadcrumbSchema, ItemListSchema } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
     title: "Blog",
     description:
-        "Personal notes on life as a software developer — lessons, reflections, and stories from the journey.",
+        "The Breanzy blog — down-to-earth, anti-corporate-speak takes on the tech industry from a developer struggling to keep up, written like a chat with another dev who gets it.",
 };
 
 const getPosts = unstable_cache(
@@ -38,6 +38,11 @@ export default async function BlogPage() {
                     { name: "Blog", path: "/blog" },
                 ]}
             />
+            {posts.length > 0 && (
+                <ItemListSchema
+                    items={posts.map((p: any) => ({ name: p.title, path: `/blog/${p.slug}` }))}
+                />
+            )}
 
             <MiniHero
                 eyebrow="cat ./blog"
