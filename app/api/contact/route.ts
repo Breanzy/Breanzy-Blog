@@ -4,8 +4,8 @@ import { escapeHtml } from "@/lib/html";
 import { checkRateLimit, clientRateKey } from "@/lib/rateLimit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <onboarding@resend.dev>";
-const TO_EMAIL = "julius.carbonilla@gmail.com";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <info@breanzy.com>";
+const TO_EMAIL = "info@breanzy.com";
 
 export async function POST(req: NextRequest) {
     if (!checkRateLimit(clientRateKey(req, "contact"), 3, 10 * 60 * 1000)) {

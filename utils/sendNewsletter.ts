@@ -5,7 +5,7 @@ import { escapeHtml } from "@/lib/html";
 import { stripHtml, getReadingTimeMinutes } from "@/utils/readingTime";
 
 const SITE_URL = process.env.SITE_URL || "https://breanzy.com";
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Breanzy Blog <info@breanzy.com>";
 const BRAND_NAME = "Breanzy Blog";
 const SEND_TIMEOUT_MS = 10000;
 const BATCH_SIZE = 10;
