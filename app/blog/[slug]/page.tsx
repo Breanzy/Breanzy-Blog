@@ -9,6 +9,7 @@ import CommentSection from "@/components/CommentSection";
 import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/PostCard";
 import FadeIn from "@/components/FadeIn";
+import MatrixRain from "@/components/MatrixRain";
 import { ArticleSchema, BreadcrumbSchema } from "@/components/JsonLd";
 import { getPostCategoryLabel } from "@/lib/postCategories";
 import { getReadingTimeMinutes } from "@/utils/readingTime";
@@ -68,7 +69,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     const categoryLabel = getPostCategoryLabel(post.category);
 
     return (
-        <main className="bg-black min-h-screen">
+        <main className="relative bg-black min-h-screen overflow-hidden">
+            {/* Subtle page-wide matrix background, kept behind everything */}
+            <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
+                <MatrixRain density={0.28} intensity={0.2} />
+            </div>
+
             <ArticleSchema
                 title={post.title}
                 description={description}
@@ -84,46 +90,49 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                     { name: post.title, path: `/blog/${post.slug}` },
                 ]}
             />
-            <div className="max-w-3xl mx-auto px-4 pt-12 pb-20">
-                <FadeIn>
-                    <h1 className="text-3xl lg:text-4xl font-bold text-white text-center leading-tight mb-5">
-                        {post.title}
-                    </h1>
-                </FadeIn>
+            <div className="relative z-10 max-w-3xl mx-auto px-4 pt-12 pb-20">
+                {/* Solid backdrop behind the article itself so the matrix effect never sits behind the text */}
+                <div className="glass rounded-2xl p-6 md:p-10">
+                    <FadeIn>
+                        <h1 className="text-3xl lg:text-4xl font-bold text-white text-center leading-tight mb-5">
+                            {post.title}
+                        </h1>
+                    </FadeIn>
 
-                <FadeIn delay={0.05} className="flex justify-center mb-8">
-                    <Link href={`/search?category=${post.category}`}>
-                        <span className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-900/40 transition-colors">
-                            {categoryLabel}
-                        </span>
-                    </Link>
-                </FadeIn>
+                    <FadeIn delay={0.05} className="flex justify-center mb-8">
+                        <Link href={`/search?category=${post.category}`}>
+                            <span className="text-xs bg-blue-950/60 text-blue-400 border border-blue-900 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-900/40 transition-colors">
+                                {categoryLabel}
+                            </span>
+                        </Link>
+                    </FadeIn>
 
-                {/* Cover image */}
-                {post.image && (
-                    <Image
-                        src={post.image}
-                        alt={post.title}
-                        width={900}
-                        height={500}
-                        priority
-                        className="w-full max-h-[500px] object-cover rounded-xl mb-6"
-                    />
-                )}
+                    {/* Cover image */}
+                    {post.image && (
+                        <Image
+                            src={post.image}
+                            alt={post.title}
+                            width={900}
+                            height={500}
+                            priority
+                            className="w-full max-h-[500px] object-cover rounded-xl mb-6"
+                        />
+                    )}
 
-                {/* Meta */}
-                <FadeIn delay={0.15} className="flex justify-between items-center text-neutral-500 text-xs mb-8 pb-4 border-b border-neutral-800">
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                    <span className="italic">{getReadingTimeMinutes(post.content)} min read</span>
-                </FadeIn>
+                    {/* Meta */}
+                    <FadeIn delay={0.15} className="flex justify-between items-center text-neutral-500 text-xs mb-8 pb-4 border-b border-neutral-800">
+                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                        <span className="italic">{getReadingTimeMinutes(post.content)} min read</span>
+                    </FadeIn>
 
-                {/* Post body — HTML from rich text editor */}
-                <FadeIn delay={0.2}>
-                    <div
-                        className="post-content text-neutral-300 leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
-                </FadeIn>
+                    {/* Post body — HTML from rich text editor */}
+                    <FadeIn delay={0.2}>
+                        <div
+                            className="post-content text-neutral-300 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: post.content }}
+                        />
+                    </FadeIn>
+                </div>
 
                 <FadeIn delay={0.1} className="mt-12">
                     <CallToAction />
@@ -133,7 +142,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </div>
 
             {recentPosts.length > 0 && (
-                <div className="bg-white/[0.025] border-t border-white/[0.04] py-14">
+                <div className="relative z-10 bg-white/[0.025] border-t border-white/[0.04] py-14">
                     <div className="max-w-6xl mx-auto px-4">
                         <FadeIn className="text-center mb-6">
                             <h2 className="text-white text-xl font-semibold">Recent Articles</h2>

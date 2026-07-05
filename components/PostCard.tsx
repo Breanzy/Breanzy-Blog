@@ -40,25 +40,27 @@ export default function PostCard({ post }: PostCardProps) {
                     style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                     <div className="absolute inset-0" style={{ background: COVER_GRADIENTS[gradIdx] }} />
-                    <MatrixRain density={0.35} intensity={0.45} />
-                    <div aria-hidden className="cover-grid" />
                     {post.image ? (
                         <Image
                             src={post.image}
                             alt={post.title}
                             fill
-                            className="object-cover opacity-60"
+                            className="object-cover"
                             sizes="(max-width: 640px) 100vw, 430px"
                         />
                     ) : (
-                        <div className="absolute inset-0 grid place-items-center">
-                            <span
-                                className="cover-emoji-wrap float-y text-5xl opacity-85"
-                                style={{ filter: "drop-shadow(0 0 20px rgba(0,0,0,0.5))" }}
-                            >
-                                📝
-                            </span>
-                        </div>
+                        <>
+                            <MatrixRain density={0.35} intensity={0.45} />
+                            <div aria-hidden className="cover-grid" />
+                            <div className="absolute inset-0 grid place-items-center">
+                                <span
+                                    className="cover-emoji-wrap float-y text-5xl opacity-85"
+                                    style={{ filter: "drop-shadow(0 0 20px rgba(0,0,0,0.5))" }}
+                                >
+                                    📝
+                                </span>
+                            </div>
+                        </>
                     )}
                     <span
                         className="absolute top-3 left-3 text-[11px] font-mono text-neutral-300 px-2.5 py-1 rounded-md"
