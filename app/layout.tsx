@@ -34,8 +34,20 @@ export const metadata: Metadata = {
         template: "%s | Breanzy",
     },
     description:
-        "Brean Julius Carbonilla — full-stack developer in the Philippines. Projects, and notes on life as a software developer.",
-    keywords: ["Brean Carbonilla", "Brean Julius Carbonilla", "Breanzy", "full-stack developer Philippines", "software developer blog"],
+        "Brean Julius Carbonilla (Breanzy) — a Filipino full-stack software developer based in Melbourne. Down-to-earth takes on the tech industry, freelance projects, and notes on keeping up as a developer.",
+    keywords: [
+        "Breanzy",
+        "who is Breanzy",
+        "Brean Julius Carbonilla",
+        "who is Brean Julius Carbonilla",
+        "Breanzy software developer",
+        "Breanzy coding",
+        "Breanzy Melbourne",
+        "Breanzy blogs",
+        "full-stack developer Melbourne",
+        "Filipino developer Melbourne",
+        "software developer blog",
+    ],
     authors: [{ name: "Brean Julius Carbonilla" }],
     creator: "Brean Julius Carbonilla",
     metadataBase: new URL(process.env.SITE_URL ?? "https://breanzy.com"),
@@ -46,6 +58,9 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
+    },
+    verification: {
+        google: "5fCeA4fzL8ZkNV6NJwNURRmmD1uTtWIop7roWpcvBFg",
     },
 };
 
