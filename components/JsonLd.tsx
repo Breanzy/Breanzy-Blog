@@ -18,10 +18,23 @@ export function PersonSchema() {
                 name: "Brean Julius Carbonilla",
                 alternateName: "Breanzy",
                 url: BASE,
+                mainEntityOfPage: `${BASE}/about`,
                 image: `${BASE}/logo.png`,
-                jobTitle: "Full-Stack Developer",
+                jobTitle: "Full-Stack Software Developer",
+                nationality: "Filipino",
+                address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Melbourne",
+                    addressRegion: "Victoria",
+                    addressCountry: "AU",
+                },
                 description:
-                    "Full-stack developer in the Philippines. Writes about life as a software developer.",
+                    "Brean Julius Carbonilla, known online as Breanzy, is a Filipino full-stack software developer based in Melbourne, Australia. Writes down-to-earth takes on the tech industry and life as a developer.",
+                sameAs: [
+                    "https://github.com/Breanzy",
+                    "https://www.linkedin.com/in/juliuscarbonilla/",
+                    "https://x.com/Breanzyy",
+                ],
             }}
         />
     );
@@ -66,13 +79,79 @@ export function ArticleSchema({ title, description, image, slug, createdAt, upda
                 image: image || `${BASE}/logo.png`,
                 datePublished: new Date(createdAt).toISOString(),
                 dateModified: new Date(updatedAt).toISOString(),
-                author: { "@type": "Person", name: "Brean Julius Carbonilla", url: BASE },
+                author: { "@type": "Person", name: "Brean Julius Carbonilla", url: `${BASE}/about` },
                 publisher: {
                     "@type": "Person",
                     name: "Brean Julius Carbonilla",
                     logo: { "@type": "ImageObject", url: `${BASE}/logo.png` },
                 },
                 mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            }}
+        />
+    );
+}
+
+interface ProjectSchemaProps {
+    title: string;
+    description?: string;
+    image?: string;
+    slug: string;
+    techStack?: string[];
+    liveUrl?: string;
+    repoUrl?: string;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+}
+
+export function ProjectSchema({
+    title,
+    description,
+    image,
+    slug,
+    techStack,
+    liveUrl,
+    repoUrl,
+    createdAt,
+    updatedAt,
+}: ProjectSchemaProps) {
+    const url = `${BASE}/projects/${slug}`;
+    return (
+        <JsonLd
+            data={{
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                name: title,
+                description,
+                image: image || `${BASE}/logo.png`,
+                url,
+                sameAs: [liveUrl, repoUrl].filter(Boolean),
+                applicationCategory: "DeveloperApplication",
+                dateCreated: new Date(createdAt).toISOString(),
+                dateModified: new Date(updatedAt).toISOString(),
+                keywords: techStack?.join(", "),
+                creator: { "@type": "Person", name: "Brean Julius Carbonilla", url: `${BASE}/about` },
+                mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            }}
+        />
+    );
+}
+
+interface ItemListSchemaProps {
+    items: { name: string; path: string }[];
+}
+
+export function ItemListSchema({ items }: ItemListSchemaProps) {
+    return (
+        <JsonLd
+            data={{
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: items.map((item, i) => ({
+                    "@type": "ListItem",
+                    position: i + 1,
+                    url: `${BASE}${item.path}`,
+                    name: item.name,
+                })),
             }}
         />
     );
