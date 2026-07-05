@@ -270,7 +270,7 @@ export default function HomeClient({ posts, projects, statusTexts = [] }: HomeCl
                                 viewport={{ once: true, margin: "-80px" }}
                             >
                                 {posts.map((post) => (
-                                    <motion.div key={post._id} variants={cardVariant}>
+                                    <motion.div key={post._id} variants={cardVariant} className="w-full sm:w-[430px] shrink-0">
                                         <PostCard post={post} />
                                     </motion.div>
                                 ))}
@@ -302,7 +302,7 @@ export default function HomeClient({ posts, projects, statusTexts = [] }: HomeCl
                                 viewport={{ once: true, margin: "-80px" }}
                             >
                                 {projects.map((project) => (
-                                    <motion.div key={project._id} variants={cardVariant}>
+                                    <motion.div key={project._id} variants={cardVariant} className="w-full sm:w-[430px] shrink-0">
                                         <ProjectCard project={project} />
                                     </motion.div>
                                 ))}

@@ -77,7 +77,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                         animate="show"
                     >
                         {filtered.map((project) => (
-                            <motion.div key={project._id} variants={cardVariant}>
+                            <motion.div key={project._id} variants={cardVariant} className="w-full sm:w-[430px] shrink-0">
                                 <ProjectCard project={project} />
                             </motion.div>
                         ))}

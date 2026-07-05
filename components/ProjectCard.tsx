@@ -22,7 +22,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <Link href={`/projects/${project.slug}`} className="group flex h-full w-full sm:w-[430px]">
+        <Link href={`/projects/${project.slug}`} className="group flex h-full w-full sm:w-[430px] shrink-0">
             <GlassCard className="flex h-full w-full flex-col">
                 {/* Cover */}
                 <div

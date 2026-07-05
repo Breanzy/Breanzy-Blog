@@ -32,7 +32,7 @@ export default function PostCard({ post }: PostCardProps) {
     const gradIdx     = Math.abs(post._id.charCodeAt(0) ?? 0) % COVER_GRADIENTS.length;
 
     return (
-        <Link href={`/blog/${post.slug}`} className="group flex h-full w-full sm:w-[430px]">
+        <Link href={`/blog/${post.slug}`} className="group flex h-full w-full sm:w-[430px] shrink-0">
             <GlassCard className="flex h-full w-full flex-col">
                 {/* Cover */}
                 <div
