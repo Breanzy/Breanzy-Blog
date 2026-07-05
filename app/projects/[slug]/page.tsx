@@ -7,7 +7,7 @@ import { connectDB } from "@/lib/db";
 import Project from "@/models/project.model";
 import ProjectPageHero from "@/components/ProjectPageHero";
 import FadeIn from "@/components/FadeIn";
-import { BreadcrumbSchema } from "@/components/JsonLd";
+import { BreadcrumbSchema, ProjectSchema } from "@/components/JsonLd";
 
 const getProject = unstable_cache(
     async (slug: string) => {
@@ -85,6 +85,17 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                     { name: "Projects", path: "/projects" },
                     { name: project.title, path: `/projects/${project.slug}` },
                 ]}
+            />
+            <ProjectSchema
+                title={project.title}
+                description={project.description}
+                image={project.image}
+                slug={project.slug}
+                techStack={project.techStack}
+                liveUrl={project.liveUrl}
+                repoUrl={project.repoUrl}
+                createdAt={project.createdAt}
+                updatedAt={project.updatedAt}
             />
             <ProjectPageHero
                 title={project.title}
