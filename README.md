@@ -1,70 +1,65 @@
-<p align="center">
-  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnZqZ3p5bzVncGxua3o1MDVhMWwyMmR3a293Ymx6bjlkZ2xpNGdpYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HoVR2q9j6pxl2zU1ZQ/giphy.gif" />
-</p>
+# Breanzy
 
-# 📝 MERN Blog Website  
+Personal site, portfolio, and blog for Brean Julius Carbonilla — a full-stack developer based in Melbourne, Australia.
 
-A **full-stack blog website** built using the **MERN stack**, featuring authentication, search functionality, an admin dashboard, and more! 🚀  
+🔗 Live: [https://breanzy.com](https://breanzy.com)
 
-## 🔧 Tech Stack  
+## Tech Stack
 
-### Frontend  
-- **React + Vite** ⚡ *(Fast development, optimized builds, and improved HMR)*  
-- **Tailwind CSS + Flowbite** 🎨 *(Pre-styled components for a clean UI)*  
-- **Redux** 🗂️ *(State management for a smoother user experience)*  
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS** for styling
+- **Redux Toolkit** with `redux-persist` for client state
+- **MongoDB + Mongoose** for data storage
+- **Firebase Storage** for media uploads
+- **Resend** for transactional email and newsletter delivery
+- **TipTap** for rich text editing
 
-### Backend  
-- **Node.js + Express.js** 🏗️ *(Handles API requests and business logic)*  
-- **MongoDB + Mongoose** 📦 *(Stores blog posts, users, comments, and other data)*  
-- **Firebase Storage** 🖼️ *(Stores images for blog posts)*  
+## Features
 
-### Authentication & Security  
-- **bcryptjs** 🔐 *(Encrypts user passwords securely)*  
-- **jsonwebtoken (JWT)** 🛡️ *(Manages authentication tokens)*  
-- **cookie-parser** 🍪 *(Handles cookies for session management)*  
+- Blog posts with rich text editing, search, and comments (with likes)
+- Projects portfolio section
+- Resume and about pages
+- Admin dashboard for managing posts, projects, comments, users, and newsletter subscribers
+- Newsletter subscription and delivery
+- Contact form
+- Authentication via email/password or Google, with JWT-based sessions (`access_token` cookie) and bcrypt password hashing
 
-## 🌟 Features  
+## Setup & Installation
 
-✅ **User Authentication** (Register/Login with Email & Google)  
-✅ **Blog Search Functionality** 🔍  
-✅ **Admin Dashboard** (Manage Posts, View Statistics 📊)  
-✅ **Create, Edit, and Delete Posts** ✍️  
-✅ **Image Uploading with Firebase** 📷  
-✅ **Secure Authentication with JWT** 🔑  
-✅ **Redux for State Management** 🎭  
+1. Clone the repository
+   ```bash
+   git clone https://github.com/Breanzy/Breanzy-Blog.git
+   cd Breanzy-Blog
+   ```
 
-## ⚡ Why Vite?  
+2. Install dependencies
+   ```bash
+   npm install
+   ```
 
-Vite makes development **blazing fast** by:  
-- **Instant Hot Module Replacement (HMR)** 🚀 *(No more long reload times!)*  
-- **Optimized Builds** 📦 *(Smaller and faster production-ready output)*  
-- **Efficient Dependency Handling** 🔄 *(Only compiles necessary files on-demand)*  
+3. Create a `.env` file with the following variables:
+   ```bash
+   MONGO=
+   JWT_SECRET=
+   SITE_URL=
+   RESEND_API_KEY=
+   RESEND_FROM_EMAIL=
+   NEXT_PUBLIC_FIREBASE_API_KEY=
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+   NEXT_PUBLIC_FIREBASE_APP_ID=
+   ```
 
-## 📌 Setup & Installation  
+4. Run the development server
+   ```bash
+   npm run dev
+   ```
 
-1️⃣ Clone the repository  
-```bash
-git clone https://github.com/your-username/blog-website.git
-cd blog-website
-```
+## Other Commands
 
-2️⃣ Install dependencies
-```bash
-npm install
-```
-
-3️⃣ Set up environment variables (create a .env file and add your credentials)
-```bash
-MONGO_URI=__
-FIREBASE_API_KEY=__
-JWT_SECRET=__
-```
-
-4️⃣ Run the development server
-```bash
-npm run dev
-```
-
-## Live Server: https://mern-tutorial-project.onrender.com/
-
-Thank you!
+- Production build: `npm run build`
+- Start production server: `npm run start`
+- Lint: `npm run lint`
+- Type-check: `npx tsc --noEmit`
